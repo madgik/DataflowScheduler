@@ -33,13 +33,20 @@ public class Cluster {
         countTypes = new HashMap<>();
         containersList = new ArrayList<>();
         containers = new HashMap<>();
-        nextId=0;
+        nextId=c.nextId;
         contUsed = new HashSet<>();
 
         for (Container cc : c.containers.values()) {
-            this.addContainer(cc.contType);
-        }
+            Container newcont = new Container(cc);
+            containersList.add(newcont);
+            containers.put(newcont.id, newcont);
 
+            contToType.put(newcont.id, newcont.contType); int ccount = 0;
+            if (countTypes.containsKey(newcont.contType)) {
+                ccount = countTypes.get(newcont.contType);
+            }
+            countTypes.put(newcont.contType, ++ccount);
+        }
 
     }
 

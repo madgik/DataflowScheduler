@@ -10,6 +10,7 @@ public class Container {
     public String name;
     public containerType contType;
     public ArrayList<Quantum> opsschedule;
+    long startofUse_MS;
     long UsedUpTo_MS;
     long UsedUpToDT_MS;
     int lastQuantum;
@@ -23,6 +24,24 @@ public class Container {
         name = "c"+ String.valueOf(cid);
         UsedUpTo_MS = 0;
         UsedUpToDT_MS = 0;
+        startofUse_MS =0;
+    }
+
+    public Container(Container c) {
+        id = c.id;
+        lastQuantum = c.lastQuantum;
+        contType = c.contType;
+        name = c.name;
+        UsedUpTo_MS = c.UsedUpTo_MS;
+        UsedUpToDT_MS = c.UsedUpToDT_MS;
+        startofUse_MS = c.startofUse_MS;
+
+        opsschedule = new ArrayList<>();
+        for(int i=0;i<c.opsschedule.size();++i){
+            opsschedule.add(new Quantum(c.opsschedule.get(i)));
+        }
+
+
     }
 
     public void setUseDT(long time){

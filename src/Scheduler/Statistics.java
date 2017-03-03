@@ -17,7 +17,7 @@ public class Statistics {
         money = 0;
         for(Container c:plan.cluster.containersList){
             runtime_MS = Math.max(c.UsedUpTo_MS,runtime_MS);
-            int localQuanta = (int) Math.ceil(c.UsedUpTo_MS/RuntimeConstants.quantum_MS);
+            int localQuanta = (int) Math.ceil((c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS);
             if(c.UsedUpTo_MS>0){
                 localQuanta+=1;
             }

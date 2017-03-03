@@ -154,13 +154,14 @@ public class Plan implements Comparable<Plan>{
         long endTime_MS = timeNow_MS;
 
 
-        //TODO assign
-
-
 
         opIdtoStartEnd_MS.put(opId,new Pair<>(startTime_MS,endTime_MS));
         cont.setUse(endTime_MS);
+        cont.startofUse_MS = Math.min(cont.startofUse_MS,startTime_MS);
+
         cluster.contUsed.add(contId);
+
+        cont.setUse(endTime_MS); //TODO ji do this better for backfilling
 
         stats = new Statistics(this);
 
@@ -206,15 +207,21 @@ public class Plan implements Comparable<Plan>{
     }
 
     public void printInfo() {
-        System.out.println("------Plan Info----");
+//        System.out.println("------Plan Info----");
+        StringBuilder i = new StringBuilder();
+        i.append(stats.runtime_MS).append(" ")
+            .append(stats.money).append(" ")
+            .append("conts ").append(cluster.containersList.size()).append("  ");
+
         for(containerType ct: cluster.countTypes.keySet()){
-            System.out.printf(ct.name+":"+cluster.countTypes.get(ct)+" ");
+            i.append(ct.name).append("(")
+                .append(cluster.countTypes.get(ct))
+                .append(")").append(" ");
         }
-        System.out.println();
 
-        stats.printStats();
 
-        System.out.println("------Plan Info END----");
+        System.out.println(i.toString());
+//        System.out.println("------Plan Info END----");
 
     }
 
