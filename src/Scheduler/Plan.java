@@ -17,9 +17,10 @@ public class Plan implements Comparable<Plan>{
     public HashMap<Long,ArrayList<Long>> contAssignments; //contId->list<opId>
     public HashMap<Long, ArrayList<Long>> contIdToOpIds;
     public Cluster cluster;
-    Statistics stats;
+    public  Statistics stats;
     Statistics beforeStats;
     String vmUpgrading;
+    public long comcost=0;
     public HashMap<Long, Pair<Long,Long>> opIdtoStartEnd_MS;
 
 
@@ -132,7 +133,7 @@ public class Plan implements Comparable<Plan>{
             Container fromCont = cluster.getContainer(fromContId);
             if (fromContId != contId) {
                 //TODO ji better division
-                long dtTime_MS = (long) (1000*( Math.ceil(link.data.size_B / RuntimeConstants.network_speed__B_SEC)));
+                long dtTime_MS = (long)( Math.ceil(link.data.size_B / RuntimeConstants.network_speed_B_MS));
 
                 // Set network usage to containers
                 long dtStart = timeNow_MS;

@@ -17,7 +17,7 @@ public class RuntimeConstants {
      * Network speed (in MB/sec)
      * Default: 100 MB/sec (~1GBit)
      */
-    public static  double network_speed__B_SEC = 100000.0;
+    public static  double network_speed_B_MS = 100000.0;
 
     /**
      * Disk throughput in (MB/sec)

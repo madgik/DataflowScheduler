@@ -4,9 +4,9 @@ import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
 
-import java.lang.reflect.Array;
-import java.rmi.RemoteException;
 import java.util.*;
+
+import static utils.Plot.plotPlans;
 
 /**
  * Created by johnchronis on 2/19/17.
@@ -74,13 +74,17 @@ public class paretoNoHomogen implements Scheduler {
             } else {
 
                 if (cType.equals(containerType.getLargest())) {
-                    skylinePlans.addAll(this.createAssigments("decreasing", ctypes));
+                    skylinePlans.addAll(this.createAssignments("decreasing", cType));
+                    plotPlans(skylinePlans);
                     System.out.println("s1 "+skylinePlans.size());
+
                 } else if (cType.equals(containerType.getSmallest())) {
-                    skylinePlans.addAll(this.createAssigments("increasing", ctypes));
+                    skylinePlans.addAll(this.createAssignments("increasing", cType));
+                    plotPlans(skylinePlans);
                     System.out.println("s2 "+skylinePlans.size());
                 } else{
-                    skylinePlans.addAll(this.createAssigments("increasing/decreasing", ctypes));
+                    skylinePlans.addAll(this.createAssignments("increasing/decreasing", cType));
+                    plotPlans(skylinePlans);
                     System.out.println("s3 "+skylinePlans.size());
                 }
             }
@@ -122,7 +126,9 @@ public class paretoNoHomogen implements Scheduler {
 
     }
 
-//    private void homoToHetero(ArrayList<Plan> skylinePlans) {
+
+
+    //    private void homoToHetero(ArrayList<Plan> skylinePlans) {
 //
 //
 //
@@ -369,7 +375,7 @@ public class paretoNoHomogen implements Scheduler {
 //    }
 
 
-    private ArrayList<Plan> createAssigments(String vmUpgrading, ArrayList<containerType> cTypes) {
+    private ArrayList<Plan> createAssignments(String vmUpgrading, containerType cType) {
 
 
         Plan firstPlan = new Plan(graph, cluster);
@@ -400,7 +406,7 @@ public class paretoNoHomogen implements Scheduler {
             long nextOpID = nextOperator(firstPlan, readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
-            System.out.println("scheduling "+nextOpID + " "+readyOps.toString());
+            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
             for (Plan plan : plans) {
@@ -408,7 +414,7 @@ public class paretoNoHomogen implements Scheduler {
                 if (plan == null) {
                     continue;
                 }
-                getCandidateContainers(nextOpID, plan, vmUpgrading, cTypes,allCandidates);//allCanditates is an out param
+                getCandidateContainers(nextOpID, plan, vmUpgrading, cType,allCandidates);//allCanditates is an out param
             }
             plans.clear();
 
@@ -418,6 +424,7 @@ public class paretoNoHomogen implements Scheduler {
 
             plans = computeSkyline(allCandidates);
 
+            System.out.println("skyline");
             for(Plan p:plans){
                 p.printInfo();
             }
@@ -453,7 +460,7 @@ public class paretoNoHomogen implements Scheduler {
 
 
     private void getCandidateContainers(Long opId , Plan plan, //assume that not empty containers exist
-         String vmUpgrading, ArrayList<containerType> contTypes,ArrayList<Plan> planEstimations)
+         String vmUpgrading, containerType contType,ArrayList<Plan> planEstimations)
      {
 
 
@@ -469,12 +476,12 @@ public class paretoNoHomogen implements Scheduler {
 
         }
         if(plan.cluster.contUsed.size()<maxContainers){ //if no empty conts in plan add an empty and assign it
-            for(containerType ctype: contTypes) {
+//            for(containerType ctype: contType) {//uncomment to add every ctype
                 Plan newPlan = new Plan(plan);
-                Long newContId = newPlan.cluster.addContainer(ctype);
+                Long newContId = newPlan.cluster.addContainer(contType);
                 newPlan.assignOperator(opId, newContId);
                 planEstimations.add(newPlan);
-            }
+//            }
         }
 
 
@@ -542,6 +549,8 @@ public class paretoNoHomogen implements Scheduler {
 
         return skyline;
     }
+
+
     private void computeRankings(){
 
         HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
@@ -575,7 +584,7 @@ public class paretoNoHomogen implements Scheduler {
                 double comCostChild = 0.0;
                 for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
                     if(parentofChildEdge.from==opId) {
-                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed__B_SEC);
+                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
                     }
                 }
                 //assumptions for output data and communication cost
@@ -595,7 +604,7 @@ public class paretoNoHomogen implements Scheduler {
             double maxRankParent=0.0;
             for (Edge inLink: graph.getParents(opId)) {
 //                ConcreteOperator opParent=graph.getOperator(inLink.from.getopID());
-                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed__B_SEC);
+                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
                 maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from));
             }
 
@@ -628,7 +637,7 @@ public class paretoNoHomogen implements Scheduler {
 
             double maxRankChild=0.0;
             for (Edge outLink: graph.getChildren(opId)) {
-                double comCostChild = Math.ceil(outLink.data.size_B / RuntimeConstants.network_speed__B_SEC);
+                double comCostChild = Math.ceil(outLink.data.size_B / RuntimeConstants.network_speed_B_MS);
                 //assumptions for output data and communication cost
                 maxRankChild = Math.max(maxRankChild, comCostChild+rankU.get(outLink.to));
             }

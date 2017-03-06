@@ -1,8 +1,12 @@
 package Scheduler;
 
+import utils.Pair;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static utils.Plot.plotPoints;
 
 /**
  * Created by johnchronis on 2/19/17.
@@ -33,6 +37,14 @@ public class SolutionSpace {
         for(Plan p:results){
             p.printInfo();
         }
+    }
+
+    public void plot(){
+        ArrayList<Pair<Long,Double>> a = new ArrayList<>();
+        for(Plan p: results){
+            a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
+        }
+        plotPoints(a);
     }
 }
 

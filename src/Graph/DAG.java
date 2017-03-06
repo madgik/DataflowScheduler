@@ -35,6 +35,8 @@ public class DAG {
     }
 
     public Long addOperator(Operator op){
+        System.out.println("opccreated "+nextId+" "+op.resourcesRequirements.runtime_MS);
+
         op.setId(nextId);
         operators.put(nextId,op);
         operatorsList.add(op);

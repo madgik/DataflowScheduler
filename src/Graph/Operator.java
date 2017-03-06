@@ -24,7 +24,6 @@ public class Operator {
         this.id = -1L;
 //        inFiles = new HashSet<>();
 //        outFiles = new HashSet<>();
-        System.out.println("opccreated "+resourcesRequirements.runtime_MS);
     }
 
 //    public long getRunTime_SEC(){
