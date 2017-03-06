@@ -75,24 +75,25 @@ public class paretoNoHomogen implements Scheduler {
 
                 if (cType.equals(containerType.getLargest())) {
                     skylinePlans.addAll(this.createAssignments("decreasing", cType));
-                    plotPlans(skylinePlans);
+                    plotPlans("dec",skylinePlans);
                     System.out.println("s1 "+skylinePlans.size());
 
                 } else if (cType.equals(containerType.getSmallest())) {
                     skylinePlans.addAll(this.createAssignments("increasing", cType));
-                    plotPlans(skylinePlans);
+                    plotPlans("inc",skylinePlans);
                     System.out.println("s2 "+skylinePlans.size());
                 } else{
                     skylinePlans.addAll(this.createAssignments("increasing/decreasing", cType));
-                    plotPlans(skylinePlans);
+                    plotPlans("inc,dec",skylinePlans);
                     System.out.println("s3 "+skylinePlans.size());
                 }
             }
         }
 
         //all plans are in skyline plans
-
+        plotPlans("all B",skylinePlans);
         paretoPlans = computeSkyline(skylinePlans);
+        plotPlans("all A",paretoPlans);
         skylinePlans.clear();
 
         for(Plan pp: paretoPlans) {

@@ -36,7 +36,7 @@ public class Plot extends ApplicationFrame {
         }
 
         final XYSeriesCollection data = new XYSeriesCollection(series);
-        final JFreeChart chart = ChartFactory.createXYLineChart(
+        final JFreeChart chart = ChartFactory.createScatterPlot(
             "Time/Money",
             "Time",
             "Money",
@@ -48,7 +48,7 @@ public class Plot extends ApplicationFrame {
         );
 
         final ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+        chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
         setContentPane(chartPanel);
 
     }
@@ -79,12 +79,12 @@ public class Plot extends ApplicationFrame {
 
     }
 
-    public static void plotPlans(ArrayList<Plan> b) {
+    public static void plotPlans(String n,ArrayList<Plan> b) {
         ArrayList<Pair<Long,Double>> a = new ArrayList<>();
         for(Plan p: b){
             a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
         }
-        final Plot demo = new Plot("Time/Money", a);
+        final Plot demo = new Plot(n, a);
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);

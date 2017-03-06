@@ -2,27 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4d6e9fc-fa75-41b9-b662-f5cedc4d96ab" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/utils/Plot.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Graph/DAG.class" afterPath="$PROJECT_DIR$/target/classes/Graph/DAG.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Graph/Operator.class" afterPath="$PROJECT_DIR$/target/classes/Graph/Operator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/Cluster.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/Cluster.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/Container.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/Container.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/Plan.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/Plan.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/Quantum$Slot.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/Quantum$Slot.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/Quantum.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/Quantum.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/RuntimeConstants.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/RuntimeConstants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/Statistics.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/Statistics.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen$1.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/SolutionSpace.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/SolutionSpace.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyScheduler.iml" afterPath="$PROJECT_DIR$/MyScheduler.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Graph/DAG.java" afterPath="$PROJECT_DIR$/src/Graph/DAG.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Graph/Operator.java" afterPath="$PROJECT_DIR$/src/Graph/Operator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/Plan.java" afterPath="$PROJECT_DIR$/src/Scheduler/Plan.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/RuntimeConstants.java" afterPath="$PROJECT_DIR$/src/Scheduler/RuntimeConstants.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" afterPath="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" afterPath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/utils/Plot.java" afterPath="$PROJECT_DIR$/src/utils/Plot.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -39,17 +22,17 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="paretoNoHomogen.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="paretoNoHomogen.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="86" column="44" lean-forward="false" selection-start-line="86" selection-start-column="44" selection-end-line="86" selection-end-column="44" />
+            <state relative-caret-position="285">
+              <caret line="95" column="24" lean-forward="false" selection-start-line="95" selection-start-column="24" selection-end-line="95" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#25615#26001#0" expanded="true" />
-                <element signature="e#26000#26001#0" expanded="true" />
-                <element signature="e#26761#26931#0" expanded="true" />
-                <element signature="e#26930#26931#0" expanded="true" />
+                <element signature="e#25717#26103#0" expanded="true" />
+                <element signature="e#26102#26103#0" expanded="true" />
+                <element signature="e#26863#27033#0" expanded="true" />
+                <element signature="e#27032#27033#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -67,11 +50,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Plot.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Plot.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/utils/Plot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="81" column="32" lean-forward="false" selection-start-line="81" selection-start-column="32" selection-end-line="81" selection-end-column="32" />
+            <state relative-caret-position="586">
+              <caret line="50" column="67" lean-forward="false" selection-start-line="50" selection-start-column="67" selection-end-line="50" selection-end-column="67" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -135,7 +118,7 @@
       <file leaf-file-name="Operator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Graph/Operator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-164">
+            <state relative-caret-position="-56">
               <caret line="8" column="23" lean-forward="false" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
               <folding />
             </state>
@@ -239,9 +222,9 @@
         <option value="$PROJECT_DIR$/src/Scheduler/RuntimeConstants.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/Scheduler/Plan.java" />
-        <option value="$PROJECT_DIR$/src/utils/Plot.java" />
         <option value="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" />
         <option value="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
+        <option value="$PROJECT_DIR$/src/utils/Plot.java" />
       </list>
     </option>
   </component>
@@ -287,7 +270,7 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1793" />
+    <option name="x" value="-1794" />
     <option name="y" value="-140" />
     <option name="width" value="1769" />
     <option name="height" value="1019" />
@@ -312,16 +295,6 @@
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyScheduler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-          </PATH>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="MyScheduler" />
@@ -1027,7 +1000,7 @@
       <workItem from="1487427103522" duration="42576000" />
       <workItem from="1487775076367" duration="28409000" />
       <workItem from="1488384287015" duration="6071000" />
-      <workItem from="1488797697223" duration="9247000" />
+      <workItem from="1488797697223" duration="9840000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1488319318583</created>
@@ -1043,20 +1016,27 @@
       <option name="project" value="LOCAL" />
       <updated>1488518687376</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="it plots">
+      <created>1488815633085</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1488815633085</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="86700000" />
+    <option name="totallyTimeSpent" value="87293000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1793" y="-140" width="1769" height="1019" extended-state="0" />
-    <editor active="true" />
+    <frame x="-1794" y="-140" width="1769" height="1019" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34735706" sideWeight="0.50492185" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.094962366" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.094962366" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1073,7 +1053,7 @@
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34735706" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24703345" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32951653" sideWeight="0.57836646" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14012739" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33069307" sideWeight="0.494705" order="1" side_tool="false" content_ui="tabs" />
@@ -1094,7 +1074,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="first commit" />
+    <MESSAGE value="it plots" />
+    <option name="LAST_COMMIT_MESSAGE" value="it plots" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1107,7 +1088,7 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>123</line>
+          <line>124</line>
           <properties />
           <option name="timeStamp" value="60" />
         </line-breakpoint>
@@ -1125,19 +1106,19 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>380</line>
+          <line>381</line>
           <properties />
           <option name="timeStamp" value="74" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>399</line>
+          <line>400</line>
           <properties />
           <option name="timeStamp" value="75" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>468</line>
+          <line>469</line>
           <properties />
           <option name="timeStamp" value="77" />
         </line-breakpoint>
@@ -1185,10 +1166,10 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#25615#26001#0" expanded="true" />
-            <element signature="e#26000#26001#0" expanded="true" />
-            <element signature="e#26761#26931#0" expanded="true" />
-            <element signature="e#26930#26931#0" expanded="true" />
+            <element signature="e#25717#26103#0" expanded="true" />
+            <element signature="e#26102#26103#0" expanded="true" />
+            <element signature="e#26863#27033#0" expanded="true" />
+            <element signature="e#27032#27033#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1271,10 +1252,10 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#25615#26001#0" expanded="true" />
-            <element signature="e#26000#26001#0" expanded="true" />
-            <element signature="e#26761#26931#0" expanded="true" />
-            <element signature="e#26930#26931#0" expanded="true" />
+            <element signature="e#25717#26103#0" expanded="true" />
+            <element signature="e#26102#26103#0" expanded="true" />
+            <element signature="e#26863#27033#0" expanded="true" />
+            <element signature="e#27032#27033#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1652,14 +1633,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Graph/Operator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-164">
-          <caret line="8" column="23" lean-forward="false" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/containerType.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -1713,16 +1686,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils/Plot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="81" column="32" lean-forward="false" selection-start-line="81" selection-start-column="32" selection-end-line="81" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/SolutionSpace.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -1735,14 +1698,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="86" column="44" lean-forward="false" selection-start-line="86" selection-start-column="44" selection-end-line="86" selection-end-column="44" />
+        <state relative-caret-position="285">
+          <caret line="95" column="24" lean-forward="false" selection-start-line="95" selection-start-column="24" selection-end-line="95" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#25615#26001#0" expanded="true" />
-            <element signature="e#26000#26001#0" expanded="true" />
-            <element signature="e#26761#26931#0" expanded="true" />
-            <element signature="e#26930#26931#0" expanded="true" />
+            <element signature="e#25717#26103#0" expanded="true" />
+            <element signature="e#26102#26103#0" expanded="true" />
+            <element signature="e#26863#27033#0" expanded="true" />
+            <element signature="e#27032#27033#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Graph/Operator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-56">
+          <caret line="8" column="23" lean-forward="false" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/Plot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="586">
+          <caret line="50" column="67" lean-forward="false" selection-start-line="50" selection-start-column="67" selection-end-line="50" selection-end-column="67" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
