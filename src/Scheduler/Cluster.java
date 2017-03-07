@@ -82,4 +82,22 @@ public class Cluster {
 
 
 
+    public void update(Long contid,containerType ctype) {
+        //used for homoToHetero;
+        containerType oldtype = containers.get(contid).contType;
+
+        containers.get(contid).contType  = ctype;
+        contToType.put(contid,ctype);
+
+        countTypes.put(oldtype,countTypes.get(oldtype)-1);
+
+        if(countTypes.containsKey(ctype)){
+            countTypes.put(ctype,countTypes.get(ctype)+1);
+        }else{
+            countTypes.put(ctype,1);
+        }
+
+
+
+    }
 }

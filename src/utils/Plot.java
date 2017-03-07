@@ -18,6 +18,7 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Plot extends ApplicationFrame {
@@ -79,7 +80,7 @@ public class Plot extends ApplicationFrame {
 
     }
 
-    public static void plotPlans(String n,ArrayList<Plan> b) {
+    public static void plotPlans(String n,List<Plan> b) {
         ArrayList<Pair<Long,Double>> a = new ArrayList<>();
         for(Plan p: b){
             a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4d6e9fc-fa75-41b9-b662-f5cedc4d96ab" name="Default" comment="">
+    <list default="true" id="e4d6e9fc-fa75-41b9-b662-f5cedc4d96ab" name="Default" comment="scatterplot">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/SolutionSpace.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/SolutionSpace.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen$1.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen$1.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen.class" afterPath="$PROJECT_DIR$/target/classes/Scheduler/paretoNoHomogen.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/Cluster.java" afterPath="$PROJECT_DIR$/src/Scheduler/Cluster.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" afterPath="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" afterPath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/utils/Plot.java" afterPath="$PROJECT_DIR$/src/utils/Plot.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -16,7 +21,15 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CreatePatchCommitExecutor">
-    <option name="PATCH_PATH" value="" />
+    <option name="PATCH_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="DatabaseView">
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
@@ -24,14 +37,31 @@
       <file leaf-file-name="paretoNoHomogen.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="95" column="24" lean-forward="false" selection-start-line="95" selection-start-column="24" selection-end-line="95" selection-end-column="24" />
+            <state relative-caret-position="238">
+              <caret line="392" column="17" lean-forward="false" selection-start-line="392" selection-start-column="17" selection-end-line="392" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#25717#26103#0" expanded="true" />
-                <element signature="e#26102#26103#0" expanded="true" />
-                <element signature="e#26863#27033#0" expanded="true" />
-                <element signature="e#27032#27033#0" expanded="true" />
+                <element signature="e#10023#10590#0" expanded="true" />
+                <element signature="e#10589#10590#0" expanded="true" />
+                <element signature="method#createAssignments#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="method#getCandidateContainers#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="method#onlyOneContainer#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="method#nextOperator#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="method#computeSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="method#computeNewSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="e#31219#31605#0" expanded="true" />
+                <element signature="e#31604#31605#0" expanded="true" />
+                <element signature="e#33221#33607#0" expanded="true" />
+                <element signature="e#33606#33607#0" expanded="true" />
+                <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
+                <element signature="e#33731#33901#0" expanded="true" />
+                <element signature="e#33821#33822#0" expanded="false" />
+                <element signature="e#33890#33891#0" expanded="false" />
+                <element signature="e#33900#33901#0" expanded="true" />
+                <element signature="e#33910#33987#0" expanded="false" />
+                <marker date="1488906912000" expanded="false" signature="24142:25287" ph="{...}" />
+                <marker date="1488906912000" expanded="false" signature="32385:33667" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -40,98 +70,23 @@
       <file leaf-file-name="SolutionSpace.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Scheduler/SolutionSpace.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+            <state relative-caret-position="336">
+              <caret line="35" column="0" lean-forward="true" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#539#540#0" expanded="true" />
+                <element signature="e#572#573#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Plot.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/utils/Plot.java">
+      <file leaf-file-name="Cluster.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Scheduler/Cluster.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
-              <caret line="25" column="66" lean-forward="false" selection-start-line="25" selection-start-column="66" selection-end-line="25" selection-end-column="66" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XYSeries.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/Desktop/jfreechart-1.0.13.jar!/org/jfree/data/xy/XYSeries.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="169" column="24" lean-forward="false" selection-start-line="169" selection-start-column="24" selection-end-line="169" selection-end-column="24" />
-              <folding>
-                <element signature="e#4652#4653#0" expanded="true" />
-                <element signature="e#4688#4689#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Number.java" pinned="false" current-in-tab="false">
-        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/src.zip!/java/lang/Number.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-93">
-              <caret line="48" column="22" lean-forward="false" selection-start-line="48" selection-start-column="22" selection-end-line="48" selection-end-column="22" />
+            <state relative-caret-position="338">
+              <caret line="92" column="0" lean-forward="false" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TODOS" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TODOS">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="16" lean-forward="false" selection-start-line="0" selection-start-column="16" selection-end-line="0" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="125" column="26" lean-forward="false" selection-start-line="125" selection-start-column="26" selection-end-line="125" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="containerType.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Scheduler/containerType.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="23" column="23" lean-forward="false" selection-start-line="23" selection-start-column="23" selection-end-line="24" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Operator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Graph/Operator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-56">
-              <caret line="8" column="23" lean-forward="false" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Plan.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Scheduler/Plan.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="19" column="11" lean-forward="false" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -174,6 +129,8 @@
       <find>out.</find>
       <find>pr</find>
       <find>1000</find>
+      <find>plan</find>
+      <find>skylinePlans</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -212,7 +169,6 @@
         <option value="$PROJECT_DIR$/src/Main.java" />
         <option value="$PROJECT_DIR$/src/Scheduler/Scheduler.java" />
         <option value="$PROJECT_DIR$/src/Graph/parsers/PegasusDaxParser.java" />
-        <option value="$PROJECT_DIR$/src/Scheduler/Cluster.java" />
         <option value="$PROJECT_DIR$/src/Scheduler/Quantum.java" />
         <option value="$PROJECT_DIR$/src/Scheduler/Container.java" />
         <option value="$PROJECT_DIR$/src/Scheduler/Statistics.java" />
@@ -221,9 +177,10 @@
         <option value="$PROJECT_DIR$/src/Scheduler/RuntimeConstants.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/Scheduler/Plan.java" />
-        <option value="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" />
-        <option value="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
         <option value="$PROJECT_DIR$/src/utils/Plot.java" />
+        <option value="$PROJECT_DIR$/src/Scheduler/SolutionSpace.java" />
+        <option value="$PROJECT_DIR$/src/Scheduler/Cluster.java" />
+        <option value="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
       </list>
     </option>
   </component>
@@ -269,10 +226,147 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1794" />
-    <option name="y" value="-140" />
-    <option name="width" value="1769" />
-    <option name="height" value="1019" />
+    <option name="width" value="1021" />
+    <option name="height" value="1080" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Android &gt; Lint &gt; Correctness</id>
+          </State>
+          <State>
+            <id>Android &gt; Lint &gt; Usability &gt; Icons</id>
+          </State>
+          <State>
+            <id>Android Lint for Kotlin</id>
+          </State>
+          <State>
+            <id>Ant inspections</id>
+          </State>
+          <State>
+            <id>Application Server Specific Inspections</id>
+          </State>
+          <State>
+            <id>Control flow issuesJava</id>
+          </State>
+          <State>
+            <id>Control flow issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Declaration redundancyJava</id>
+          </State>
+          <State>
+            <id>Django</id>
+          </State>
+          <State>
+            <id>Faces Model</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>GeneralJavaScript</id>
+          </State>
+          <State>
+            <id>Groovy</id>
+          </State>
+          <State>
+            <id>Hibernate Issues</id>
+          </State>
+          <State>
+            <id>Initialization issuesJava</id>
+          </State>
+          <State>
+            <id>Internationalization issuesJava</id>
+          </State>
+          <State>
+            <id>JBoss Seam issues</id>
+          </State>
+          <State>
+            <id>JPA issues</id>
+          </State>
+          <State>
+            <id>JSON</id>
+          </State>
+          <State>
+            <id>Java</id>
+          </State>
+          <State>
+            <id>Java EE issues</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript validity issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Mako</id>
+          </State>
+          <State>
+            <id>Maven</id>
+          </State>
+          <State>
+            <id>Plugin DevKit</id>
+          </State>
+          <State>
+            <id>Probable bugsJava</id>
+          </State>
+          <State>
+            <id>Properties Files</id>
+          </State>
+          <State>
+            <id>Python</id>
+          </State>
+          <State>
+            <id>SQL</id>
+          </State>
+          <State>
+            <id>Spring</id>
+          </State>
+          <State>
+            <id>Spring CoreSpring</id>
+          </State>
+          <State>
+            <id>Struts</id>
+          </State>
+          <State>
+            <id>Struts 1Struts</id>
+          </State>
+          <State>
+            <id>TestNGJava</id>
+          </State>
+          <State>
+            <id>Threading issuesJava</id>
+          </State>
+          <State>
+            <id>UI Form Problems</id>
+          </State>
+          <State>
+            <id>Validity issuesGroovy</id>
+          </State>
+          <State>
+            <id>XML</id>
+          </State>
+          <State>
+            <id>XMLSpring CoreSpring</id>
+          </State>
+          <State>
+            <id>XSLT</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Duplicates</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -348,14 +442,15 @@
     <property name="js.eslint.eslintPackage" value="" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="SearchEverywhereHistoryKey" value="space&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;con&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/containerType.java&#10;monta&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/resources/MONTAGE.n.25.0.dax&#10;Operator&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/Operator.java&#10;dax&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/parsers/PegasusDaxParser.java&#10;stat&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;runt&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;cont&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/containerType.java&#10;solutio&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Cluster&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Cluster.java&#10;Main&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Main.java&#10;parse&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/parsers/PegasusDaxParser.java&#10;plan&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java&#10;bag&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/BagOfPlans.java&#10;pl&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java&#10;main&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Main.java&#10;sta&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;stati&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;Plan&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java" />
-    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+    <property name="SearchEverywhereHistoryKey" value="solu&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;space&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;con&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/containerType.java&#10;monta&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/resources/MONTAGE.n.25.0.dax&#10;Operator&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/Operator.java&#10;dax&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/parsers/PegasusDaxParser.java&#10;stat&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;runt&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;cont&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/containerType.java&#10;solutio&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Cluster&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Cluster.java&#10;Main&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Main.java&#10;parse&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/parsers/PegasusDaxParser.java&#10;plan&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java&#10;bag&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/BagOfPlans.java&#10;pl&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java&#10;main&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Main.java&#10;sta&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;stati&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;Plan&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
+    <property name="FullScreen" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -999,7 +1094,7 @@
       <workItem from="1487427103522" duration="42576000" />
       <workItem from="1487775076367" duration="28409000" />
       <workItem from="1488384287015" duration="6071000" />
-      <workItem from="1488797697223" duration="10061000" />
+      <workItem from="1488797697223" duration="27189000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1488319318583</created>
@@ -1029,29 +1124,36 @@
       <option name="project" value="LOCAL" />
       <updated>1488816220753</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="scatterplot">
+      <created>1488816437604</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1488816437604</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="87514000" />
+    <option name="totallyTimeSpent" value="104642000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1794" y="-140" width="1769" height="1019" extended-state="0" />
+    <frame x="0" y="0" width="1021" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34735706" sideWeight="0.50492185" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.094962366" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1790393" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969433" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1731326" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41584158" sideWeight="0.6459909" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.519802" sideWeight="0.6459909" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35382956" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -1059,9 +1161,9 @@
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24703345" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.6821782" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32951653" sideWeight="0.57836646" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14012739" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26419213" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33069307" sideWeight="0.494705" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
@@ -1089,13 +1191,13 @@
       <breakpoints>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>46</line>
+          <line>47</line>
           <properties />
           <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>124</line>
+          <line>122</line>
           <properties />
           <option name="timeStamp" value="60" />
         </line-breakpoint>
@@ -1107,45 +1209,27 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>94</line>
-          <properties />
-          <option name="timeStamp" value="73" />
-        </line-breakpoint>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>381</line>
+          <line>478</line>
           <properties />
           <option name="timeStamp" value="74" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>400</line>
-          <properties />
-          <option name="timeStamp" value="75" />
-        </line-breakpoint>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>469</line>
+          <line>571</line>
           <properties />
           <option name="timeStamp" value="77" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>76</line>
+          <line>723</line>
           <properties />
-          <option name="timeStamp" value="84" />
+          <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>81</line>
+          <line>227</line>
           <properties />
-          <option name="timeStamp" value="86" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>85</line>
-          <properties />
-          <option name="timeStamp" value="87" />
+          <option name="timeStamp" value="99" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1158,7 +1242,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="89" />
+      <option name="time" value="100" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1173,10 +1257,27 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#25717#26103#0" expanded="true" />
-            <element signature="e#26102#26103#0" expanded="true" />
-            <element signature="e#26863#27033#0" expanded="true" />
-            <element signature="e#27032#27033#0" expanded="true" />
+            <element signature="e#10023#10590#0" expanded="true" />
+            <element signature="e#10589#10590#0" expanded="true" />
+            <element signature="method#createAssignments#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#getCandidateContainers#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#onlyOneContainer#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#nextOperator#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeNewSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="e#31219#31605#0" expanded="true" />
+            <element signature="e#31604#31605#0" expanded="true" />
+            <element signature="e#33221#33607#0" expanded="true" />
+            <element signature="e#33606#33607#0" expanded="true" />
+            <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="e#33731#33901#0" expanded="true" />
+            <element signature="e#33821#33822#0" expanded="false" />
+            <element signature="e#33890#33891#0" expanded="false" />
+            <element signature="e#33900#33901#0" expanded="true" />
+            <element signature="e#33910#33987#0" expanded="false" />
+            <marker date="1488906912000" expanded="false" signature="24142:25287" ph="{...}" />
+            <marker date="1488906912000" expanded="false" signature="32385:33667" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1211,7 +1312,7 @@
         <state relative-caret-position="2385">
           <caret line="165" column="28" lean-forward="false" selection-start-line="165" selection-start-column="28" selection-end-line="165" selection-end-column="28" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1259,10 +1360,27 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#25717#26103#0" expanded="true" />
-            <element signature="e#26102#26103#0" expanded="true" />
-            <element signature="e#26863#27033#0" expanded="true" />
-            <element signature="e#27032#27033#0" expanded="true" />
+            <element signature="e#10023#10590#0" expanded="true" />
+            <element signature="e#10589#10590#0" expanded="true" />
+            <element signature="method#createAssignments#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#getCandidateContainers#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#onlyOneContainer#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#nextOperator#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeNewSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="e#31219#31605#0" expanded="true" />
+            <element signature="e#31604#31605#0" expanded="true" />
+            <element signature="e#33221#33607#0" expanded="true" />
+            <element signature="e#33606#33607#0" expanded="true" />
+            <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="e#33731#33901#0" expanded="true" />
+            <element signature="e#33821#33822#0" expanded="false" />
+            <element signature="e#33890#33891#0" expanded="false" />
+            <element signature="e#33900#33901#0" expanded="true" />
+            <element signature="e#33910#33987#0" expanded="false" />
+            <marker date="1488906912000" expanded="false" signature="24142:25287" ph="{...}" />
+            <marker date="1488906912000" expanded="false" signature="32385:33667" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1336,7 +1454,7 @@
         <state relative-caret-position="2685">
           <caret line="185" column="0" lean-forward="false" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1564,18 +1682,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Scheduler/Cluster.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="39" column="0" lean-forward="false" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#1843#1844#0" expanded="false" />
-            <element signature="e#1884#1885#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/Quantum.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="615">
@@ -1664,22 +1770,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/Desktop/jfreechart-1.0.13.jar!/org/jfree/data/xy/XYSeries.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="169" column="24" lean-forward="false" selection-start-line="169" selection-start-column="24" selection-end-line="169" selection-end-column="24" />
-          <folding>
-            <element signature="e#4652#4653#0" expanded="true" />
-            <element signature="e#4688#4689#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/src.zip!/java/lang/Number.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-93">
           <caret line="48" column="22" lean-forward="false" selection-start-line="48" selection-start-column="22" selection-end-line="48" selection-end-column="22" />
-          <folding />
+          <folding>
+            <element signature="e#0#3113#0" expanded="false" />
+            <element signature="e#2566#2567#0" expanded="false" />
+            <element signature="e#2605#2606#0" expanded="false" />
+            <element signature="e#2928#2929#0" expanded="false" />
+            <element signature="e#2968#2969#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1688,17 +1789,7 @@
         <state relative-caret-position="184">
           <caret line="19" column="11" lean-forward="false" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
           <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Scheduler/SolutionSpace.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1711,26 +1802,74 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/Desktop/jfreechart-1.0.13.jar!/org/jfree/data/xy/XYSeries.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="169" column="24" lean-forward="false" selection-start-line="169" selection-start-column="24" selection-end-line="169" selection-end-column="24" />
+          <folding>
+            <element signature="e#4652#4653#0" expanded="true" />
+            <element signature="e#4688#4689#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/utils/Plot.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="25" column="66" lean-forward="false" selection-start-line="25" selection-start-column="66" selection-end-line="25" selection-end-column="66" />
+        <state relative-caret-position="243">
+          <caret line="82" column="42" lean-forward="false" selection-start-line="82" selection-start-column="42" selection-end-line="82" selection-end-column="42" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
+    <entry file="file://$PROJECT_DIR$/src/Scheduler/Cluster.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="95" column="24" lean-forward="false" selection-start-line="95" selection-start-column="24" selection-end-line="95" selection-end-column="24" />
+        <state relative-caret-position="338">
+          <caret line="92" column="0" lean-forward="false" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Scheduler/SolutionSpace.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="35" column="0" lean-forward="true" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#25717#26103#0" expanded="true" />
-            <element signature="e#26102#26103#0" expanded="true" />
-            <element signature="e#26863#27033#0" expanded="true" />
-            <element signature="e#27032#27033#0" expanded="true" />
+            <element signature="e#539#540#0" expanded="true" />
+            <element signature="e#572#573#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="392" column="17" lean-forward="false" selection-start-line="392" selection-start-column="17" selection-end-line="392" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#10023#10590#0" expanded="true" />
+            <element signature="e#10589#10590#0" expanded="true" />
+            <element signature="method#createAssignments#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#getCandidateContainers#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#onlyOneContainer#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#nextOperator#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeNewSkyline#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="e#31219#31605#0" expanded="true" />
+            <element signature="e#31604#31605#0" expanded="true" />
+            <element signature="e#33221#33607#0" expanded="true" />
+            <element signature="e#33606#33607#0" expanded="true" />
+            <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
+            <element signature="e#33731#33901#0" expanded="true" />
+            <element signature="e#33821#33822#0" expanded="false" />
+            <element signature="e#33890#33891#0" expanded="false" />
+            <element signature="e#33900#33901#0" expanded="true" />
+            <element signature="e#33910#33987#0" expanded="false" />
+            <marker date="1488906912000" expanded="false" signature="24142:25287" ph="{...}" />
+            <marker date="1488906912000" expanded="false" signature="32385:33667" ph="{...}" />
           </folding>
         </state>
       </provider>

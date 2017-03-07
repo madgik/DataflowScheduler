@@ -3,6 +3,7 @@ package Scheduler;
 import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
+import utils.Pair;
 
 import java.util.*;
 
@@ -75,25 +76,25 @@ public class paretoNoHomogen implements Scheduler {
 
                 if (cType.equals(containerType.getLargest())) {
                     skylinePlans.addAll(this.createAssignments("decreasing", cType));
-                    plotPlans("dec",skylinePlans);
-                    System.out.println("s1 "+skylinePlans.size());
+//                    plotPlans("dec",skylinePlans);
+//                    System.out.println("s1 "+skylinePlans.size());
 
                 } else if (cType.equals(containerType.getSmallest())) {
                     skylinePlans.addAll(this.createAssignments("increasing", cType));
-                    plotPlans("inc",skylinePlans);
-                    System.out.println("s2 "+skylinePlans.size());
+//                    plotPlans("inc",skylinePlans);
+//                    System.out.println("s2 "+skylinePlans.size());
                 } else{
                     skylinePlans.addAll(this.createAssignments("increasing/decreasing", cType));
-                    plotPlans("inc,dec",skylinePlans);
-                    System.out.println("s3 "+skylinePlans.size());
+//                    plotPlans("inc,dec",skylinePlans);
+//                    System.out.println("s3 "+skylinePlans.size());
                 }
             }
         }
 
         //all plans are in skyline plans
-        plotPlans("all B",skylinePlans);
+//        plotPlans("all B",skylinePlans);
         paretoPlans = computeSkyline(skylinePlans);
-        plotPlans("all A",paretoPlans);
+//        plotPlans("all A",paretoPlans);
         skylinePlans.clear();
 
         for(Plan pp: paretoPlans) {
@@ -109,271 +110,367 @@ public class paretoNoHomogen implements Scheduler {
                 skylinePlans.add(pp);
             }
         }
+//
 
-        paretoPlans.clear();
+
+        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
         paretoPlans.addAll(skylinePlans);
 
-//        paretoPlans.addAll(homoToHetero()); //TODO j homotohetero
 
-        space.addAllResults(paretoPlans);
-
-
-        space.print();
-
+        space.addAllResults(computeSkyline(paretoPlans));
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
+
+        space.print();
         return space;
 
     }
 
 
+    private List<Plan> homoToHetero(ArrayList<Plan> plans) {
 
-    //    private void homoToHetero(ArrayList<Plan> skylinePlans) {
-//
-//
-//
+        ArrayList<Plan> result = new ArrayList<>();
+        ArrayList<Plan> buffer = new ArrayList<>();
+
 //        //look at each plan and upgrade one by one the LARGE containers
+
+        ArrayList<Plan> skylinePlansNew = new ArrayList<>();
 //
-//        ArrayList<Plan> skylinePlansNew = new ArrayList<>();
+        int updateSkyline = 1;
 //
-//        int updateSkyline = 1;
+        while (updateSkyline == 1) {
+
+            updateSkyline = 0;
 //
-//        while (updateSkyline == 1) {
+            for (final Plan plan : plans) {
 //
-//            updateSkyline = 0;
+                final HashMap<Long, Double> contSlack = new HashMap<>();
+                final HashMap<Long, Integer> contOps = new HashMap<>();
+
+                LinkedList<Long> planContainersTobeModified = new LinkedList<>();
 //
-//            for (final Plan plan : skylinePlans) {
-//
-//
-//                final HashMap<Long, Double> vmUtilisation = new HashMap<>();
-//                final HashMap<Long, Double> contSlack = new HashMap<>();
-//                final HashMap<Long, Integer> contOps = new HashMap<>();
-//
-//
-//                LinkedList<Long> planContainers = new LinkedList<>();
-//
-//                HashMap<Long, Long> opIDtoCont = new HashMap<>();
-//                HashMap<Long, Integer> opIDtoAssignment = new HashMap<>();
+//                HashMap<Integer, Integer> opIDtoCont = new HashMap<>();
+//                HashMap<Integer, Integer> opIDtoAssignment = new HashMap<>();
 //
 //                int ass=0;
-//                for (Long opId: plan.assignments.keySet()) {
+//                for (OperatorAssignment opAss : plan.assignments) {
+//                    //    System.out.println("op ass " + opAss.getCOpID() + " " + opAss.getOpID() + " " + plan.activeAssignments.get(opAss.getCOpID()).start_SEC + " " +plan.activeAssignments.get(opAss.getCOpID()).end_SEC + " at " + plan.activeAssignments.get(opAss.getCOpID()).assignment.container + " " + plan.activeContainers.get(plan.activeAssignments.get(opAss.getCOpID()).assignment.container).acContID);
 //
-//                    opIDtoCont.put(opId, plan.assignments.get(opId));
-//                    opIDtoAssignment.put(opId, ass);
+//                    opIDtoCont.put(opAss.getOpID(), opAss.container);
+//                    opIDtoAssignment.put(opAss.getOpID(), ass);
 //                    ass++;
 //                } //save the assignment of each op for faster access
 //
 //                //check the ids of active container, simple container, activeop, simple op etc are the same
 //
 //                /////////////////////////////  separate the computation of slack per container to a computeSumSlackPerCont method
-//                for(Long opid: opsSortedReversed()) {//topOrder.iteratorReverse()) //ranking reversed
-//                    Double opSlackTime = Double.MAX_VALUE;
+                for(Long opId: opsSortedReversed()) {//topOrder.iteratorReverse()) //ranking reversed
+                    Double opSlackTime = Double.MAX_VALUE;
 //
 //                    //  System.out.println("\ncomputing slack for " + op.getopID());
 //
-//                    if (graph.getChildren(opid).isEmpty()) //if exit node
-//                        opSlackTime = (double) plan.stats.runtime_MS  - plan.opIdtoStartEnd_MS.get(opid).b;
+                    if (graph.getChildren(opId).isEmpty()) //if exit node
+                        opSlackTime = (double) plan.stats.runtime_MS - plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS;
 //
-//                    for (Edge outLink : graph.getChildren(opid)) {//successors at the dag
-//                        Long outLinkToId = outLink.to;
-//                        Double childSlack = opSlack.get(outLinkToId);
-//                        Double opSpareTime = (double) plan.opIdtoStartEnd_MS.get(outLinkToId).a - plan.opIdtoStartEnd_MS.get(opid).b;//assumption: output data and communication cost computed in runtime
-//                        opSlackTime = Math.min(childSlack + opSpareTime, opSlackTime);
-//                        // System.out.println("from parent " + op.getopID() + "child " + opChild.getopID() + " op tmp spare " + op.getopID() + " " + opSpareTime + " " + plan.activeAssignments.get(opIDtoAssignment.get(opChild.getopID())).start_SEC + " " + plan.activeAssignments.get(opIDtoAssignment.get(op.getopID())).end_SEC);
-//                    }
+                    for (Edge outEdge : graph.getChildren(opId)) {//successors at the dag
+                        Long opChildId = outEdge.to;
+                        Double childSlack = opSlack.get(opChildId);
+
+                        Double opSpareTime = (double) plan.opIdtoStartEnd_MS.get(opChildId).a - plan.opIdtoStartEnd_MS.get(opId).b;//assumption: output data and communication cost computed in runtime
+                        opSlackTime = Math.min(childSlack + opSpareTime, opSlackTime);
+                    }
 //
-//                    long opContID = opIDtoCont.get(opid);//consider successor at the container. If last op at container the returned bit (succStart) is -1
-//                    long curBit = plan.opIdtoStartEnd_MS.get(opIDtoAssignment.get(opid)).b;
-//                    long succStart = plan.cluster.getContainer(opContID).UsedUpTo_MS; //TODO ji check if correct
-//                    if(succStart!=-1) // {   System.out.println("succ at container starts at " + succStart + " while " + plan.activeAssignments.get(opIDtoAssignment.get(op.getopID())).end_SEC);
-//                        opSlackTime = Math.min(opSlackTime, succStart - plan.opIdtoStartEnd_MS.get(opid).b);//}
-//
-//                    opSlack.put(opid, opSlackTime);
-//
-//                    double slackPerCont = opSlackTime;
-//                    int opsPerCont = 1;
-//                    if(contOps.containsKey(plan.cluster.getContainer(opContID)))
-//                    {
-//                        slackPerCont+= contSlack.get(plan.cluster.getContainer(opContID));
-//                        opsPerCont = contOps.get(plan.cluster.getContainer(opContID))+1;
-//                    }
-//
-//                    contSlack.put(opContID, slackPerCont);
-//                    contOps.put(opContID, opsPerCont);
-//
-//                }
+                    long opContID = plan.assignments.get(opId);//consider successor at the container. If last op at container the returned bit (succStart) is -1
+                    long contEndTime_MS = plan.cluster.getContainer(opContID).UsedUpTo_MS;
+                    long opEndTime_MS = plan.opIdtoStartEnd_MS.get(opId).b;
+                    if(contEndTime_MS>opEndTime_MS) {
+                        long succStart = Long.MAX_VALUE;
+                        boolean succExists = false;
+                        for (Long opopId : plan.opIdtoStartEnd_MS.keySet()) {
+                            Pair<Long, Long> pair = plan.opIdtoStartEnd_MS.get(opopId);
+                            Long contcontId = plan.assignments.get(opopId);
+                            long opopStartTime = plan.opIdtoStartEnd_MS.get(opopId).a;
+
+                            if (contcontId == opContID && opopStartTime > opEndTime_MS) {
+                                Math.min(succStart, opopStartTime);
+                                succExists = true;
+                            }
+
+                        }
+                        if (contEndTime_MS > opEndTime_MS) {//   System.out.println("succ at container starts at " + succStart + " while " + plan.activeAssignments.get(opIDtoAssignment.get(op.getopID())).end_SEC);
+                            opSlackTime = Math.min(opSlackTime, succStart - opEndTime_MS);
+                        }
+                    }
+                    opSlack.put(opId, opSlackTime);
+
+                    double slackPerCont = opSlackTime;
+                    int opsPerCont = 1;
+                    if(contOps.containsKey(opContID))
+                    {
+                        slackPerCont+= contSlack.get(opContID);
+                        opsPerCont = contOps.get(opContID)+1;
+                    }
+
+                    contSlack.put(opContID, slackPerCont);
+                    contOps.put(opContID, opsPerCont);
+
+                    //   System.out.println("op slack " + op.getopID() + " " + opSlackTime);
+                }
 //                ////////////////////////////
 //
 //                //compute avg slack per container/VM
-//
-//                for (int i = 0; i < plan.cluster.containersList.size(); ++i) {
-//                    if(plan.cluster.contUsed.size() > 0) {
-//                        if ((plan.cluster.containersList.get(i).contType == containerType.getSmallest() && plan.vmUpgrading.equals("increasing")) || (plan.cluster.containersList.get(i).contType == containerType.getLargest() && plan.vmUpgrading.equals("decreasing")))
-//                            updateSkyline = 1;//there is at least one new configuration to be checked so the algorithm continues}
-//                    }
-//                    else
-//                        continue;
-//
-//                    if ((plan.cluster.containersList.get(i).contType == containerType.getLargest() && plan.vmUpgrading.equals("increasing")) || (plan.cluster.containersList.get(i).contType == containerType.getSmallest() && plan.vmUpgrading.equals("decreasing"))) {//the container has the largest vm type so it will be ignored as a candidate for upgrading
-//                        //System.out.printf("already largest\n");
-//                        continue;
-//                    } else {//the container is a candidate for upgrading
-//                        //System.out.printf("not the largest\n");
-//                        planContainers.add(i);
-//                    }
-//                }
-//
-//                if (planContainers.size() == 0)//if the list of candidate containers for upgrading is empty then continue to the next plan
-//                    continue;
-//
-//
-//                Comparator<Integer> contSlackComparator = new Comparator<Integer>() {
-//                    @Override
-//                    public int compare(Integer vm1, Integer vm2) {
-//                        double s1 = contSlack.get(plan.cluster.containersList.get(vm1))/(double)contOps.get(plan.cluster.containersList.get(vm1));
-//                        double s2 = contSlack.get(plan.cluster.containersList.get(vm2))/(double)contOps.get(plan.cluster.containersList.get(vm2));
-//                        if (s1 > s2)//TODO: add precision error
-//                            return -1;
-//                        else if (s1 < s2)
-//                            return 1;
-//                        else
-//                            return 0;
-//                    }
-//                };
-//
-//                if(plan.vmUpgrading.contains("decreasing"))
-//                    Collections.sort(planContainers, contSlackComparator);
-//                else Collections.sort(planContainers, Collections.reverseOrder(contSlackComparator));
+
+                for (Long i: plan.cluster.containers.keySet()) {
+                    Container cont  = plan.cluster.getContainer(i);
+
+                    if (plan.vmUpgrading == null) {
+                        System.out.println("bug line 273");
+                        break;
+                    }
+
+                    if ((cont.contType == containerType.getLargest() && plan.vmUpgrading.equals("increasing"))
+                        || (cont.contType == containerType.getSmallest() && plan.vmUpgrading.equals("decreasing"))) {
+                        //the container has the largest vm type so it will be ignored as a candidate for upgrading
+                        continue;
+                    } else {//the container is a candidate for upgrading
+                        planContainersTobeModified.add(i);
+                        updateSkyline = 1;
+                    }
+                }
+
+                if (planContainersTobeModified.size() == 0)//if the list of candidate containers for upgrading is empty then continue to the next plan
+                    continue;
+
+
+                Comparator<Long> contSlackComparator = new Comparator<Long>() {
+                    @Override
+                    public int compare(Long vm1, Long vm2) {
+                        double s1 = contSlack.get(vm1)/(double)contOps.get(vm1);
+                        double s2 = contSlack.get(vm2)/(double)contOps.get(vm2);
+                        if (s1 > s2)//TODO: add precision error
+                            return -1;
+                        else if (s1 < s2)
+                            return 1;
+                        else
+                            return 0;
+                    }
+                };
 //
 //
 //
-//                Plan newPlan = null;
+                if(plan.vmUpgrading.contains("decreasing"))
+                    Collections.sort(planContainersTobeModified, contSlackComparator);
+                else Collections.sort(planContainersTobeModified, Collections.reverseOrder(contSlackComparator));
+
+                Plan newPlan = null;
+
+                for (Long k: planContainersTobeModified) {
+
+                   if (plan.vmUpgrading == null) {
+                        System.out.println("bug line 273");
+                        break;
+                    }
+
+                   newPlan = new Plan(graph,new Cluster());
+                   newPlan.vmUpgrading = plan.vmUpgrading;
+                   for(Container contcont : plan.cluster.containersList){
+                        newPlan.cluster.addContainer(contcont.contType);
+                   }
+
+
+                    Container cont = newPlan.cluster.containers.get(k);
+
+                    if (plan.vmUpgrading.equals("increasing"))
+                        newPlan.cluster.update(cont.id,containerType.getNextLarger(cont.contType));
+                    else
+                        newPlan.cluster.update(cont.id,containerType.getNextSmaller(cont.contType));
+
+
+
+                    int opsAssigned=0;
+                    HashSet<Long> opsAssignedSet = new HashSet<>();
+                    HashSet<Long> readyOps = new HashSet<>();
+                    for(Long opid:graph.operators.keySet()){
+                        if( graph.getParents(opid).size()==0){
+                            readyOps.add(opid);
+                        }
+                    }
+
+
+                    while ( readyOps.size() > 0) {//iterate on the ready to schedule ops
+
+                        opsAssigned++;
+                        long nextOpID = nextOperator(readyOps);
+                        Operator nextOp = graph.getOperator(nextOpID);
+//                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
+
+
+                        newPlan.assignOperator(nextOpID,plan.assignments.get(nextOpID));
+
+                        opsAssignedSet.add(nextOpID);
+                        readyOps.remove(nextOpID);
+                        //            assignedOperators.set(nextOpID);
+
+                        Boolean allAssigned;               //find new readyops
+                        readyOps.remove(nextOpID);
+                        for (Edge childEdge : graph.getChildren(nextOpID)) {
+                            Long childopId = childEdge.to;
+                            allAssigned = true;
+                            for (Edge ParentChildEdge : graph.getParents(childopId)) {
+                                Long ParentChildOpId = ParentChildEdge.from;
+                                if (!opsAssignedSet.contains(ParentChildOpId)) {
+                                    allAssigned = false;
+                                }
+                            }
+                            if (allAssigned) {
+                                readyOps.add(childopId);
+                            }
+                        }
+
+
+                    }
+
+                    //use Double.compare
+                    if(newPlan.stats.money >= plan.stats.money && newPlan.stats.runtime_MS >= plan.stats.runtime_MS)//we could use a threshold. e.g. if savings less than 0.1%
+                    {
+                        //    System.out.println("breaks for k "+k);
+                        break;
+                    }
+                    skylinePlansNew.add(newPlan);
+
+                     System.out.println("OLDPLAN ");
+                    plan.printInfo();
+                    System.out.println("NEWPLAN");
+                     newPlan.printInfo();
+
+
+                    //   }
+
+
+                }
+
+                // skylinePlansNew.add(newPlan);
+
+            }
 //
-//                for (int k = 0; k < planContainers.size(); ++k) {
-//
-//                    if (plan.vmUpgrading == null) {
-//                        System.out.println("bug");
-//                        break;
-//                    }
-//
-//                    HashMap<Integer, containerType> containersTypeTmp = new HashMap<>();
-//                    int j = 0;
-//                    for (Container aCont : plan.cluster.containersList) {
-//                        containersTypeTmp.put(j++, aCont.contType);
-//                    } //get the containers and types from the old plan
-//
-//                    if (plan.vmUpgrading.equals("increasing"))
-//                        containersTypeTmp.put(k, containerType.getNextLarger(plan.cluster.containersList.get(k).contType)); //upgrade the chosen one//get next smaller
-//                    else
-//                        containersTypeTmp.put(k, containerType.getNextSmaller(plan.cluster.containersList.get(k).contType));//getnextSmaller
+//            // paretoPlans.clear();
 //
 //
-//                    newPlan = new ScheduleEstimator(graph, plan.activeContainers.size(), containersTypeTmp, runTimeParams);
-//                    newPlan.vmUpgrading = plan.vmUpgrading;
-//                    LinkedHashMap<Integer, ConcreteOperator> readyOpsTmp = new LinkedHashMap<>();
-//                    BitSet readyOpsMaskTmp = new BitSet(graph.getMaxOpId());
-//                    for (ConcreteOperator start : graph.getLeafOperators()) {
-//                        readyOpsTmp.put(start.getopID(), start);
-//                        readyOpsMaskTmp.set(start.getopID());
-//                    } //find the ready to schedule ops
-//
-//                    BitSet assignedOperatorsTmp = new BitSet();
-//
-//                    while (readyOpsMaskTmp.cardinality() > 0) {//iterate on the ready to schedule ops
-//
-//                        int nextOpID = nextOperator(readyOpsTmp);
-//                        ConcreteOperator op = readyOpsTmp.get(nextOpID);
-//                        readyOpsTmp.remove(nextOpID);
-//                        readyOpsMaskTmp.clear(nextOpID);
-//
-//                        int assignedCont = opIDtoCont.get(op.getopID());
-//
-//                        newPlan.addOperatorAssignment(op.getopID(), assignedCont, containersTypeTmp.get(assignedCont), graph); //add each op to the new plan
-//
-//                        assignedOperatorsTmp.set(op.getopID());
-//
-//                        for (Link outLink : graph.getOutputLinks(op.getopID())) {
-//                            if (readyOpsMaskTmp.get(outLink.to.getopID()) || assignedOperatorsTmp.get(outLink.to.getopID())) {
-//                                continue;
-//                            }
-//                            boolean allAssigned = true;
-//                            for (Link inLink : graph.getInputLinks(outLink.to.getopID())) {
-//                                if (assignedOperatorsTmp.get(inLink.from.getopID()) == false) {
-//                                    allAssigned = false;
-//                                    break;
-//                                }
-//                            }
-//                            if (allAssigned) {
-//                                readyOpsMaskTmp.set(outLink.to.getopID());
-//                                readyOpsTmp.put(outLink.to.getopID(), outLink.to);
-//                            }
-//                        }
-//
-//
-//                    }
-//
-//                    //use Double.compare
-//                    if(newPlan.getScheduleStatistics().getMoneyInQuanta() >= plan.getScheduleStatistics().getMoneyInQuanta() && newPlan.getScheduleStatistics().getTime() >= plan.getScheduleStatistics().getTime())//we could use a threshold. e.g. if savings less than 0.1%
-//                    {
-//                        //    System.out.println("breaks for k "+k);
-//                        break;
-//                    }
-//                    skylinePlansNew.add(newPlan);
-//
-//
-//                }
-//
+//          /*  for(ScheduleEstimator plan: paretoPlans) {
+//                System.out.println("before pareto has " + plan.getScheduleStatistics().getMoneyInQuanta() + " " +plan.getScheduleStatistics().getTime());
+//                skylinePlans.add(plan);
 //            }
-//            skylinePlans.clear();
-//            skylinePlans.addAll(paretoPlans);
-//            paretoPlans = computeNewSkyline(skylinePlans, skylinePlansNew);
+//*/
+//
+//            // for(ScheduleEstimator plan: skylinePlansNew) {
+//            //     System.out.println("before skylinePlansNew has " + plan.getScheduleStatistics().getMoneyInQuanta() + " " +plan.getScheduleStatistics().getTime());
+//
+//            //  }
 //
 //
-//            skylinePlans.clear();
-//            skylinePlans.addAll(skylinePlansNew);
+//            //  for(ScheduleEstimator plan: skylinePlans) {
+//            //   System.out.println("before skylinePlans has " + plan.getScheduleStatistics().getMoneyInQuanta() + " " +plan.getScheduleStatistics().getTime());
 //
+//            //    }
+
+
+//            result.addAll(skylinePlansNew);
+//
+//            plans.clear();
+//            plans.addAll(skylinePlansNew);
 //
 //            skylinePlansNew.clear();
+
+
+//////////
+            plans.clear();
+            plans.addAll(result);
+            result = computeNewSkyline(plans, skylinePlansNew);
+
+            plans.clear();
+
+            plans.addAll(skylinePlansNew);
+
+
+            skylinePlansNew.clear();
+
+
+            //            //            if (paretoPlans.size() > skylinePlansToKeep)
+            //            //                refineSkyline(paretoPlans);
+            //
+            //
+            //            //  System.out.println("new pareto:");
+            //
+            //            //  for(ScheduleEstimator plan: paretoPlans) {
+            //            //      System.out.println( plan.getScheduleStatistics().getMoneyInQuanta() + " " +plan.getScheduleStatistics().getTime());
+            //
+            //            //   }
+///*
+//            for(ScheduleEstimator plan: skylinePlansNew) {
+//                System.out.println("after skylinePlansNew has " + plan.getScheduleStatistics().getMoneyInQuanta() + " " +plan.getScheduleStatistics().getTime());
 //
-//        }
-//        //todo:compute new skyline and continue with the loop as long as pareto has changed
+//            }
+//*/
 //
-//        skylinePlans.clear();
+//
+//            // for(ScheduleEstimator plan: skylinePlansNew)
+//            //     skylinePlans.add(plan);
+//
+//        /*    for(ScheduleEstimator plan: skylinePlans) {
+//                System.out.println("while skylineplans will have " + plan.getScheduleStatistics().getMoneyInQuanta() + " " +plan.getScheduleStatistics().getTime());
+//
+//            }*/
+//
+//            //update skylinecandidatesOld, skylinecandidatesNew, skyline
+//            //updateSkylineOld and skylinePlansNew...
+//
+        }
+
+//
 //        skylinePlans.addAll(paretoPlans);
 //
+//        // skylinePlans.addAll(skylinePlansNew);
 //        skylinePlansNew = null;
 //
-//        for (ScheduleEstimator plan : skylinePlans) {
-//            if (plan == null) {
-//                continue;
-//            }
+        for (Plan plan : result) {
+            if (plan == null) {
+                continue;
+            }
+
+            HashMap<containerType, Double> avgOpTime = new HashMap<>();
+            HashMap<containerType, Integer> opNumber = new HashMap<>();
+
+            for (Long opId : plan.assignments.keySet()) {
+
+
+                containerType cType = plan.cluster.getContainer(plan.assignments.get(opId)).contType;
+
+                int ops = 0;
+                double opProcessTime = plan.opIdtoStartEnd_MS.get(opId).b - plan.opIdtoStartEnd_MS.get(opId).a;
+
+                if (opNumber.get(cType) == null) {
+                    ops = 1;
+                    avgOpTime.put(cType, opProcessTime);
+                } else {
+                    ops = opNumber.get(cType);
+                    double processTime = avgOpTime.get(cType) * ops + opProcessTime;
+                    ops++;
+                    avgOpTime.put(cType, processTime / ops);
+
+                }
+                opNumber.put(cType, ops);
 //
-//            HashMap<containerType, Double> avgOpTime = new HashMap<>();
-//            HashMap<containerType, Integer> opNumber = new HashMap<>();
+//                // System.out.println(opID+" processTime "+ plan.getAssignments().get(opAss).processTime +" contType "+ plan.getAssignments().get(opAss).contType+" contID "+ plan.getAssignments().get(opAss).container+" starts "+plan.activeAssignments.get(opAss).start_SEC +" ends "+ plan.activeAssignments.get(opAss).end_SEC);///plan.getAssignments().get(opAss).contType.container_CPU);
+            }
 //
-//            for (int opAss = 0; opAss < plan.getAssignments().size(); opAss++) {
-//
-//                containerType cType = plan.getAssignments().get(opAss).contType;
-//
-//                int ops = 0;
-//                double opProcessTime = plan.getAssignments().get(opAss).processTime;
-//
-//                if (opNumber.get(cType) == null) {
-//                    ops = 1;
-//                    avgOpTime.put(cType, opProcessTime);
-//                } else {
-//                    ops = opNumber.get(cType);
-//                    double processTime = avgOpTime.get(cType) * ops + opProcessTime;
-//                    ops++;
-//                    avgOpTime.put(cType, processTime / ops);
-//
-//                }
-//                opNumber.put(cType, ops);
-//
-//            }
-//        }
-//    }
+//            //  space.addResult(
+//            //        new SchedulingResult(containers.size(), runTimeParams, finProps, exception, plan));
+        }
+
+
+        return result;
+    }
 
 
     private ArrayList<Plan> createAssignments(String vmUpgrading, containerType cType) {
@@ -396,7 +493,7 @@ public class paretoNoHomogen implements Scheduler {
             }
         }
 
-
+        int prevPrune=-1;
 
         while ( readyOps.size() > 0) {
 
@@ -404,7 +501,7 @@ public class paretoNoHomogen implements Scheduler {
 
 
             // Get the most expensive operator from the ready ones
-            long nextOpID = nextOperator(firstPlan, readyOps);
+            long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
             System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
@@ -422,6 +519,13 @@ public class paretoNoHomogen implements Scheduler {
             for(Plan p:allCandidates){
                 p.printInfo();
             }
+
+//            if(prevPrune+3 == opsAssigned){
+//                plans = computeSkyline(allCandidates);
+//                prevPrune=opsAssigned+3;
+//            }else{
+//                plans = new ArrayList<>(allCandidates);
+//            }
 
             plans = computeSkyline(allCandidates);
 
@@ -458,8 +562,6 @@ public class paretoNoHomogen implements Scheduler {
         return plans;
     }
 
-
-
     private void getCandidateContainers(Long opId , Plan plan, //assume that not empty containers exist
          String vmUpgrading, containerType contType,ArrayList<Plan> planEstimations)
      {
@@ -489,11 +591,6 @@ public class paretoNoHomogen implements Scheduler {
         //return planEstimations;
     }
 
-
-
-
-
-
     public Plan onlyOneContainer() {
         containerType contType= containerType.getSmallest();//maybe check for every container later
         Plan plan = new Plan(graph,cluster);
@@ -505,8 +602,7 @@ public class paretoNoHomogen implements Scheduler {
         return plan;
     }
 
-
-    public long nextOperator(Plan plan, HashSet<Long> readyOps) {
+    public long nextOperator(HashSet<Long> readyOps) {
 
         long minRankOpID = 0;
         Integer minRank = Integer.MAX_VALUE;
@@ -520,7 +616,6 @@ public class paretoNoHomogen implements Scheduler {
 
         return minRankOpID;
     }
-
 
     public ArrayList<Plan> computeSkyline(ArrayList<Plan> plans){
         ArrayList<Plan> skyline = new ArrayList<>();
@@ -551,82 +646,154 @@ public class paretoNoHomogen implements Scheduler {
         return skyline;
     }
 
+    private ArrayList<Plan> computeHomoSkyline(ArrayList<Plan> skylinePlans) {
+
+        ArrayList<Plan> candidates = new ArrayList<>();
+
+        candidates.addAll(skylinePlans);
+
+        // Sort by time breaking exec time equality by sorting by money and then containers used
+        Collections.sort(candidates);
+
+        // Keep only the skyline
+        ArrayList<Plan> skyline = new ArrayList<>();
+        Plan previous = null;
+
+
+        for (Plan est : candidates) {
+            // System.out.println("candidate "+est.estimator.getAssignments()+ est.estimator.activeContainersType);
+            if (previous == null) {
+                //    System.out.println("kept ");
+                skyline.add(est);
+                previous = est;
+                continue;
+            }
+            if (previous.stats.runtime_MS == est.stats.runtime_MS){
+                // Already sorted by money
+                continue;
+            }
+            if (previous.stats.money > est.stats.money && Math.abs(previous.stats.money - est.stats.money)>0.000000001) {
+                //   System.out.println("kept ");
+                skyline.add(est);
+                previous = est;
+            }
+        }
+        return skyline;
+    }
+
+    private ArrayList<Plan> computeNewSkyline(ArrayList<Plan> skylinePlans, ArrayList<Plan> skylinePlansNew) {
+
+        ArrayList<Plan> candidates = new ArrayList<>();
+
+        candidates.addAll(skylinePlans);
+        candidates.addAll(skylinePlansNew);
+
+        // Sort by time breaking exec time equality by sorting by money and then containers used
+        Collections.sort(candidates);
+
+        // Keep only the skyline
+        ArrayList<Plan> skyline = new ArrayList<>();
+        Plan previous = null;
+
+
+        for (Plan est : candidates) {
+            // System.out.println("candidate "+est.estimator.getAssignments()+ est.estimator.activeContainersType);
+            if (previous == null) {
+                //    System.out.println("kept ");
+                skyline.add(est);
+                previous = est;
+                continue;
+            }
+            if (previous.stats.runtime_MS == est.stats.runtime_MS){
+                skylinePlansNew.remove(est);
+                // Already sorted by money
+                continue;
+            }
+            if (previous.stats.money > est.stats.money && Math.abs(previous.stats.money - est.stats.money)>0.000000001){                //   System.out.println("kept ");
+                skyline.add(est);
+                previous = est;
+            }
+            else
+                skylinePlansNew.remove(est);
+        }
+        return skyline;
+    }
 
     private void computeRankings(){
 
-        HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
-
+//        HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
+//
         final TopologicalSorting topOrder = new TopologicalSorting(graph);
-        int numLevels=0;
-
-        for (Long opId : topOrder.iterator()) {
-            int level=0;
-            for (Edge parentEdge: graph.getParents(opId)) {
-
-                Integer plevel=opLevel.get(parentEdge.from);
-                level=Math.max(plevel+1, level);
-            }
-            opLevel.put(opId, level);
-            numLevels=Math.max(level+1, numLevels);
-            if(opLevelperLevel.containsKey(level))
-                opLevelperLevel.put(level, opLevelperLevel.get(level)+1);
-            else
-                opLevelperLevel.put(level, 1);
-
-             System.out.println("op "+ opId + " level " +level);
-
-        }
-
-
-        Double crPathLength=0.0;
-        for (Long opId : topOrder.iteratorReverse()) {
-            double maxRankChild=0.0;
-            for (Edge childEdge: graph.getChildren(opId)) {
-                double comCostChild = 0.0;
-                for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
-                    if(parentofChildEdge.from==opId) {
-                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
-                    }
-                }
-                //assumptions for output data and communication cost
-                maxRankChild = Math.max(maxRankChild, comCostChild+b_rank.get(childEdge.to));
-            }
-
-            double wcur=0.0;
-            for(containerType contType: containerType.values())
-                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
-            int types= containerType.values().length;
-            double w=wcur/(double)types;//average execution cost for operator op
-            b_rank.put(opId, (w+maxRankChild));
-
-        }
-
-        for (Long opId : topOrder.iterator()) {
-            double maxRankParent=0.0;
-            for (Edge inLink: graph.getParents(opId)) {
-//                ConcreteOperator opParent=graph.getOperator(inLink.from.getopID());
-                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
-                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from));
-            }
-
-            double wcur=0.0;
-            for(containerType contType: containerType.values())
-                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
-            int types= containerType.values().length;
-            double w=wcur/(double)types;//average execution cost for operator op
-            t_rank.put(opId, (w+maxRankParent));
-            Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
-            sum_rank.put(opId, opRank);
-            crPathLength =Math.max(crPathLength, opRank);
-        }
-
-        for (Long op : topOrder.iterator()) {
-            opsSumRankSorted.add(op);
-            opsBySlack.add(op);
-            Double opRank=sum_rank.get(op);
-            double opSlacktime = crPathLength - opRank;
-            slacktime.put(op, opSlacktime);
-        }
+//        int numLevels=0;
+//
+//        for (Long opId : topOrder.iterator()) {
+//            int level=0;
+//            for (Edge parentEdge: graph.getParents(opId)) {
+//
+//                Integer plevel=opLevel.get(parentEdge.from);
+//                level=Math.max(plevel+1, level);
+//            }
+//            opLevel.put(opId, level);
+//            numLevels=Math.max(level+1, numLevels);
+//            if(opLevelperLevel.containsKey(level))
+//                opLevelperLevel.put(level, opLevelperLevel.get(level)+1);
+//            else
+//                opLevelperLevel.put(level, 1);
+//
+//             System.out.println("op "+ opId + " level " +level);
+//
+//        }
+//
+//
+//        Double crPathLength=0.0;
+//        for (Long opId : topOrder.iteratorReverse()) {
+//            double maxRankChild=0.0;
+//            for (Edge childEdge: graph.getChildren(opId)) {
+//                double comCostChild = 0.0;
+//                for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
+//                    if(parentofChildEdge.from==opId) {
+//                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
+//                    }
+//                }
+//                //assumptions for output data and communication cost
+//                maxRankChild = Math.max(maxRankChild, comCostChild+b_rank.get(childEdge.to));
+//            }
+//
+//            double wcur=0.0;
+//            for(containerType contType: containerType.values())
+//                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
+//            int types= containerType.values().length;
+//            double w=wcur/(double)types;//average execution cost for operator op
+//            b_rank.put(opId, (w+maxRankChild));
+//
+//        }
+//
+//        for (Long opId : topOrder.iterator()) {
+//            double maxRankParent=0.0;
+//            for (Edge inLink: graph.getParents(opId)) {
+////                ConcreteOperator opParent=graph.getOperator(inLink.from.getopID());
+//                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
+//                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from));
+//            }
+//
+//            double wcur=0.0;
+//            for(containerType contType: containerType.values())
+//                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
+//            int types= containerType.values().length;
+//            double w=wcur/(double)types;//average execution cost for operator op
+//            t_rank.put(opId, (w+maxRankParent));
+//            Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
+//            sum_rank.put(opId, opRank);
+//            crPathLength =Math.max(crPathLength, opRank);
+//        }
+//
+//        for (Long op : topOrder.iterator()) {
+//            opsSumRankSorted.add(op);
+//            opsBySlack.add(op);
+//            Double opRank=sum_rank.get(op);
+//            double opSlacktime = crPathLength - opRank;
+//            slacktime.put(op, opSlacktime);
+//        }
 
 
 
@@ -675,22 +842,60 @@ public class paretoNoHomogen implements Scheduler {
 
 
 
-        int cur_id=0;
-        for (Long cur_op : opsBySlack) {
-            //    System.out.println("inf op " + cur_op.getopID() + " slack " + slacktime.get(cur_op));
-            //    System.out.println("inf op " + cur_op.getopID() + " rank " +  sum_rank.get(cur_op) + " level " + opLevel.get(cur_op));
-            if (cur_id<opsInfluential) {
-                // System.out.println("added op " + cur_op.getopID() + " rank " +  sum_rank.get(cur_op) + " b_rank " + b_rank.get(cur_op) + " t_rank " + t_rank.get(cur_op));
-                cur_id++;
-                opIDsInfluential.put(cur_op, 1);
+//        int cur_id=0;
+//        for (Long cur_op : opsBySlack) {
+//            //    System.out.println("inf op " + cur_op.getopID() + " slack " + slacktime.get(cur_op));
+//            //    System.out.println("inf op " + cur_op.getopID() + " rank " +  sum_rank.get(cur_op) + " level " + opLevel.get(cur_op));
+//            if (cur_id<opsInfluential) {
+//                // System.out.println("added op " + cur_op.getopID() + " rank " +  sum_rank.get(cur_op) + " b_rank " + b_rank.get(cur_op) + " t_rank " + t_rank.get(cur_op));
+//                cur_id++;
+//                opIDsInfluential.put(cur_op, 1);
+//            }
+//        }///remove
+
+
+
+
+
+
+    }
+
+    private void computeHomoRankings(containerType cType)
+    {
+        final TopologicalSorting topOrder = new TopologicalSorting(graph);
+
+        final HashMap<Long, Double> rankU = new HashMap<>();
+
+        for (Long opId : topOrder.iteratorReverse()) {
+
+            double maxRankChild=0.0;
+            for (Edge outLink: graph.getChildren(opId)) {
+                double comCostChild = Math.ceil(outLink.data.size_B / RuntimeConstants.network_speed_B_MS);
+                //assumptions for output data and communication cost
+                maxRankChild = Math.max(maxRankChild, comCostChild+rankU.get(outLink.to));
             }
-        }///remove
 
+            double w=graph.getOperator(opId).getRunTime_MS()/cType.container_CPU;
+            rankU.put(opId, (w+maxRankChild));
 
+        }
+        for (Long opId : topOrder.iterator())
+            opsSorted.add(opId);
 
-
-
-
+        Comparator<Long> rankComparator = new Comparator<Long>() {
+            @Override
+            public int compare(Long op1, Long op2) {
+                double r1 = rankU.get(op1);
+                double r2 = rankU.get(op2);
+                if (r1 > r2)
+                    return -1;
+                else if (r1 < r2)
+                    return 1;
+                else
+                    return 0;
+            }
+        };
+        Collections.sort(opsSorted, rankComparator);
     }
     public Iterable<Long> opsSortedReversed() {
         return new Iterable<Long>() {
@@ -700,9 +905,6 @@ public class paretoNoHomogen implements Scheduler {
             }
         };
     }
-
-
-
 
 //    private class WhatIfEstimation implements Comparable<WhatIfEstimation>{
 //        long opId;
@@ -739,7 +941,6 @@ public class paretoNoHomogen implements Scheduler {
 //        }
 //
 //    }
-
 
 }
 

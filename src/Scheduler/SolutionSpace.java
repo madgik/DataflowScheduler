@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static utils.Plot.plotPlans;
 import static utils.Plot.plotPoints;
 
 /**
@@ -34,9 +35,12 @@ public class SolutionSpace {
     }
 
     public void print() {
+        System.out.println("////////////////Space");
         for(Plan p:results){
             p.printInfo();
         }
+        System.out.printf("/////////////////Space size: "+results.size());
+        plotPlans("Space print",results);
     }
 
     public void plot(){
