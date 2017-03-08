@@ -69,16 +69,11 @@ public class Cluster {
         return containers.get(id);
     }
 
-
-    public void assignOp(Long opId, Long contId){
-        contUsed.add(contId);
-
-
-
-
-
-        containers.get(contId).assignOp(opId);
-    }
+//
+//    public void assignOp(Long opId, Long contId, long starttime_MS, long endtime_MS){
+//        contUsed.add(contId);
+//        containers.get(contId).assignOp(opId, long starttime_MS, long endtime_MS);
+//    }
 
 
 

@@ -5,7 +5,10 @@ import Graph.Edge;
 import Graph.Operator;
 import utils.Pair;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -22,6 +25,7 @@ public class Plan implements Comparable<Plan>{
     String vmUpgrading;
     public long comcost=0;
     public HashMap<Long, Pair<Long,Long>> opIdtoStartEnd_MS;
+    public static boolean backfilling = false;
 
 
 //    public HashSet<Long> readyOps;
@@ -113,6 +117,7 @@ public class Plan implements Comparable<Plan>{
         Container cont = cluster.getContainer(contId);
         long contFirstAvailTime = cont.getEnd_MS();
 
+        ////////////find start time//////////////////
         long depStart_MS = 0;
         for (Edge link : graph.getParents(opId)) {
             long fromId = link.from;
@@ -126,6 +131,8 @@ public class Plan implements Comparable<Plan>{
         timeNow_MS+= depStart_MS;
         long startTime_MS = timeNow_MS;
 
+        ////////////add transfer time//////////////////
+
         long networkDelay_MS=0;
         for (Edge link : graph.getParents(opId)) {
             long fromId = link.from;
@@ -138,31 +145,79 @@ public class Plan implements Comparable<Plan>{
                 // Set network usage to containers
                 long dtStart = timeNow_MS;
                 long dtEnd = dtStart + dtTime_MS;
-                fromCont.setUseDT(dtEnd);
+//                fromCont.setUseDT(dtEnd);
 
                 networkDelay_MS += dtTime_MS;
             }
         }
         timeNow_MS += networkDelay_MS;
 
+        /////////////////////////////////////////////
+
 
         //TODO ji add disk delay?
 
-        Operator op = graph.getOperator(opId);
-        int runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
-        timeNow_MS += runTime;
 
-        long endTime_MS = timeNow_MS;
+            Operator op = graph.getOperator(opId);
+            long runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
+            timeNow_MS += runTime;
+
+            long endTime_MS = timeNow_MS;
 
 
+            long runspan = endTime_MS - startTime_MS;
 
-        opIdtoStartEnd_MS.put(opId,new Pair<>(startTime_MS,endTime_MS));
-        cont.setUse(endTime_MS);
-        cont.startofUse_MS = Math.min(cont.startofUse_MS,startTime_MS);
+        boolean backfilled = false;
 
-        cluster.contUsed.add(contId);
+        if(backfilling) {
+            Collections.sort(cont.freeSlots, new Comparator<Slot>() {
+                @Override public int compare(Slot o1, Slot o2) {
+                     return (int) (o1.start_MS - o2.start_MS);
+                }
+            });
+            Slot toberemoved = null;
+            for(Slot fs:cont.freeSlots){
+                if(fs.end_MS-depStart_MS>=runspan && depStart_MS>=fs.start_MS){
+                    backfilled = true;
+                    startTime_MS = depStart_MS;
+                    endTime_MS = startTime_MS + runspan;
 
-        cont.setUse(endTime_MS); //TODO ji do this better for backfilling
+                    opIdtoStartEnd_MS.put(opId,new Pair<>(startTime_MS,endTime_MS));
+                    cont.setUse(endTime_MS);
+                    cont.startofUse_MS = Math.min(cont.startofUse_MS,startTime_MS);
+                    cluster.contUsed.add(contId);
+
+                    //TODO ji add before and after slots that get created
+
+                     toberemoved  = fs;
+                     cont.opsschedule.add(new Slot(opId,startTime_MS,endTime_MS));
+                }
+            }
+            if(toberemoved!=null){
+                cont.freeSlots.remove(toberemoved);
+            }
+
+
+        }
+
+       outsideofbackfilling:
+       if( !backfilling || !backfilled ){
+
+            opIdtoStartEnd_MS.put(opId,new Pair<>(startTime_MS,endTime_MS));
+            cont.setUse(endTime_MS);
+            cont.startofUse_MS = Math.min(cont.startofUse_MS,startTime_MS);
+
+            cluster.contUsed.add(contId);
+
+            Collections.sort(cont.opsschedule);
+            if(cont.opsschedule.size()>0) {
+                if (cont.opsschedule.get(cont.opsschedule.size() - 1).end_MS < startTime_MS + 1) {
+                    cont.freeSlots.add(new Slot(cont.opsschedule.get(cont.opsschedule.size() - 1).end_MS,
+                        startTime_MS - 1));
+                }
+            }
+            cont.opsschedule.add(new Slot(opId,startTime_MS,endTime_MS));
+        }
 
         stats = new Statistics(this);
 
