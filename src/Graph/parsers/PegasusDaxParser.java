@@ -323,7 +323,7 @@ public class PegasusDaxParser {
 
 
 
-        System.out.println("/////edges from data");
+//        System.out.println("/////edges from data");
 //        for(Edge e:edges){
 //            if(!fEdges.containsKey(e.from)){
 //                fEdges.put(e.from,new HashMap<Long,Edge>());

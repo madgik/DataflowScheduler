@@ -72,8 +72,8 @@ public class Plot extends ApplicationFrame {
      * @param args  ignored.
      */
 
-    public static void plotPoints(ArrayList<Pair<Long,Double>> a){
-        final Plot demo = new Plot("Time/Money",a);
+    public static void plotPoints(String n,ArrayList<Pair<Long,Double>> a){
+        final Plot demo = new Plot(n,a);
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);

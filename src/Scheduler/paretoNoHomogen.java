@@ -7,8 +7,6 @@ import utils.Pair;
 
 import java.util.*;
 
-import static utils.Plot.plotPlans;
-
 /**
  * Created by johnchronis on 2/19/17.
  */
@@ -54,11 +52,15 @@ public class paretoNoHomogen implements Scheduler {
     public SolutionSpace schedule() {
         long startCPU_MS = System.currentTimeMillis();
 
-        ArrayList<Plan> skylinePlans = new ArrayList<>();
-        ArrayList<Plan> paretoPlans ;//= new ArrayList<>();
+        SolutionSpace skylinePlans = new SolutionSpace();
+
+        SolutionSpace skylinePlans_INC = new SolutionSpace();
+        SolutionSpace skylinePlans_DEC = new SolutionSpace();
+        SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
+
+        SolutionSpace paretoPlans = new SolutionSpace();
 
         computeRankings();
-//        paretoPlans.clear();
 
         ArrayList<containerType> ctypes = new ArrayList<>();
 
@@ -75,29 +77,49 @@ public class paretoNoHomogen implements Scheduler {
             } else {
 
                 if (cType.equals(containerType.getLargest())) {
-                    skylinePlans.addAll(this.createAssignments("decreasing", cType));
+                    skylinePlans_DEC.addAll(this.createAssignments("decreasing", cType));
 //                    plotPlans("dec",skylinePlans);
 //                    System.out.println("s1 "+skylinePlans.size());
 
                 } else if (cType.equals(containerType.getSmallest())) {
-                    skylinePlans.addAll(this.createAssignments("increasing", cType));
+                    skylinePlans_INC.addAll(this.createAssignments("increasing", cType));
 //                    plotPlans("inc",skylinePlans);
 //                    System.out.println("s2 "+skylinePlans.size());
                 } else{
-                    skylinePlans.addAll(this.createAssignments("increasing/decreasing", cType));
+                    skylinePlans_INCDEC.addAll(this.createAssignments("increasing/decreasing", cType));
 //                    plotPlans("inc,dec",skylinePlans);
 //                    System.out.println("s3 "+skylinePlans.size());
                 }
             }
         }
 
-        //all plans are in skyline plans
-//        plotPlans("all B",skylinePlans);
-        paretoPlans = computeSkyline(skylinePlans);
-//        plotPlans("all A",paretoPlans);
+        System.out.println("//////////DEC///////");
+        skylinePlans_DEC.print();
+        skylinePlans_DEC.plot("DEC");
+        System.out.println("//////////INC///////");
+        skylinePlans_INC.print();
+        skylinePlans_INC.plot("INC");
+        System.out.println("//////////INCDEC///////");
+        skylinePlans_INCDEC.print();
+        skylinePlans_INCDEC.plot("INCDEC");
+
+
+        skylinePlans.addAll(skylinePlans_DEC.results);
+        skylinePlans.addAll(skylinePlans_INC.results);
+        skylinePlans.addAll(skylinePlans_INCDEC.results);
+
+
+        paretoPlans.addAll(computeSkyline(skylinePlans.results));
+
+
+        System.out.println("//////////PARETO///////");
+        paretoPlans.print();
+        paretoPlans.plot("pareto");
+
+
         skylinePlans.clear();
 
-        for(Plan pp: paretoPlans) {
+        for(Plan pp: paretoPlans.results) {
             if (pp.vmUpgrading.equals("increasing/decreasing")) {
 
                 pp.vmUpgrading = "increasing";
@@ -112,17 +134,21 @@ public class paretoNoHomogen implements Scheduler {
         }
 //
 
+        paretoPlans.clear();
 
-        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
-        paretoPlans.addAll(skylinePlans);
+        paretoPlans.addAll(homoToHetero(skylinePlans.results)); //returns only hetero
+        paretoPlans.addAll(skylinePlans.results);
 
 
-        space.addAllResults(computeSkyline(paretoPlans));
+        space.addAll(computeSkyline(paretoPlans.results));
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
+        System.out.println("//////////RESULT///////");
+
         space.print();
+        space.plot("space");
         return space;
 
     }
@@ -225,7 +251,7 @@ public class paretoNoHomogen implements Scheduler {
                     Container cont  = plan.cluster.getContainer(i);
 
                     if (plan.vmUpgrading == null) {
-                        System.out.println("bug line 273");
+                        System.out.println("bug line 254");
                         break;
                     }
 
@@ -268,7 +294,7 @@ public class paretoNoHomogen implements Scheduler {
                 for (Long k: planContainersTobeModified) {
 
                    if (plan.vmUpgrading == null) {
-                        System.out.println("bug line 273");
+                        System.out.println("bug line 297");
                         break;
                     }
 
@@ -338,12 +364,12 @@ public class paretoNoHomogen implements Scheduler {
                         break;
                     }
                     skylinePlansNew.add(newPlan);
-
-                     System.out.println("OLDPLAN ");
-                    plan.printInfo();
-                    System.out.println("NEWPLAN");
-                     newPlan.printInfo();
-
+//
+//                     System.out.println("OLDPLAN ");
+//                    plan.printInfo();
+//                    System.out.println("NEWPLAN");
+//                     newPlan.printInfo();
+//
 
                     //   }
 
@@ -464,7 +490,7 @@ public class paretoNoHomogen implements Scheduler {
 //                // System.out.println(opID+" processTime "+ plan.getAssignments().get(opAss).processTime +" contType "+ plan.getAssignments().get(opAss).contType+" contID "+ plan.getAssignments().get(opAss).container+" starts "+plan.activeAssignments.get(opAss).start_SEC +" ends "+ plan.activeAssignments.get(opAss).end_SEC);///plan.getAssignments().get(opAss).contType.container_CPU);
             }
 //
-//            //  space.addResult(
+//            //  space.add(
 //            //        new SchedulingResult(containers.size(), runTimeParams, finProps, exception, plan));
         }
 
@@ -504,7 +530,7 @@ public class paretoNoHomogen implements Scheduler {
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
-            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
+//            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
             for (Plan plan : plans) {
@@ -515,10 +541,10 @@ public class paretoNoHomogen implements Scheduler {
                 getCandidateContainers(nextOpID, plan, vmUpgrading, cType,allCandidates);//allCanditates is an out param
             }
             plans.clear();
-
-            for(Plan p:allCandidates){
-                p.printInfo();
-            }
+//
+//            for(Plan p:allCandidates){
+//                p.printInfo();
+//            }
 
 //            if(prevPrune+3 == opsAssigned){
 //                plans = computeSkyline(allCandidates);
@@ -529,10 +555,10 @@ public class paretoNoHomogen implements Scheduler {
 
             plans = computeSkyline(allCandidates);
 
-            System.out.println("skyline");
-            for(Plan p:plans){
-                p.printInfo();
-            }
+//            System.out.println("skyline");
+//            for(Plan p:plans){
+//                p.printInfo();
+//            }
 
 
             opsAssignedSet.add(nextOpID);

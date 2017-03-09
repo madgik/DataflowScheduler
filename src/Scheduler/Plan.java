@@ -187,7 +187,12 @@ public class Plan implements Comparable<Plan>{
                     cont.startofUse_MS = Math.min(cont.startofUse_MS,startTime_MS);
                     cluster.contUsed.add(contId);
 
-                    //TODO ji add before and after slots that get created
+                    if(fs.start_MS<startTime_MS-1){
+                        cont.freeSlots.add(new Slot(fs.start_MS,startTime_MS-1));
+                    }
+                    if(endTime_MS+1<fs.end_MS){
+                        cont.freeSlots.add(new Slot(endTime_MS+1,fs.end_MS));
+                    }
 
                      toberemoved  = fs;
                      cont.opsschedule.add(new Slot(opId,startTime_MS,endTime_MS));
@@ -241,14 +246,6 @@ public class Plan implements Comparable<Plan>{
 //        }
 
     }
-
-
-
-    public Statistics calculateStatistics(){
-        //TODO j implement
-        return stats;
-    }
-
 
     @Override
     public int compareTo(Plan other){  //TODO ji is this right?

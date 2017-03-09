@@ -14,7 +14,7 @@ import static utils.Plot.plotPoints;
  */
 public class SolutionSpace {
 
-    private List<Plan> results = null;
+    public ArrayList<Plan> results = null;
     public double optimizationTime_SEC;
 
 
@@ -22,11 +22,11 @@ public class SolutionSpace {
         results = new ArrayList<>();
     }
 
-    public void addResult(Plan p){
+    public void add(Plan p){
         results.add(p);
     }
 
-    public void addAllResults(Collection<Plan> p){
+    public void addAll(Collection<Plan> p){
         results.addAll(p);
     }
 
@@ -39,16 +39,21 @@ public class SolutionSpace {
         for(Plan p:results){
             p.printInfo();
         }
-        System.out.printf("/////////////////Space size: "+results.size());
-        plotPlans("Space print",results);
+        System.out.println("/////////////////Space size: "+results.size());
     }
 
-    public void plot(){
+    public void plot(String n){
         ArrayList<Pair<Long,Double>> a = new ArrayList<>();
         for(Plan p: results){
             a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
         }
-        plotPoints(a);
+        plotPoints(n,a);
+    }
+
+
+    public void clear(){
+        results.clear();
+        optimizationTime_SEC = -1;
     }
 }
 

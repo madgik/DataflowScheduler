@@ -13,16 +13,13 @@
     <groupId>madgik</groupId>
     <artifactId>MyScheduler</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-    </dependencies>
-    <packaging>pom</packaging>
-    <dependencyManagement>
-        <dependencies>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -31,12 +28,7 @@
                 <scope>test</scope>
             </dependency>
             <!-- Logging deps -->
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
-                <type>jar</type>
-            </dependency>
+
             <!-- Compression deps -->
             <!-- Visualization deps -->
 
@@ -128,14 +120,14 @@
                 <version>4.4</version>
                 <type>jar</type>
             </dependency>
-            <!-- Apache Hadoop deps-->
+             <!--Apache Hadoop deps-->
             <dependency>
                 <groupId>org.jfree</groupId>
                 <artifactId>jcommon</artifactId>
                 <version>1.0.23</version>
             </dependency>
         </dependencies>
-    </dependencyManagement>
+
 
     <properties>
 
