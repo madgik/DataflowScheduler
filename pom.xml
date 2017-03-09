@@ -126,7 +126,13 @@
                 <artifactId>jcommon</artifactId>
                 <version>1.0.23</version>
             </dependency>
-        </dependencies>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.19</version>
+        </dependency>
+
+    </dependencies>
 
 
     <properties>
