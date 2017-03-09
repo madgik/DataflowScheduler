@@ -15,7 +15,7 @@ import static utils.Plot.plotPoints;
 public class SolutionSpace {
 
     public ArrayList<Plan> results = null;
-    public double optimizationTime_SEC;
+    public double optimizationTime_MS;
 
 
     public SolutionSpace(){
@@ -31,7 +31,7 @@ public class SolutionSpace {
     }
 
     public void setOptimizationTime(long optimizationTime_MS) {
-        optimizationTime_SEC = optimizationTime_MS/1000;
+        this.optimizationTime_MS = optimizationTime_MS;
     }
 
     public void print() {
@@ -53,7 +53,7 @@ public class SolutionSpace {
 
     public void clear(){
         results.clear();
-        optimizationTime_SEC = -1;
+        optimizationTime_MS = -1;
     }
 }
 

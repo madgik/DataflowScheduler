@@ -17,13 +17,13 @@ public class RuntimeConstants {
      * Network speed (in MB/sec)
      * Default: 100 MB/sec (~1GBit)
      */
-    public static  double network_speed_B_MS = 100000.0;
+    public static  double network_speed_B_MS = 104857.6;
 
     /**
      * Disk throughput in (MB/sec)
      * Default: 200 MB/sec (SSD)
      */
-    public static  double disk_throughput__MB_SEC = 200.0;
+    public static  double disk_throughput__B_MS = 209715.2;
 
     /**
      * CPU utilization of the data transfer operator

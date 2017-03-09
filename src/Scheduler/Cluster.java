@@ -85,6 +85,9 @@ public class Cluster {
         contToType.put(contid,ctype);
 
         countTypes.put(oldtype,countTypes.get(oldtype)-1);
+        if(countTypes.get(oldtype) == 0){
+            countTypes.remove(oldtype);
+        }
 
         if(countTypes.containsKey(ctype)){
             countTypes.put(ctype,countTypes.get(ctype)+1);

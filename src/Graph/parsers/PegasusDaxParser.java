@@ -121,6 +121,7 @@ public class PegasusDaxParser {
             ResourcesRequirements res = new ResourcesRequirements(runtime_MS,memoryValue);
 
             Long opid = graph.addOperator(new Operator(name,res));
+            System.out.println("opcreated "+opid+"  "+runtime_MS);
 
             Operator op = graph.getOperator(opid);
             operatorNameMap.put(name, opid);

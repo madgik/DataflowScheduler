@@ -80,7 +80,7 @@ public class DAG {
         for(Long opid:edges.keySet()){
             System.out.printf(opid+": ");
             for(Edge out: getChildren(opid)){
-                System.out.printf(" "+out.to/*+"("+out.data.size_B+")"*/);
+                System.out.printf(" "+out.to+"("+out.data.size_B+")");
             }
             System.out.println();
         }

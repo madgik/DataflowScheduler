@@ -28,11 +28,6 @@ public class Plan implements Comparable<Plan>{
     public static boolean backfilling = false;
 
 
-//    public HashSet<Long> readyOps;
-
-
-
-
     public Plan(DAG graph,Cluster cluster){
         this.graph = graph;
         beforeStats=null;
@@ -156,16 +151,34 @@ public class Plan implements Comparable<Plan>{
 
 
         //TODO ji add disk delay?
+        long inputDiskTime_MS = 0;
+        for (Edge edge : graph.getParents(opId)) {
+            long diskTime = (long) Math.ceil(edge.data.size_B / RuntimeConstants.disk_throughput__B_MS);
+            inputDiskTime_MS += diskTime;
+        }
+        timeNow_MS += inputDiskTime_MS; //TODO ji uncomment to schedule disk time
+
+        int outputDiskTime_MS = 0;
+        long diskdata=0;
+        for (Edge edge : graph.getChildren(opId)) {
+            int diskTime = (int) Math.ceil(edge.data.size_B / RuntimeConstants.disk_throughput__B_MS);
+            diskdata+=edge.data.size_B;
+            outputDiskTime_MS += diskTime;
+        }
+        timeNow_MS += outputDiskTime_MS;
 
 
-            Operator op = graph.getOperator(opId);
-            long runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
-            timeNow_MS += runTime;
-
-            long endTime_MS = timeNow_MS;
+        /////////////////////////
 
 
-            long runspan = endTime_MS - startTime_MS;
+        Operator op = graph.getOperator(opId);
+        long runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
+        timeNow_MS += runTime;
+
+        long endTime_MS = timeNow_MS;
+
+
+        long runspan = endTime_MS - startTime_MS;
 
         boolean backfilled = false;
 

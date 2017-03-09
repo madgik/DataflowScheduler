@@ -551,7 +551,7 @@ public class paretoNoHomogen implements Scheduler {
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
-//            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
+            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
             for (Plan plan : plans) {
@@ -563,9 +563,9 @@ public class paretoNoHomogen implements Scheduler {
             }
             plans.clear();
 //
-//            for(Plan p:allCandidates){
-//                p.printInfo();
-//            }
+            for(Plan p:allCandidates){
+                p.printInfo();
+            }
 
 //            if(prevPrune+3 == opsAssigned){
 //                plans = computeSkyline(allCandidates);
@@ -576,10 +576,10 @@ public class paretoNoHomogen implements Scheduler {
 
             plans = computeSkyline(allCandidates);
 
-//            System.out.println("skyline");
-//            for(Plan p:plans){
-//                p.printInfo();
-//            }
+            System.out.println("skyline");
+            for(Plan p:plans){
+                p.printInfo();
+            }
 
 
             opsAssignedSet.add(nextOpID);

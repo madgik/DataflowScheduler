@@ -29,7 +29,7 @@ public class Statistics {
 
 
     public void printStats() {
-        System.out.println("Time_SEC: "+runtime_MS/1000+" Money: "+money+" Quanta: "+quanta );
+        System.out.println("Time_MS: "+runtime_MS+" Money: "+money+" Quanta: "+quanta );
     }
 
     public Statistics(Statistics s){
