@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4d6e9fc-fa75-41b9-b662-f5cedc4d96ab" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/utils/MultiplePlotInfo.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/utils/skylineExploration.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" afterPath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/utils/Plot.java" afterPath="$PROJECT_DIR$/src/utils/Plot.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/utils/MultiplePlotInfo.java" afterPath="$PROJECT_DIR$/src/utils/MultiplePlotInfo.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -34,8 +32,8 @@
       <file leaf-file-name="paretoNoHomogen.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="163" column="0" lean-forward="false" selection-start-line="163" selection-start-column="0" selection-end-line="163" selection-end-column="0" />
+            <state relative-caret-position="231">
+              <caret line="150" column="0" lean-forward="true" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
               <folding>
                 <element signature="method#getCandidateContainers#0;class#paretoNoHomogen#0" expanded="false" />
                 <element signature="method#onlyOneContainer#0;class#paretoNoHomogen#0" expanded="false" />
@@ -45,7 +43,7 @@
                 <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
                 <element signature="method#computeHomoRankings#0;class#paretoNoHomogen#0" expanded="false" />
                 <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
-                <element signature="e#35192#35269#0" expanded="false" />
+                <element signature="e#35380#35457#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -54,8 +52,8 @@
       <file leaf-file-name="MultiplePlotInfo.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/utils/MultiplePlotInfo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="22" column="23" lean-forward="false" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
+            <state relative-caret-position="270">
+              <caret line="20" column="67" lean-forward="false" selection-start-line="20" selection-start-column="67" selection-end-line="20" selection-end-column="67" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -116,6 +114,7 @@
       <find>plan</find>
       <find>skylinePlans</find>
       <find>out.println</find>
+      <find>0.8500000000000001</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -166,8 +165,8 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/Main.java" />
         <option value="$PROJECT_DIR$/src/utils/Plot.java" />
-        <option value="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
         <option value="$PROJECT_DIR$/src/utils/MultiplePlotInfo.java" />
+        <option value="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
       </list>
     </option>
   </component>
@@ -1164,7 +1163,7 @@
       <workItem from="1488981442670" duration="3637000" />
       <workItem from="1489061050715" duration="665000" />
       <workItem from="1489063364177" duration="238000" />
-      <workItem from="1489064219140" duration="1743000" />
+      <workItem from="1489064219140" duration="3072000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1488319318583</created>
@@ -1222,11 +1221,18 @@
       <option name="project" value="LOCAL" />
       <updated>1489063482192</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="multiple plot">
+      <created>1489066099304</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1489066099304</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="115187000" />
+    <option name="totallyTimeSpent" value="116516000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="130" y="52" width="1401" height="994" extended-state="0" />
@@ -1241,16 +1247,16 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34735706" sideWeight="0.50492185" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17880794" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35920176" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42572063" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3778626" sideWeight="0.57836646" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21927889" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21927889" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969433" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4223947" sideWeight="0.494705" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16203336" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16188374" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -1278,7 +1284,8 @@
     <MESSAGE value="homoHetero done" />
     <MESSAGE value="backfilling" />
     <MESSAGE value="added jfreechart&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="added jfreechart&#10;" />
+    <MESSAGE value="multiple plot" />
+    <option name="LAST_COMMIT_MESSAGE" value="multiple plot" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1297,31 +1304,25 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>516</line>
+          <line>525</line>
           <properties />
           <option name="timeStamp" value="74" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>609</line>
+          <line>618</line>
           <properties />
           <option name="timeStamp" value="77" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>761</line>
+          <line>770</line>
           <properties />
           <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>265</line>
-          <properties />
-          <option name="timeStamp" value="99" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java</url>
-          <line>162</line>
+          <line>166</line>
           <properties />
           <option name="timeStamp" value="101" />
         </line-breakpoint>
@@ -1397,7 +1398,7 @@
             <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
             <element signature="method#computeHomoRankings#0;class#paretoNoHomogen#0" expanded="false" />
             <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
-            <element signature="e#35192#35269#0" expanded="false" />
+            <element signature="e#35380#35457#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1720,8 +1721,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/utils/MultiplePlotInfo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="22" column="23" lean-forward="false" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
+        <state relative-caret-position="270">
+          <caret line="20" column="67" lean-forward="false" selection-start-line="20" selection-start-column="67" selection-end-line="20" selection-end-column="67" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1740,8 +1741,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="163" column="0" lean-forward="false" selection-start-line="163" selection-start-column="0" selection-end-line="163" selection-end-column="0" />
+        <state relative-caret-position="231">
+          <caret line="150" column="0" lean-forward="true" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
           <folding>
             <element signature="method#getCandidateContainers#0;class#paretoNoHomogen#0" expanded="false" />
             <element signature="method#onlyOneContainer#0;class#paretoNoHomogen#0" expanded="false" />
@@ -1751,7 +1752,7 @@
             <element signature="method#computeRankings#0;class#paretoNoHomogen#0" expanded="false" />
             <element signature="method#computeHomoRankings#0;class#paretoNoHomogen#0" expanded="false" />
             <element signature="method#opsSortedReversed#0;class#paretoNoHomogen#0" expanded="false" />
-            <element signature="e#35192#35269#0" expanded="false" />
+            <element signature="e#35380#35457#0" expanded="false" />
           </folding>
         </state>
       </provider>

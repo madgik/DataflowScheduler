@@ -145,7 +145,11 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.clear();
 
+
+
         paretoPlans.addAll(homoToHetero(skylinePlans.results)); //returns only hetero
+
+
         paretoPlans.addAll(skylinePlans.results);
 
 
@@ -168,6 +172,11 @@ public class paretoNoHomogen implements Scheduler {
 
     private List<Plan> homoToHetero(ArrayList<Plan> plans) {
 
+        ArrayList<Plan> plansInner = new ArrayList<>();//deepcopy of input
+        for(Plan p:plans){
+            plansInner.add(new Plan(p));
+        }
+
         ArrayList<Plan> result = new ArrayList<>();
         ArrayList<Plan> buffer = new ArrayList<>();
 
@@ -181,7 +190,7 @@ public class paretoNoHomogen implements Scheduler {
 
             updateSkyline = 0;
 //
-            for (final Plan plan : plans) {
+            for (final Plan plan : plansInner) {
 //
                 final HashMap<Long, Double> contSlack = new HashMap<>();
                 final HashMap<Long, Integer> contOps = new HashMap<>();
@@ -422,13 +431,13 @@ public class paretoNoHomogen implements Scheduler {
 
 
 //////////
-            plans.clear();
-            plans.addAll(result);
-            result = computeNewSkyline(plans, skylinePlansNew);
+            plansInner.clear();
+            plansInner.addAll(result);
+            result = computeNewSkyline(plansInner, skylinePlansNew);
 
-            plans.clear();
+            plansInner.clear();
 
-            plans.addAll(skylinePlansNew);
+            plansInner.addAll(skylinePlansNew);
 
 
             skylinePlansNew.clear();
