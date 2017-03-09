@@ -54,6 +54,31 @@ public class Plot extends ApplicationFrame {
 
     }
 
+    public Plot(MultiplePlotInfo info) {
+
+        super("MultiplePlot");
+
+        final XYSeriesCollection data = new XYSeriesCollection();
+        for(XYSeries s: info.series){
+            data.addSeries(s);
+        }
+        final JFreeChart chart = ChartFactory.createScatterPlot(
+            "Time/Money",
+            "Time",
+            "Money",
+            data,
+            PlotOrientation.VERTICAL,
+            true,
+            true,
+            false
+        );
+
+        final ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+        setContentPane(chartPanel);
+
+    }
+
 
     // ****************************************************************************
     // * JFREECHART DEVELOPER GUIDE                                               *
@@ -91,6 +116,17 @@ public class Plot extends ApplicationFrame {
         demo.setVisible(true);
 
     }
+
+
+    public static void plotMultiple(MultiplePlotInfo info){
+        final Plot demo = new Plot(info);
+        demo.pack();
+        RefineryUtilities.centerFrameOnScreen(demo);
+        demo.setVisible(true);
+
+    }
+
+
 
 
 

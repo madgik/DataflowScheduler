@@ -3,9 +3,12 @@ package Scheduler;
 import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
+import utils.MultiplePlotInfo;
 import utils.Pair;
 
 import java.util.*;
+
+import static utils.Plot.plotMultiple;
 
 /**
  * Created by johnchronis on 2/19/17.
@@ -51,7 +54,7 @@ public class paretoNoHomogen implements Scheduler {
     @Override
     public SolutionSpace schedule() {
         long startCPU_MS = System.currentTimeMillis();
-
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
         SolutionSpace skylinePlans = new SolutionSpace();
 
         SolutionSpace skylinePlans_INC = new SolutionSpace();
@@ -96,12 +99,16 @@ public class paretoNoHomogen implements Scheduler {
         System.out.println("//////////DEC///////");
         skylinePlans_DEC.print();
         skylinePlans_DEC.plot("DEC");
+        mpinfo.add("DEC",skylinePlans_DEC.results);
         System.out.println("//////////INC///////");
         skylinePlans_INC.print();
         skylinePlans_INC.plot("INC");
+        mpinfo.add("INC",skylinePlans_INC.results);
         System.out.println("//////////INCDEC///////");
         skylinePlans_INCDEC.print();
         skylinePlans_INCDEC.plot("INCDEC");
+        mpinfo.add("INCDEC",skylinePlans_INCDEC.results);
+
 
 
         skylinePlans.addAll(skylinePlans_DEC.results);
@@ -115,6 +122,8 @@ public class paretoNoHomogen implements Scheduler {
         System.out.println("//////////PARETO///////");
         paretoPlans.print();
         paretoPlans.plot("pareto");
+        mpinfo.add("pareto",paretoPlans.results);
+
 
 
         skylinePlans.clear();
@@ -149,6 +158,9 @@ public class paretoNoHomogen implements Scheduler {
 
         space.print();
         space.plot("space");
+        mpinfo.add("space",space.results);
+
+        plotMultiple(mpinfo);
         return space;
 
     }
