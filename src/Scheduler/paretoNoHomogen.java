@@ -180,12 +180,19 @@ public class paretoNoHomogen implements Scheduler {
         ArrayList<Plan> result = new ArrayList<>();
         ArrayList<Plan> buffer = new ArrayList<>();
 
+        for(Plan p:plans){
+            result.add(new Plan(p));
+        }
 //        //look at each plan and upgrade one by one the LARGE containers
 
         ArrayList<Plan> skylinePlansNew = new ArrayList<>();
 //
         int updateSkyline = 1;
 //
+
+        System.out.println("initial pareto and candidate plans for upgrading");
+        for (final Plan plan : plansInner)
+            plan.printInfo();//plan.stats.printStats();
         while (updateSkyline == 1) {
 
             updateSkyline = 0;
@@ -551,7 +558,7 @@ public class paretoNoHomogen implements Scheduler {
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
-            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
+         //   System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
             for (Plan plan : plans) {
@@ -576,10 +583,10 @@ public class paretoNoHomogen implements Scheduler {
 
             plans = computeSkyline(allCandidates);
 
-            System.out.println("skyline");
-            for(Plan p:plans){
-                p.printInfo();
-            }
+//            System.out.println("skyline");
+//            for(Plan p:plans){
+//                p.printInfo();
+//            }
 
 
             opsAssignedSet.add(nextOpID);
