@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args)  {
 
-        File loadFile = new File(Main.class.getResource("MONTAGE.n.25.0.dax").getFile());
+        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
         //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
@@ -27,6 +27,8 @@ public class Main {
 
         SolutionSpace solutions = sched.schedule();
 
+
+        //TODO: Run the simulation to validate the results for the space of solutions
 //        solutions.print();
 
     }
