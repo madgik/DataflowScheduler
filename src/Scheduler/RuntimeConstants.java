@@ -39,6 +39,7 @@ public class RuntimeConstants {
     public static  int data_transfer_memory__MB = 1;
 
 
+    public static double precisionError = 0.0000000001;
 
 
 }

@@ -681,7 +681,7 @@ public class paretoNoHomogen implements Scheduler {
                 // Already sorted by money
                 continue;
             }
-            if(Math.abs(previous.stats.money - est.stats.money)>0.000000000001) //TODO ji fix or check
+            if(Math.abs(previous.stats.money - est.stats.money)>RuntimeConstants.precisionError) //TODO ji fix or check
                 if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
                     skyline.add(est);
                     previous = est;

@@ -107,7 +107,6 @@ public class Plan implements Comparable<Plan>{
 
 
         long timeNow_MS = 0L;
-        //TODO ji change for backfilling
 
         Container cont = cluster.getContainer(contId);
         long contFirstAvailTime = cont.getEnd_MS();
@@ -150,13 +149,12 @@ public class Plan implements Comparable<Plan>{
         /////////////////////////////////////////////
 
 
-        //TODO ji add disk delay?
         long inputDiskTime_MS = 0;
         for (Edge edge : graph.getParents(opId)) {
             long diskTime = (long) Math.ceil(edge.data.size_B / RuntimeConstants.disk_throughput__B_MS);
             inputDiskTime_MS += diskTime;
         }
-        timeNow_MS += inputDiskTime_MS; //TODO ji uncomment to schedule disk time
+        timeNow_MS += inputDiskTime_MS;
 
         int outputDiskTime_MS = 0;
         long diskdata=0;
@@ -263,7 +261,7 @@ public class Plan implements Comparable<Plan>{
     @Override
     public int compareTo(Plan other){  //TODO ji is this right?
         if(stats.runtime_MS == other.stats.runtime_MS){
-            if(Double.compare(stats.money,other.stats.money)==0){
+            if(Math.abs(stats.money-other.stats.money) < RuntimeConstants.precisionError){
                 return Long.compare(stats.containersUsed, other.stats.containersUsed);
             }
             return Double.compare(stats.money,other.stats.money);
