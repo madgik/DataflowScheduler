@@ -23,7 +23,7 @@ public class RuntimeConstants {
      * Disk throughput in (MB/sec)
      * Default: 200 MB/sec (SSD)
      */
-    public static  double disk_throughput__B_MS = 209715.2;
+    public static  double disk_throughput_B_MS = 209715.2;
 
     /**
      * CPU utilization of the data transfer operator
@@ -40,6 +40,8 @@ public class RuntimeConstants {
 
 
     public static double precisionError = 0.0000000001;
+
+
 
 
 }

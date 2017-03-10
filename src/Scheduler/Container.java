@@ -60,8 +60,8 @@ public class Container {
 //    public void assignOp(Long opId) {
 //    }
 
-    public Long getEnd_MS(){
-        return UsedUpTo_MS;
+    public Long getFirstAvailTime_atEnd_MS(){
+        return UsedUpTo_MS+1;
 
     }
 
