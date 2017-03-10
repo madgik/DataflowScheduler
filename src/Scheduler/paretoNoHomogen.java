@@ -177,15 +177,18 @@ public class paretoNoHomogen implements Scheduler {
             plansInner.add(new Plan(p));
         }
 
-        ArrayList<Plan> result = new ArrayList<>();
+        ArrayList<Plan> result = new ArrayList<>();//keeps all the solutions at the current pareto
         ArrayList<Plan> buffer = new ArrayList<>();
 
+        for(Plan p:plans){
+            result.add(new Plan(p));
+        }
 //        //look at each plan and upgrade one by one the LARGE containers
 
-        ArrayList<Plan> skylinePlansNew = new ArrayList<>();
+        ArrayList<Plan> skylinePlansNew = new ArrayList<>();//the set of plans from the newly modified plans (plans with upgraded/degraded vm types) that belong to the current pareto
 //
         int updateSkyline = 1;
-//
+
         while (updateSkyline == 1) {
 
             updateSkyline = 0;
@@ -196,30 +199,12 @@ public class paretoNoHomogen implements Scheduler {
                 final HashMap<Long, Integer> contOps = new HashMap<>();
 
                 LinkedList<Long> planContainersTobeModified = new LinkedList<>();
-//
-//                HashMap<Integer, Integer> opIDtoCont = new HashMap<>();
-//                HashMap<Integer, Integer> opIDtoAssignment = new HashMap<>();
-//
-//                int ass=0;
-//                for (OperatorAssignment opAss : plan.assignments) {
-//                    //    System.out.println("op ass " + opAss.getCOpID() + " " + opAss.getOpID() + " " + plan.activeAssignments.get(opAss.getCOpID()).start_SEC + " " +plan.activeAssignments.get(opAss.getCOpID()).end_SEC + " at " + plan.activeAssignments.get(opAss.getCOpID()).assignment.container + " " + plan.activeContainers.get(plan.activeAssignments.get(opAss.getCOpID()).assignment.container).acContID);
-//
-//                    opIDtoCont.put(opAss.getOpID(), opAss.container);
-//                    opIDtoAssignment.put(opAss.getOpID(), ass);
-//                    ass++;
-//                } //save the assignment of each op for faster access
-//
-//                //check the ids of active container, simple container, activeop, simple op etc are the same
-//
+
 //                /////////////////////////////  separate the computation of slack per container to a computeSumSlackPerCont method
                 for(Long opId: opsSortedReversed()) {//topOrder.iteratorReverse()) //ranking reversed
                     Double opSlackTime = Double.MAX_VALUE;
-//
-//                    //  System.out.println("\ncomputing slack for " + op.getopID());
-//
                     if (graph.getChildren(opId).isEmpty()) //if exit node
                         opSlackTime = (double) plan.stats.runtime_MS - plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS;
-//
                     for (Edge outEdge : graph.getChildren(opId)) {//successors at the dag
                         Long opChildId = outEdge.to;
                         Double childSlack = opSlack.get(opChildId);
@@ -227,7 +212,6 @@ public class paretoNoHomogen implements Scheduler {
                         Double opSpareTime = (double) plan.opIdtoStartEnd_MS.get(opChildId).a - plan.opIdtoStartEnd_MS.get(opId).b;//assumption: output data and communication cost computed in runtime
                         opSlackTime = Math.min(childSlack + opSpareTime, opSlackTime);
                     }
-//
                     long opContID = plan.assignments.get(opId);//consider successor at the container. If last op at container the returned bit (succStart) is -1
                     long contEndTime_MS = plan.cluster.getContainer(opContID).UsedUpTo_MS;
                     long opEndTime_MS = plan.opIdtoStartEnd_MS.get(opId).b;
@@ -240,12 +224,12 @@ public class paretoNoHomogen implements Scheduler {
                             long opopStartTime = plan.opIdtoStartEnd_MS.get(opopId).a;
 
                             if (contcontId == opContID && opopStartTime > opEndTime_MS) {
-                                Math.min(succStart, opopStartTime);
+                                succStart = Math.min(succStart, opopStartTime);
                                 succExists = true;
                             }
 
                         }
-                        if (contEndTime_MS > opEndTime_MS) {//   System.out.println("succ at container starts at " + succStart + " while " + plan.activeAssignments.get(opIDtoAssignment.get(op.getopID())).end_SEC);
+                        if (succExists){//(contEndTime_MS > opEndTime_MS) {//   System.out.println("succ at container starts at " + succStart + " while " + plan.activeAssignments.get(opIDtoAssignment.get(op.getopID())).end_SEC);
                             opSlackTime = Math.min(opSlackTime, succStart - opEndTime_MS);
                         }
                     }
@@ -551,7 +535,7 @@ public class paretoNoHomogen implements Scheduler {
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
-            System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
+         //   System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
             for (Plan plan : plans) {
@@ -576,10 +560,10 @@ public class paretoNoHomogen implements Scheduler {
 
             plans = computeSkyline(allCandidates);
 
-            System.out.println("skyline");
-            for(Plan p:plans){
-                p.printInfo();
-            }
+//            System.out.println("skyline");
+//            for(Plan p:plans){
+//                p.printInfo();
+//            }
 
 
             opsAssignedSet.add(nextOpID);
