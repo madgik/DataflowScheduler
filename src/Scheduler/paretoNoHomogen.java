@@ -483,7 +483,7 @@ public class paretoNoHomogen implements Scheduler {
                 }
 
                 System.out.println("\nnewly created plans");
-                getCandidateContainers(nextOpID, plan, vmUpgrading, cType,allCandidates);//allCanditates is an out param
+                getCandidateContainers(nextOpID, plan, cType,allCandidates);//allCanditates is an out param
             }
             plans.clear();
 //
@@ -534,14 +534,11 @@ public class paretoNoHomogen implements Scheduler {
     }
 
     private void getCandidateContainers(Long opId , Plan plan, //assume that not empty containers exist
-         String vmUpgrading, containerType contType,ArrayList<Plan> planEstimations)
+         containerType contType,ArrayList<Plan> planEstimations)
      {
 
 
-        long runtime = graph.getOperator(opId).getRunTime_MS();
-
         for(Long contId: plan.cluster.containers.keySet()){
-            Container curCont = plan.cluster.getContainer(contId);
             ///////////////
             Plan newPlan = new Plan(plan);
             newPlan.assignOperator(opId, contId);
