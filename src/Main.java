@@ -23,7 +23,7 @@ public class Main {
         Cluster cluster = new Cluster();
 //        cluster.addContainer(containerType.LARGE);
 
-        Scheduler sched = new Moheft(graph,cluster);//new paretoNoHomogen(graph,cluster);
+        Scheduler sched = new paretoNoHomogen(graph,cluster);
 
         SolutionSpace solutions = sched.schedule();
 

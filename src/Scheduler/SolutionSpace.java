@@ -2,9 +2,7 @@ package Scheduler;
 
 import utils.Pair;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static utils.Plot.plotPlans;
 import static utils.Plot.plotPoints;
@@ -12,7 +10,7 @@ import static utils.Plot.plotPoints;
 /**
  * Created by johnchronis on 2/19/17.
  */
-public class SolutionSpace {
+public class SolutionSpace implements Iterable<Plan> {
 
     public ArrayList<Plan> results = null;
     public double optimizationTime_MS;
@@ -28,6 +26,10 @@ public class SolutionSpace {
 
     public void addAll(Collection<Plan> p){
         results.addAll(p);
+    }
+
+    public void addAll(SolutionSpace sp){
+        results.addAll(sp.results);
     }
 
     public void setOptimizationTime(long optimizationTime_MS) {
@@ -54,6 +56,14 @@ public class SolutionSpace {
     public void clear(){
         results.clear();
         optimizationTime_MS = -1;
+    }
+
+    public void sort(){
+        Collections.sort(results);
+    }
+
+    @Override public Iterator<Plan> iterator() {
+        return results.iterator();
     }
 }
 

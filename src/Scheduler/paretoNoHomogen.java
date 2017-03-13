@@ -15,22 +15,20 @@ import static utils.Plot.plotMultiple;
  */
 public class paretoNoHomogen implements Scheduler {
 
-//    public ArrayList<Plan> skylinePlans;
-//    public ArrayList<Plan> paretoPlans;
     public SolutionSpace space;
     public Cluster cluster;
     public DAG graph;
 
     ///rankingks
-    private HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
-    private HashMap<Long, Double> t_rank = new HashMap<>();
-    private HashMap<Long, Double> sum_rank = new HashMap<>();
-    private HashMap<Long, Double> slacktime = new HashMap<>();
-    private LinkedList<Long> opsSumRankSorted = new LinkedList<>();
-    private Integer opsInfluential=-5;//10;//check from derivative ranking
-    private LinkedList<Long> opsBySlack = new LinkedList<>();
-//    private HashMap<Long, Double> opSlack = new HashMap<>();
-    private HashMap<Long, Integer> opIDsInfluential= new HashMap<>();
+//    private HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
+//    private HashMap<Long, Double> t_rank = new HashMap<>();
+//    private HashMap<Long, Double> sum_rank = new HashMap<>();
+//    private HashMap<Long, Double> slacktime = new HashMap<>();
+//    private LinkedList<Long> opsSumRankSorted = new LinkedList<>();
+//    private Integer opsInfluential=-5;//10;//check from derivative ranking
+//    private LinkedList<Long> opsBySlack = new LinkedList<>();
+////    private HashMap<Long, Double> opSlack = new HashMap<>();
+//    private HashMap<Long, Integer> opIDsInfluential= new HashMap<>();
     public static LinkedList<Long> opsSorted = new LinkedList<>();
 
 
@@ -42,8 +40,6 @@ public class paretoNoHomogen implements Scheduler {
 
 
     public paretoNoHomogen(DAG graph,Cluster cl){
-//        skylinePlans = new ArrayList<>();
-//        paretoPlans = new ArrayList<>();
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
@@ -65,14 +61,9 @@ public class paretoNoHomogen implements Scheduler {
 
         computeRankings();
 
-       // ArrayList<containerType> ctypes = new ArrayList<>();
-
         skylinePlans.clear();
 
         for(containerType cType: containerType.values()) {
-
-         //   ctypes.clear();
-         //   ctypes.add(containerType.getLargest());
 
 
             if (maxContainers == 1) {
@@ -116,7 +107,7 @@ public class paretoNoHomogen implements Scheduler {
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
 
-        paretoPlans.addAll(computeSkyline(skylinePlans.results));
+        paretoPlans.addAll(computeSkyline(skylinePlans));
 
 
         System.out.println("//////////PARETO///////");
@@ -147,13 +138,13 @@ public class paretoNoHomogen implements Scheduler {
 
 
 
-        paretoPlans.addAll(homoToHetero(skylinePlans.results)); //returns only hetero
+        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
 
-        paretoPlans.addAll(skylinePlans.results);
+        paretoPlans.addAll(skylinePlans);
 
 
-        space.addAll(computeSkyline(paretoPlans.results));
+        space.addAll(computeSkyline(paretoPlans));
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
@@ -228,14 +219,14 @@ public class paretoNoHomogen implements Scheduler {
         }
     }
 
-    private List<Plan> homoToHetero(ArrayList<Plan> plans) {
+    private SolutionSpace homoToHetero(SolutionSpace plans) {
 
-        ArrayList<Plan> plansInner = new ArrayList<>();//deepcopy of input
-        for(Plan p:plans){
+        SolutionSpace plansInner = new SolutionSpace();//deepcopy of input
+        for(Plan p:plans.results){
             plansInner.add(new Plan(p));
         }
 
-        ArrayList<Plan> result = new ArrayList<>();//keeps all the solutions at the current pareto
+        SolutionSpace result = new SolutionSpace();//keeps all the solutions at the current pareto
 
         for(Plan p:plans){
             result.add(new Plan(p));
@@ -246,7 +237,7 @@ public class paretoNoHomogen implements Scheduler {
         final HashMap<Long, Double> contSlack = new HashMap<>();
         final HashMap<Long, Integer> contOps = new HashMap<>();
 
-        ArrayList<Plan> skylinePlansNew = new ArrayList<>();
+        SolutionSpace skylinePlansNew = new SolutionSpace();
         //the set of plans from the newly modified plans (plans with upgraded/degraded vm types) that belong to the current pareto
 
         int updateSkyline = 1;
@@ -394,12 +385,12 @@ public class paretoNoHomogen implements Scheduler {
             }
 
             plansInner.clear();
-            plansInner.addAll(result);
-            result = computeNewSkyline(plansInner, skylinePlansNew);
+            plansInner.addAll(result.results);
+            result.addAll(computeNewSkyline(plansInner.results, skylinePlansNew.results));
 
             plansInner.clear();
 
-            plansInner.addAll(skylinePlansNew);
+            plansInner.addAll(skylinePlansNew.results);
 
 
             skylinePlansNew.clear();
@@ -442,14 +433,14 @@ public class paretoNoHomogen implements Scheduler {
     }
 
 
-    private ArrayList<Plan> createAssignments(String vmUpgrading, containerType cType) {
+    private SolutionSpace createAssignments(String vmUpgrading, containerType cType) {
 
 
         Plan firstPlan = new Plan(graph, cluster);
         firstPlan.vmUpgrading = vmUpgrading;
 
-        ArrayList<Plan> allCandidates = new ArrayList<>();
-        ArrayList<Plan> plans = new ArrayList<>();
+        SolutionSpace allCandidates = new SolutionSpace();
+        SolutionSpace plans = new SolutionSpace();
         plans.add(firstPlan);
 
         int opsAssigned=0;
@@ -534,7 +525,7 @@ public class paretoNoHomogen implements Scheduler {
     }
 
     private void getCandidateContainers(Long opId , Plan plan, //assume that not empty containers exist
-         containerType contType,ArrayList<Plan> planEstimations)
+         containerType contType,SolutionSpace planEstimations)
      {
 
 
@@ -589,11 +580,11 @@ public class paretoNoHomogen implements Scheduler {
         return minRankOpID;
     }
 
-    public ArrayList<Plan> computeSkyline(ArrayList<Plan> plans){
-        ArrayList<Plan> skyline = new ArrayList<>();
+    public SolutionSpace computeSkyline(SolutionSpace plans){
+        SolutionSpace skyline = new SolutionSpace();
 
 
-        Collections.sort(plans); // Sort by time breaking equality by sorting by money
+        plans.sort(); // Sort by time breaking equality by sorting by money
 
         Plan previous = null;
         for (Plan est : plans) {
@@ -773,7 +764,6 @@ public class paretoNoHomogen implements Scheduler {
 
 
         for (Long opId : topOrder.iteratorReverse()) {
-            // System.out.println("reversed ID is " + op.getopID());
 
             double maxRankChild=0.0;
             for (Edge outLink: graph.getChildren(opId)) {
@@ -903,42 +893,6 @@ public class paretoNoHomogen implements Scheduler {
             }
         };
     }
-
-//    private class WhatIfEstimation implements Comparable<WhatIfEstimation>{
-//        long opId;
-//        long contId;
-//        Statistics before;
-//        Statistics after;
-//
-//
-//        public WhatIfEstimation(Long oid, Long cid, Statistics b, Statistics af){
-//            opId = oid;
-//            contId = cid;
-//            before = b;
-//            after = af;
-//        }
-//
-//        public double getScore(Double alphaPar, Double mCost, Double mTime, Double k){
-//            return (1.0-alphaPar)*after.quanta+alphaPar*(after.runtime_MS);
-//        }
-//
-//        @Override public int compareTo(WhatIfEstimation other) {
-//            if (after.runtime_MS == other.after.runtime_MS) {
-//                if (Math.abs(after.money - other.after.money)<=0.000000001) {// if (moneyQuanta == other.moneyQuanta) {
-//
-//                        // Keep the one with the least number of containers
-//                        return Long.compare(after.containersUsed, other.after.containersUsed);
-//                } else {
-//                    // Order by money
-//                    return Double.compare(after.money, other.after.money);
-//                }
-//            } else {
-//                // Order by time
-//                return Long.compare(after.runtime_MS, other.after.runtime_MS);
-//            }
-//        }
-//
-//    }
 
 }
 
