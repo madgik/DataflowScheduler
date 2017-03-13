@@ -24,7 +24,7 @@ public class Container {
         freeSlots = new ArrayList<>();
         contType = ctype;
         name = "c"+ String.valueOf(cid);
-        UsedUpTo_MS = 0;
+        UsedUpTo_MS = -1;
 //        UsedUpToDT_MS = 0;
         startofUse_MS =0;
     }

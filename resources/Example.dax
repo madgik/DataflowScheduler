@@ -7,12 +7,16 @@
   <job id="ID00000" namespace="Montage" name="mProjectPP" version="1.0" runtime="12.00">
     <uses file="id0_3" link="output" register="true" transfer="true" optional="false" type="data" size="419430400"/>
     <uses file="id0_4" link="output" register="true" transfer="true" optional="false" type="data" size="629145600"/>
+    <uses file="id0_1" link="output" register="true" transfer="true" optional="false" type="data" size="419430400"/>
+    <uses file="id0_2" link="output" register="true" transfer="true" optional="false" type="data" size="104857600"/>
   </job>
   <job id="ID00001" namespace="Montage" name="mProjectPP" version="1.0" runtime="6.00">
        <uses file="id1_5" link="output" register="true" transfer="true" optional="false" type="data" size="419430400"/>
+       <uses file="id0_1" link="input" register="true" transfer="true" optional="false" type="data" size="419430400"/>
   </job>
   <job id="ID00002" namespace="Montage" name="mProjectPP" version="1.0" runtime="3.00">
   <uses file="id2_5" link="output" register="true" transfer="true" optional="false" type="data" size="629145600"/>
+  <uses file="id0_2" link="input" register="true" transfer="true" optional="false" type="data" size="104857600"/>
   </job>
   <job id="ID00003" namespace="Montage" name="mProjectPP" version="1.0" runtime="6.00">
     <uses file="id0_3" link="input" register="true" transfer="true" optional="false" type="data" size="419430400"/>
@@ -38,6 +42,12 @@
    <uses file="id7end" link="output" register="true" transfer="true" optional="false" type="data" size="629145600"/>
   </job>
 <!-- part 3: list of control-flow dependencies (may be empty) -->
+  <child ref="ID00001">
+    <parent ref="ID00000"/>
+  </child>
+    <child ref="ID00002">
+      <parent ref="ID00000"/>
+    </child>
   <child ref="ID00003">
     <parent ref="ID00000"/>
   </child>

@@ -65,14 +65,14 @@ public class paretoNoHomogen implements Scheduler {
 
         computeRankings();
 
-        ArrayList<containerType> ctypes = new ArrayList<>();
+       // ArrayList<containerType> ctypes = new ArrayList<>();
 
         skylinePlans.clear();
 
         for(containerType cType: containerType.values()) {
 
-            ctypes.clear();
-            ctypes.add(containerType.LARGE);
+         //   ctypes.clear();
+         //   ctypes.add(containerType.getLargest());
 
 
             if (maxContainers == 1) {
@@ -543,6 +543,8 @@ public class paretoNoHomogen implements Scheduler {
                 if (plan == null) {
                     continue;
                 }
+
+                System.out.println("\nnewly created plans");
                 getCandidateContainers(nextOpID, plan, vmUpgrading, cType,allCandidates);//allCanditates is an out param
             }
             plans.clear();
@@ -606,6 +608,9 @@ public class paretoNoHomogen implements Scheduler {
             Plan newPlan = new Plan(plan);
             newPlan.assignOperator(opId, contId);
             planEstimations.add(newPlan);
+
+            newPlan.printAssignments();
+           // System.out.println(newPlan.assignments.);
             //////////////
 
         }
@@ -615,6 +620,7 @@ public class paretoNoHomogen implements Scheduler {
                 Long newContId = newPlan.cluster.addContainer(contType);
                 newPlan.assignOperator(opId, newContId);
                 planEstimations.add(newPlan);
+                newPlan.printAssignments();
 //            }
         }
 
@@ -890,6 +896,32 @@ public class paretoNoHomogen implements Scheduler {
 
 
     }
+
+
+//    public HashMap<Long, Double> computeLST(Plan plan) {
+//
+//        HashMap <Long, Double> opLST = new HashMap<>();
+//
+//        for(Long opId: opsSortedReversed()) {
+//            Double lst = Double.MAX_VALUE;
+//
+//            plan.opIdtoStartEnd_MS
+//
+//            if (graph.getChildren(opId).isEmpty()) //if exit node
+//                lst = (double) plan.stats.runtime_MS - plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS;
+//            for (Edge outEdge : graph.getChildren(opId)) {
+//                Long succId = outEdge.to;
+//                Double opRuntime = (double) (plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS - plan.cluster.getContainer(plan.assignments.get(opId)).startofUse_MS);
+//                Double succStartTime = (double) (plan.cluster.getContainer(plan.assignments.get(succId)).UsedUpTo_MS);
+//                lst = Math.min(succStartTime- opRuntime, lst);
+//            }
+//            opLST.put(opId, lst);
+//
+//        }
+//
+//
+//        return opLST;
+//    }
 
     private void computeHomoRankings(containerType cType)
     {

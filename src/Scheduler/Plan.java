@@ -275,6 +275,14 @@ public class Plan implements Comparable<Plan> {
 
     }
 
+    public void printAssignments() {
+        for(Long contId: this.contAssignments.keySet()) {
+            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
+           // this.assignments
+            //System.out.println( "cont " + contId + ": " + this.contAssignments.get(contId));
+        }
+    }
+
     public double getScore(Double alphaPar, Double mCost, Double mTime, Double k) {
         return (1.0 - alphaPar) * stats.quanta + alphaPar * (stats.runtime_MS);
     }
