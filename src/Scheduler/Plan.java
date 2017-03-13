@@ -24,7 +24,9 @@ public class Plan implements Comparable<Plan> {
     String vmUpgrading;
     public long comcost = 0;
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEnd_MS;
-    public HashMap<Long, Long> opIdToearliestStartTime_MS;
+    public HashMap<Long, Long> opIdToRuntimeAssigned_MS; //runtime for the assigned container;
+    public HashMap<Long, Long> opIdToRuntimeAssignedNODT_MS;
+    public HashMap<Long, Long> opIdToearliestStartTime_MS; //not sure if we should use it
     public static boolean backfilling = false;
 
 
@@ -39,6 +41,8 @@ public class Plan implements Comparable<Plan> {
         opIdtoStartEnd_MS = new HashMap<>();
         stats = new Statistics(this);
         opIdToearliestStartTime_MS = new HashMap<>();
+        opIdToRuntimeAssigned_MS = new HashMap<>();
+        opIdToRuntimeAssignedNODT_MS = new HashMap<>();
 
     }
 
@@ -75,6 +79,16 @@ public class Plan implements Comparable<Plan> {
         opIdToearliestStartTime_MS = new HashMap<>();
         for (Long opId : p.opIdToearliestStartTime_MS.keySet()) {
             opIdToearliestStartTime_MS.put(opId, p.opIdToearliestStartTime_MS.get(opId));
+        }
+
+        opIdToRuntimeAssigned_MS = new HashMap<>();
+        for(Long opId: p.opIdToRuntimeAssigned_MS.keySet()){
+            opIdToRuntimeAssigned_MS.put(opId,p.opIdToRuntimeAssigned_MS.get(opId));
+        }
+
+        opIdToRuntimeAssignedNODT_MS = new HashMap<>();
+        for(Long opId: p.opIdToRuntimeAssignedNODT_MS.keySet()){
+            opIdToRuntimeAssignedNODT_MS.put(opId,p.opIdToRuntimeAssignedNODT_MS.get(opId));
         }
 
         this.cluster = new Cluster(p.cluster);
@@ -236,6 +250,10 @@ public class Plan implements Comparable<Plan> {
 
         opIdtoStartEnd_MS.put(opId, new Pair<>(startTime_MS, endTime_MS)); //runtime + disk times + network delay
 
+        opIdToRuntimeAssigned_MS.put(opId,endTime_MS - startTime_MS);
+
+        opIdToRuntimeAssignedNODT_MS.put(opId,endTime_MS - startContTime_MS);
+
         cont.setUse(endTime_MS);
         cont.startofUse_MS = Math.min(cont.startofUse_MS,startContTime_MS);    //set the start of use at the container
 
@@ -275,12 +293,12 @@ public class Plan implements Comparable<Plan> {
     }
 
     public void printAssignments() {
-        for(Long contId: this.contAssignments.keySet()) {
-            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-             }
-
-        for(Long opId: opIdtoStartEnd_MS.keySet())
-            System.out.println( "op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+//        for(Long contId: this.contAssignments.keySet()) {
+//            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
+//             }
+//
+//        for(Long opId: opIdtoStartEnd_MS.keySet())
+//            System.out.println( "op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
 
     }
 

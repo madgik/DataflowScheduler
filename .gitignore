@@ -1,6 +1,4 @@
-./exareme-docker/raw-sniffer
-./exareme-docker/datasets/*
-
+.idea/*
 
 ### Maven template
 target/

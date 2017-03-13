@@ -88,16 +88,16 @@ public class paretoNoHomogen implements Scheduler {
         }
 
         System.out.println("//////////DEC///////");
-        skylinePlans_DEC.print();
-        skylinePlans_DEC.plot("DEC");
+//        skylinePlans_DEC.print();
+//        skylinePlans_DEC.plot("DEC");
         mpinfo.add("DEC",skylinePlans_DEC.results);
         System.out.println("//////////INC///////");
-        skylinePlans_INC.print();
-        skylinePlans_INC.plot("INC");
+//        skylinePlans_INC.print();
+//        skylinePlans_INC.plot("INC");
         mpinfo.add("INC",skylinePlans_INC.results);
         System.out.println("//////////INCDEC///////");
-        skylinePlans_INCDEC.print();
-        skylinePlans_INCDEC.plot("INCDEC");
+//        skylinePlans_INCDEC.print();
+//        skylinePlans_INCDEC.plot("INCDEC");
         mpinfo.add("INCDEC",skylinePlans_INCDEC.results);
 
 
@@ -111,8 +111,8 @@ public class paretoNoHomogen implements Scheduler {
 
 
         System.out.println("//////////PARETO///////");
-        paretoPlans.print();
-        paretoPlans.plot("pareto");
+//        paretoPlans.print();
+//        paretoPlans.plot("pareto");
         mpinfo.add("pareto",paretoPlans.results);
 
 
@@ -823,30 +823,55 @@ public class paretoNoHomogen implements Scheduler {
     }
 
 
-//    public HashMap<Long, Double> computeLST(Plan plan) {
-//
-//        HashMap <Long, Double> opLST = new HashMap<>();
-//
-//        for(Long opId: opsSortedReversed()) {
-//            Double lst = Double.MAX_VALUE;
-//
-//            plan.opIdtoStartEnd_MS
-//
-//            if (graph.getChildren(opId).isEmpty()) //if exit node
-//                lst = (double) plan.stats.runtime_MS - plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS;
-//            for (Edge outEdge : graph.getChildren(opId)) {
-//                Long succId = outEdge.to;
-//                Double opRuntime = (double) (plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS - plan.cluster.getContainer(plan.assignments.get(opId)).startofUse_MS);
-//                Double succStartTime = (double) (plan.cluster.getContainer(plan.assignments.get(succId)).UsedUpTo_MS);
-//                lst = Math.min(succStartTime- opRuntime, lst);
-//            }
-//            opLST.put(opId, lst);
-//
-//        }
-//
-//
-//        return opLST;
-//    }
+    public HashMap<Long, Long> computeLST(Plan plan) {
+
+        HashMap <Long, Long> opLST = new HashMap<>();
+
+        for(Long opId: opsSortedReversed()) {
+            Long lst = Long.MAX_VALUE;
+            Long opRuntime = plan.opIdToRuntimeAssigned_MS.get(opId);
+            if (graph.getChildren(opId).isEmpty()) { //if exit node
+                lst = plan.stats.runtime_MS - opRuntime;
+            }else {
+                for (Edge outEdge : graph.getChildren(opId)) {
+                    Long succId = outEdge.to;
+
+                    Long succStartTime =  plan.opIdtoStartEnd_MS.get(succId).a;
+
+                    lst = Math.min(succStartTime - opRuntime, lst);
+                }
+            }
+            opLST.put(opId, lst);
+        }
+
+
+        return opLST;
+    }
+
+
+    public HashMap<Long,Long> computeEST(Plan plan){
+        HashMap <Long, Long> opEST = new HashMap<>();
+
+        for(Long opId: opsSorted){
+            Long est = Long.MIN_VALUE;
+            if(graph.getParents(opId).isEmpty()){
+                est = 0L;
+            }else{
+                for(Edge inEdge:graph.getParents(opId)){
+                    Long preId = inEdge.from;
+
+                    Long preEndTime = plan.opIdtoStartEnd_MS.get(preId).b;
+
+                    est = Math.max(preEndTime,est);
+                }
+            }
+            opEST.put(opId,est);
+        }
+        return opEST;
+    }
+
+
+
 
     private void computeHomoRankings(containerType cType)
     {
@@ -899,14 +924,14 @@ public class paretoNoHomogen implements Scheduler {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
