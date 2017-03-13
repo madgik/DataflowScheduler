@@ -278,9 +278,11 @@ public class Plan implements Comparable<Plan> {
     public void printAssignments() {
         for(Long contId: this.contAssignments.keySet()) {
             System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-           // this.assignments
-            //System.out.println( "cont " + contId + ": " + this.contAssignments.get(contId));
-        }
+             }
+
+        for(Long opId: opIdtoStartEnd_MS.keySet())
+            System.out.println( "op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+
     }
 
     public double getScore(Double alphaPar, Double mCost, Double mTime, Double k) {
