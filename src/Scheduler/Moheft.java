@@ -13,31 +13,19 @@ import java.util.*;
  */
 public class Moheft implements Scheduler {
 
-//    public ArrayList<Plan> skylinePlans;
-//    public ArrayList<Plan> paretoPlans;
     public SolutionSpace space;
     public Cluster cluster;
     public DAG graph;
 
     ///rankingks
-    private HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
-    private HashMap<Long, Double> t_rank = new HashMap<>();
-    private HashMap<Long, Double> sum_rank = new HashMap<>();
-    private HashMap<Long, Double> slacktime = new HashMap<>();
-    private LinkedList<Long> opsSumRankSorted = new LinkedList<>();
-    private Integer opsInfluential=-5;//10;//check from derivative ranking
-    private LinkedList<Long> opsBySlack = new LinkedList<>();
-    private HashMap<Long, Double> opSlack = new HashMap<>();
-    private HashMap<Long, Integer> opIDsInfluential= new HashMap<>();
+
     public static LinkedList<Long> opsSorted = new LinkedList<>();
 
 
 
     protected int skylinePlansToKeep =100;
-    protected int maxContainersNumber = 100000000;
     protected int skylinePruningOption = 2;
 
-    ///
     public int maxContainers = 100;
 
 
