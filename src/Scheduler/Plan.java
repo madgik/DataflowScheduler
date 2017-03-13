@@ -117,7 +117,7 @@ public class Plan implements Comparable<Plan> {
             long fromId = link.from;
 
             if (depStart_MS < opIdtoStartEnd_MS.get(fromId).b) {
-                depStart_MS = opIdtoStartEnd_MS.get(fromId).b;
+                depStart_MS = opIdtoStartEnd_MS.get(fromId).b+1;
             }
         }
         //        depStart_MS = Math.max(depStart_MS, contFirstAvailTime);
