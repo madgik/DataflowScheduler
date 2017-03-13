@@ -103,10 +103,10 @@ public class Plan implements Comparable<Plan> {
             long fromId = link.from;
 
             if (depStart_MS < opIdtoStartEnd_MS.get(fromId).b) {
-                depStart_MS = opIdtoStartEnd_MS.get(fromId).b;
+                depStart_MS = opIdtoStartEnd_MS.get(fromId).b+1;
             }
         }
-        //        depStart_MS = Math.max(depStart_MS, contFirstAvailTime);
+            //    depStart_MS = Math.max(depStart_MS, contFirstAvailTime);
 
         timeNow_MS += depStart_MS;
         startTime_MS = timeNow_MS;             ////operator runtime starts now
@@ -128,6 +128,9 @@ public class Plan implements Comparable<Plan> {
         timeNow_MS += networkDelay_MS;
         startContTime_MS = timeNow_MS;         //cont runtime starts now
 
+        startTime_MS = timeNow_MS;
+
+        System.out.println("timeNow_MS " + timeNow_MS);
         ///////////////DISK INPUT TIME//////////////////
 
 
