@@ -28,6 +28,7 @@ public class Moheft implements Scheduler {
 
     public int maxContainers = 100;
 
+    public boolean backfilling = true;
 
     private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
 
@@ -411,7 +412,7 @@ public class Moheft implements Scheduler {
         for(Long contId: plan.cluster.containers.keySet()){
             ///////////////
             Plan newPlan = new Plan(plan);
-            newPlan.assignOperator(opId, contId);
+            newPlan.assignOperator(opId, contId, backfilling);
             planEstimations.add(newPlan);
             //////////////
 
@@ -420,7 +421,7 @@ public class Moheft implements Scheduler {
             for(containerType ctype: containerType.values()) {
                 Plan newPlan = new Plan(plan);
                 Long newContId = newPlan.cluster.addContainer(ctype);
-                newPlan.assignOperator(opId, newContId);
+                newPlan.assignOperator(opId, newContId, backfilling);
                 planEstimations.add(newPlan);
             }
         }
@@ -432,7 +433,7 @@ public class Moheft implements Scheduler {
 
 
         for (Operator op : graph.getOperators()) {
-            plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id);
+            plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id, backfilling);
         }
         return plan;
     }
