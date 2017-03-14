@@ -56,7 +56,7 @@ public class Moheft implements Scheduler {
             Operator op = graph.getOperator(opId);
             for (Edge outEdge: graph.getChildren(opId)) {
                 Long ChildId = outEdge.to;
-                double comCostChild = Math.ceil(outEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
+                double comCostChild = Math.ceil(outEdge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
                 //assumptions for output data and communication cost
                 maxRankChild = Math.max(maxRankChild, comCostChild+rankU.get(ChildId));
             }

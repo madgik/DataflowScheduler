@@ -34,7 +34,6 @@ public class Plan implements Comparable<Plan> {
 
     public HashMap<Long,Long> opIdToAfterDTDuration_MS;
 
-    public static boolean backfilling = false;
 
 
     public Plan(DAG graph, Cluster cluster) {
@@ -114,7 +113,7 @@ public class Plan implements Comparable<Plan> {
 
     }
 
-    public void assignOperator(Long opId, Long contId) {
+    public void assignOperator(Long opId, Long contId, boolean backfilling) {
         assignments.put(opId, contId);
         if (!contAssignments.containsKey(contId)) {
             contAssignments.put(contId, new ArrayList<Long>());
@@ -371,15 +370,15 @@ public class Plan implements Comparable<Plan> {
     }
 
     public void printAssignments() {
-        for(Long contId: this.contAssignments.keySet()) {
-            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-        }
-
-        for(Long opId: opIdtoStartEnd_MS.keySet()) {
-            System.out.println("op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
-            System.out.println("dataTransfer for op " + opId + " (" + (dataTransfer_MS.get(opId).b - dataTransfer_MS.get(opId).a) + ") [ " + dataTransfer_MS.get(opId).a + " - " + dataTransfer_MS.get(opId).b + " ]");
-
-        }
+//        for(Long contId: this.contAssignments.keySet()) {
+//            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
+//        }
+//
+//        for(Long opId: opIdtoStartEnd_MS.keySet()) {
+//            System.out.println("op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+//            System.out.println("dataTransfer for op " + opId + " (" + (dataTransfer_MS.get(opId).b - dataTransfer_MS.get(opId).a) + ") [ " + dataTransfer_MS.get(opId).a + " - " + dataTransfer_MS.get(opId).b + " ]");
+//
+//        }
 
     }
 

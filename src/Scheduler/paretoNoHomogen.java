@@ -33,6 +33,9 @@ public class paretoNoHomogen implements Scheduler {
 
     public int maxContainers = 100;
 
+    public boolean backfilling = false;
+    public boolean backfillingUpgrade = false;
+
     private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
 
     public paretoNoHomogen(DAG graph,Cluster cl){
@@ -333,7 +336,7 @@ public class paretoNoHomogen implements Scheduler {
                         Operator nextOp = graph.getOperator(nextOpID);
 //                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
 
-                        newPlan.assignOperator(nextOpID,plan.assignments.get(nextOpID));
+                        newPlan.assignOperator(nextOpID,plan.assignments.get(nextOpID),backfillingUpgrade);
 
                         findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
                     }
@@ -499,7 +502,7 @@ public class paretoNoHomogen implements Scheduler {
 
         for(Long contId: plan.cluster.containers.keySet()){ //add to every existing container
             Plan newPlan = new Plan(plan);
-            newPlan.assignOperator(opId, contId);
+            newPlan.assignOperator(opId, contId,backfilling);
             planEstimations.add(newPlan);
 
             newPlan.printAssignments();
@@ -508,7 +511,7 @@ public class paretoNoHomogen implements Scheduler {
 //            for(containerType ctype: contType) {//uncomment to add every ctype
                 Plan newPlan = new Plan(plan);
                 Long newContId = newPlan.cluster.addContainer(contType);
-                newPlan.assignOperator(opId, newContId);
+                newPlan.assignOperator(opId, newContId, backfilling);
                 planEstimations.add(newPlan);
 
                 newPlan.printAssignments();
@@ -525,7 +528,7 @@ public class paretoNoHomogen implements Scheduler {
 
 
         for (Operator op : graph.getOperators()) {
-            plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id);
+            plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id,backfilling);
         }
         return plan;
     }
