@@ -17,7 +17,7 @@ public class RuntimeConstants {
      * Network speed (in MB/sec)
      * Default: 100 MB/sec (~1GBit)
      */
-    public static  double network_speed_B_MS = 104857.6;
+    public static  double network_speed_B_MS = 104857.6;//*1000 for Example.dax
 
     /**
      * Disk throughput in (MB/sec)

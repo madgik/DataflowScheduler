@@ -24,6 +24,7 @@ public class Plan implements Comparable<Plan> {
     String vmUpgrading;
     public long comcost = 0;
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEnd_MS;
+    public HashMap<Long, Pair<Long, Long>> dataTransfer_MS;
     public HashMap<Long, Long> opIdToRuntimeAssigned_MS; //runtime for the assigned container;
     public HashMap<Long, Long> opIdToRuntimeAssignedNODT_MS;
     public HashMap<Long, Long> opIdToearliestStartTime_MS; //not sure if we should use it
@@ -38,7 +39,7 @@ public class Plan implements Comparable<Plan> {
         this.cluster = new Cluster(cluster);
         opIdtoStartEnd_MS = new HashMap<>();
         contAssignments = new HashMap<>();
-        opIdtoStartEnd_MS = new HashMap<>();
+        dataTransfer_MS = new HashMap<>();
         stats = new Statistics(this);
         opIdToearliestStartTime_MS = new HashMap<>();
         opIdToRuntimeAssigned_MS = new HashMap<>();
@@ -74,6 +75,13 @@ public class Plan implements Comparable<Plan> {
             opIdtoStartEnd_MS.put(oid,
                 new Pair<>(p.opIdtoStartEnd_MS.get(oid).a, p.opIdtoStartEnd_MS.get(oid).b));
         }
+
+        dataTransfer_MS = new HashMap<>();
+        for (long oid : p.dataTransfer_MS.keySet()) {
+            dataTransfer_MS.put(oid,
+                    new Pair<>(p.dataTransfer_MS.get(oid).a, p.dataTransfer_MS.get(oid).b));
+        }
+
         stats = new Statistics(p.stats);
 
         opIdToearliestStartTime_MS = new HashMap<>();
@@ -142,9 +150,8 @@ public class Plan implements Comparable<Plan> {
         timeNow_MS += networkDelay_MS;
         startContTime_MS = timeNow_MS;         //cont runtime starts now
 
-        startTime_MS = timeNow_MS;
-
-        System.out.println("timeNow_MS " + timeNow_MS);
+        dataTransfer_MS.put(opId, new Pair<>(timeNow_MS-networkDelay_MS, timeNow_MS));
+        //    startTime_MS = timeNow_MS;//TODO: is it better to calc data transfer but not add it at op runtime?
         ///////////////DISK INPUT TIME//////////////////
 
 
@@ -296,12 +303,15 @@ public class Plan implements Comparable<Plan> {
     }
 
     public void printAssignments() {
-//        for(Long contId: this.contAssignments.keySet()) {
-//            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-//             }
-//
-//        for(Long opId: opIdtoStartEnd_MS.keySet())
-//            System.out.println( "op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+        for(Long contId: this.contAssignments.keySet()) {
+            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
+        }
+
+        for(Long opId: opIdtoStartEnd_MS.keySet()) {
+            System.out.println("op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+            System.out.println("dataTransfer for op " + opId + " (" + (dataTransfer_MS.get(opId).b - dataTransfer_MS.get(opId).a) + ") [ " + dataTransfer_MS.get(opId).a + " - " + dataTransfer_MS.get(opId).b + " ]");
+
+        }
 
     }
 

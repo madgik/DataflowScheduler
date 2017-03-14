@@ -491,10 +491,10 @@ public class paretoNoHomogen implements Scheduler {
 
             plans = computeSkyline(allCandidates);
 
-//            System.out.println("skyline");
-//            for(Plan p:plans){
-//                p.printInfo();
-//            }
+            System.out.println("skyline");
+            for(Plan p:plans){
+                p.printInfo();
+            }
 
 
             opsAssignedSet.add(nextOpID);
