@@ -36,6 +36,14 @@ public class SolutionSpace implements Iterable<Plan> {
         this.optimizationTime_MS = optimizationTime_MS;
     }
 
+    public boolean isEmpty(){
+        return results.isEmpty();
+    }
+
+    public int size(){
+        return results.size();
+    }
+
     public void print() {
         System.out.println("////////////////Space");
         for(Plan p:results){
@@ -51,7 +59,6 @@ public class SolutionSpace implements Iterable<Plan> {
         }
         plotPoints(n,a);
     }
-
 
     public void clear(){
         results.clear();

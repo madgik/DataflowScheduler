@@ -29,8 +29,6 @@ public  class Slot implements Comparable<Slot>{
     }
 
 
-
-
     @Override public int compareTo(Slot o) {
         return (int) (this.start_MS - o.start_MS); //TODO test if it works properly
     }

@@ -4,7 +4,6 @@ import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
 import utils.Check;
-import utils.Pair;
 
 import java.util.*;
 
@@ -110,7 +109,8 @@ public class Moheft implements Scheduler {
                 containerType cType =  plan.cluster.getContainer(contId).contType;
 
                 int ops = 0;
-                double opProcessTime = plan.opIdtoStartEnd_MS.get(opId).b - plan.opIdtoStartEnd_MS.get(opId).a;
+                double opProcessTime = plan.opIdtoStartEndProcessing_MS
+                    .get(opId).b - plan.opIdtoStartEndProcessing_MS.get(opId).a;
 
                 if(opNumber.get(cType)==null) {
                     ops = 1;

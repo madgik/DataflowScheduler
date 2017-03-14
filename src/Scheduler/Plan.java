@@ -22,11 +22,18 @@ public class Plan implements Comparable<Plan> {
     public Statistics stats;
     Statistics beforeStats;
     String vmUpgrading;
-    public long comcost = 0;
-    public HashMap<Long, Pair<Long, Long>> opIdtoStartEnd_MS;
-    public HashMap<Long, Long> opIdToRuntimeAssigned_MS; //runtime for the assigned container;
-    public HashMap<Long, Long> opIdToRuntimeAssignedNODT_MS;
+
+    public HashMap<Long, Pair<Long, Long>> opIdtoStartEndProcessing_MS;
+
+    public HashMap<Long, Long> opIdToContainerRuntime_MS; //runtime for the assigned container;
+    public HashMap<Long, Long> opIdToProcessingTime_MS;
+
     public HashMap<Long, Long> opIdToearliestStartTime_MS; //not sure if we should use it
+
+    public HashMap<Long,Long> opIdToBeforeDTDuration_MS;
+
+    public HashMap<Long,Long> opIdToAfterDTDuration_MS;
+
     public static boolean backfilling = false;
 
 
@@ -36,13 +43,15 @@ public class Plan implements Comparable<Plan> {
         assignments = new HashMap<>();
         contIdToOpIds = new HashMap<>();
         this.cluster = new Cluster(cluster);
-        opIdtoStartEnd_MS = new HashMap<>();
+        opIdtoStartEndProcessing_MS = new HashMap<>();
         contAssignments = new HashMap<>();
-        opIdtoStartEnd_MS = new HashMap<>();
+        opIdtoStartEndProcessing_MS = new HashMap<>();
         stats = new Statistics(this);
         opIdToearliestStartTime_MS = new HashMap<>();
-        opIdToRuntimeAssigned_MS = new HashMap<>();
-        opIdToRuntimeAssignedNODT_MS = new HashMap<>();
+        opIdToContainerRuntime_MS = new HashMap<>();
+        opIdToProcessingTime_MS = new HashMap<>();
+        opIdToBeforeDTDuration_MS = new HashMap<>();
+        opIdToAfterDTDuration_MS = new HashMap<>();
 
     }
 
@@ -69,10 +78,10 @@ public class Plan implements Comparable<Plan> {
 
             contAssignments.put(cid, t);
         }
-        opIdtoStartEnd_MS = new HashMap<>();
-        for (long oid : p.opIdtoStartEnd_MS.keySet()) {
-            opIdtoStartEnd_MS.put(oid,
-                new Pair<>(p.opIdtoStartEnd_MS.get(oid).a, p.opIdtoStartEnd_MS.get(oid).b));
+        opIdtoStartEndProcessing_MS = new HashMap<>();
+        for (long oid : p.opIdtoStartEndProcessing_MS.keySet()) {
+            opIdtoStartEndProcessing_MS.put(oid,
+                new Pair<>(p.opIdtoStartEndProcessing_MS.get(oid).a, p.opIdtoStartEndProcessing_MS.get(oid).b));
         }
         stats = new Statistics(p.stats);
 
@@ -81,14 +90,24 @@ public class Plan implements Comparable<Plan> {
             opIdToearliestStartTime_MS.put(opId, p.opIdToearliestStartTime_MS.get(opId));
         }
 
-        opIdToRuntimeAssigned_MS = new HashMap<>();
-        for(Long opId: p.opIdToRuntimeAssigned_MS.keySet()){
-            opIdToRuntimeAssigned_MS.put(opId,p.opIdToRuntimeAssigned_MS.get(opId));
+        opIdToContainerRuntime_MS = new HashMap<>();
+        for(Long opId: p.opIdToContainerRuntime_MS.keySet()){
+            opIdToContainerRuntime_MS.put(opId,p.opIdToContainerRuntime_MS.get(opId));
         }
 
-        opIdToRuntimeAssignedNODT_MS = new HashMap<>();
-        for(Long opId: p.opIdToRuntimeAssignedNODT_MS.keySet()){
-            opIdToRuntimeAssignedNODT_MS.put(opId,p.opIdToRuntimeAssignedNODT_MS.get(opId));
+        opIdToProcessingTime_MS = new HashMap<>();
+        for(Long opId: p.opIdToProcessingTime_MS.keySet()){
+            opIdToProcessingTime_MS.put(opId,p.opIdToProcessingTime_MS.get(opId));
+        }
+
+        opIdToBeforeDTDuration_MS = new HashMap<>();
+        for(Long opId: p.opIdToBeforeDTDuration_MS.keySet()){
+            opIdToBeforeDTDuration_MS.put(opId,p.opIdToBeforeDTDuration_MS.get(opId));
+        }
+
+        opIdToAfterDTDuration_MS = new HashMap<>();
+        for(Long opId: p.opIdToAfterDTDuration_MS.keySet()){
+            opIdToAfterDTDuration_MS.put(opId,p.opIdToAfterDTDuration_MS.get(opId));
         }
 
         this.cluster = new Cluster(p.cluster);
@@ -103,87 +122,93 @@ public class Plan implements Comparable<Plan> {
         contAssignments.get(contId).add(opId);
         beforeStats = new Statistics(stats);
 
-        long startTime_MS = 0L;
-        long timeNow_MS = 0L;
-        long startContTime_MS = 0L;
+        long startProcessingTime_MS = 0L;
+        long endProcessingTime_MS = 0L;
+
+        long beforeDTDuration_MS = 0L;
+        long afterDTDuration_MS = 0L;
+
+        long opProcessingDuration_MS = 0L;
+        long contOpDuration_MS = 0L;
+
+        long startTimeCont_MS =0L;
+        long endTimeCont_MS = 0L; //endTime + max dt duration
+
+        long dependenciesEnd_MS = 0;
+
+        long earliestStartTime_MS = 0L;
+
 
         Container cont = cluster.getContainer(contId);
-        long contFirstAvailTime = cont.getFirstAvailTime_atEnd_MS();
+        long contFirstAvailTime_MS = cont.getFirstAvailTime_atEnd_MS();
 
         ////////////DEPENDENCIES//////////////////
 
-        long depStart_MS = 0;
-        for (Edge link : graph.getParents(opId)) {
+
+        for (Edge link : graph.getParents(opId)) {              //calculate the max(ParentFS+dtTime)
             long fromId = link.from;
 
-            if (depStart_MS < opIdtoStartEnd_MS.get(fromId).b) {
-                depStart_MS = opIdtoStartEnd_MS.get(fromId).b+1;
-            }
-        }
-        //        depStart_MS = Math.max(depStart_MS, contFirstAvailTime);
+            long fromOpEndTimePLUSDTTime =
+                opIdtoStartEndProcessing_MS.get(fromId).b + calculateDelayDistributedStorage(fromId,opId,contId);
 
-        timeNow_MS += depStart_MS;
-        startTime_MS = timeNow_MS;             ////operator runtime starts now
+            dependenciesEnd_MS = Math.max(dependenciesEnd_MS,fromOpEndTimePLUSDTTime+1);
+
+        }
+
+
+        //        timeNow_MS += depStart_MS;
+//
+//        startProcessingTime_MS = timeNow_MS;             ////operator runtime starts now
 
         ////////////DATA TRANSFER TIMES//////////////////
 
-        long networkDelay_MS = 0;
-        for (Edge link : graph.getParents(opId)) {
-            long fromId = link.from;
-            long fromContId = assignments.get(fromId);
-            if (fromContId != contId) {
+//        long networkDelay_MS = 0;
+//        for (Edge link : graph.getParents(opId)) {
+//            long fromId = link.from;
+//            long fromContId = assignments.get(fromId);
+//            if (fromContId != contId) {
+//
+//                long dtTime_MS =
+//                    (long) (Math.ceil(link.data.size_B / RuntimeConstants.network_speed_B_MS));
+//
+//                networkDelay_MS += dtTime_MS;
+//            }
+//        }
+//        timeNow_MS += networkDelay_MS;
+//        startContTime_MS = timeNow_MS;         //cont runtime starts now
 
-                long dtTime_MS =
-                    (long) (Math.ceil(link.data.size_B / RuntimeConstants.network_speed_B_MS));
+        ///////////////BRING DATA TO OPERATOR MACHINE//////////////////
 
-                networkDelay_MS += dtTime_MS;
-            }
+
+        for (Edge edge : graph.getParents(opId)) {
+            long transferTime = (long) Math.ceil(edge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
+
+            beforeDTDuration_MS = Math.max(beforeDTDuration_MS, transferTime);
         }
-        timeNow_MS += networkDelay_MS;
-        startContTime_MS = timeNow_MS;         //cont runtime starts now
-
-        ///////////////DISK INPUT TIME//////////////////
 
 
-        //        long inputDiskTime_MS = 0;
-        //        for (Edge edge : graph.getParents(opId)) {
-        //            long diskTime = (long) Math.ceil(edge.data.size_B / RuntimeConstants.disk_throughput_B_MS);
-        //            inputDiskTime_MS += diskTime;
-        //        }
-        //
-        //        timeNow_MS += inputDiskTime_MS;
-
-
-        ///////////////////////////////////////////////////
+        ///////////////OPERATOR PROCESS TIME///////////////
 
 
         Operator op = graph.getOperator(opId);
-        long runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
-        timeNow_MS += runTime;
+        opProcessingDuration_MS = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
 
-        ////////////////DISK OUT TIME/////////////////////////
+        ////////////////SEND DATA TO DISTRIBUTED STORAGE ////////////////////
 
-        //        int outputDiskTime_MS = 0;
-        //        long diskdata=0;
-        //        for (Edge edge : graph.getChildren(opId)) {
-        //            int diskTime = (int) Math.ceil(edge.data.size_B / RuntimeConstants.disk_throughput_B_MS);
-        //            diskdata+=edge.data.size_B;
-        //            outputDiskTime_MS += diskTime;
-        //        }
-        //
-        //        timeNow_MS += outputDiskTime_MS;
+        for (Edge edge : graph.getChildren(opId)) {
+            int transferTime = (int) Math.ceil(edge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
+            afterDTDuration_MS = Math.max(afterDTDuration_MS,transferTime);
+        }
+
+        //////////////////INFO///////////////////////
 
 
-        ///////////RUNTIME////////////////////////////////////
+        contOpDuration_MS = beforeDTDuration_MS + opProcessingDuration_MS + afterDTDuration_MS;
 
+        earliestStartTime_MS = dependenciesEnd_MS + 1;
 
-        long endTime_MS = timeNow_MS;
+        opIdToearliestStartTime_MS.put(opId, dependenciesEnd_MS+1);
 
-        long runspan = endTime_MS - startTime_MS;
-
-        long runspanCont = endTime_MS - startContTime_MS;
-
-        opIdToearliestStartTime_MS.put(opId, startTime_MS);
 
         ////////////////BACKFILLING/////////////////////////////////
 
@@ -198,25 +223,29 @@ public class Plan implements Comparable<Plan> {
 
                 Slot fs = cont.freeSlots.get(i);
 
-                if (fs.end_MS - fs.start_MS >= runspanCont && // if the slot is big enough
-                    fs.start_MS >= startContTime_MS) { //and the slot starts after the earliest cont start time
+                if ( earliestStartTime_MS + beforeDTDuration_MS <= fs.end_MS - opProcessingDuration_MS){
+//                    Math.max(fs.start_MS,earliestStartTime_MS) + opProcessingDuration_MS >= fs.end_MS ){ //if operator fits
 
                     backfilled = true;
 
-                    if (startContTime_MS < fs.start_MS) {                     //free slot is not available when the op is ready
-                        long pushForward = fs.start_MS - startContTime_MS;  //so we push the op start,contStart, end times
-                        startContTime_MS += pushForward;
-                        startTime_MS += pushForward;
-                        endTime_MS += pushForward;
-
+                    long pushForward = 0L;
+                    if (earliestStartTime_MS + beforeDTDuration_MS < fs.start_MS) {      //free slot is not available when the op is ready
+                        pushForward = fs.start_MS - (earliestStartTime_MS + beforeDTDuration_MS);   //so we push the op start,contStart, end times
                     }
 
-                    if (startContTime_MS > fs.start_MS) {                                             // add possible free Slot at start
-                        cont.freeSlots.add(new Slot(fs.start_MS, startContTime_MS - 1));
+                    startTimeCont_MS = earliestStartTime_MS + pushForward;
+
+                    endTimeCont_MS = startTimeCont_MS + contOpDuration_MS;
+                    startProcessingTime_MS = startTimeCont_MS + beforeDTDuration_MS;
+                    endProcessingTime_MS = startProcessingTime_MS + opProcessingDuration_MS;
+
+
+                    if (startProcessingTime_MS > fs.start_MS + 1) {                                             // add possible free Slot at start
+                        cont.freeSlots.add(new Slot(fs.start_MS, startProcessingTime_MS - 1));
                     }
 
-                    if (endTime_MS < fs.end_MS - 1) {                                                     //and at end
-                        cont.freeSlots.add(new Slot(endTime_MS + 1, fs.end_MS));
+                    if (endProcessingTime_MS < fs.end_MS - 1) {                                                     //and at end
+                        cont.freeSlots.add(new Slot(endProcessingTime_MS + 1, fs.end_MS));
                     }
 
                     toberemoved = fs;
@@ -230,38 +259,87 @@ public class Plan implements Comparable<Plan> {
 
         ///////////////////NO BACKFILLING/////////////////////////
 
-        if (!backfilling && !backfilled) {
+        if (!backfilling || (backfilling && !backfilled)) {
 
-            if (startContTime_MS < contFirstAvailTime) {                   //cont is not available when the op is ready
-                long pushForward = contFirstAvailTime- startContTime_MS;  //so we push the op start,contStart, end times
+            long pushForward = 0L;
+            if (earliestStartTime_MS + beforeDTDuration_MS < contFirstAvailTime_MS) {                   //cont is not available when the op is ready
+                pushForward = contFirstAvailTime_MS - (earliestStartTime_MS + beforeDTDuration_MS);  //so we push the op start,contStart, end times
 
-                startContTime_MS += pushForward;
-                startTime_MS += pushForward;
-                endTime_MS += pushForward;
-
-            } else {                                                          //if starContTime is after the cont was available
-                if (contFirstAvailTime < startContTime_MS - 1) {              // add possible free Slot
-                    cont.freeSlots.add(new Slot(contFirstAvailTime, startContTime_MS - 1));
-                }
+            } else if( earliestStartTime_MS > contFirstAvailTime_MS ){           //if starContTime is after the cont was available
+                         // add possible free Slot
+                cont.freeSlots.add(new Slot(contFirstAvailTime_MS,earliestStartTime_MS+beforeDTDuration_MS));
             }
+
+
+            startTimeCont_MS = earliestStartTime_MS + pushForward;
+            endTimeCont_MS = startTimeCont_MS + contOpDuration_MS;
+
+            startProcessingTime_MS = startTimeCont_MS + beforeDTDuration_MS ;
+            endProcessingTime_MS = startProcessingTime_MS + opProcessingDuration_MS ;
+
 
         }
         //////////////////////////////////////////////////////////////////
 
-        opIdtoStartEnd_MS.put(opId, new Pair<>(startTime_MS, endTime_MS)); //runtime + disk times + network delay
 
-        opIdToRuntimeAssigned_MS.put(opId,endTime_MS - startTime_MS);
+        /////set start and end time for the container
+        cont.setStartDT(startTimeCont_MS);
+        cont.setUsedUpToDT(endTimeCont_MS);
+        cont.setStart(startProcessingTime_MS);
+        cont.setUsedUpTo(endProcessingTime_MS);
 
-        opIdToRuntimeAssignedNODT_MS.put(opId,endTime_MS - startContTime_MS);
+        ////set start end times for operator////////
+        opIdtoStartEndProcessing_MS.put(opId, new Pair<>(startProcessingTime_MS, endProcessingTime_MS)); //processing time ONLY
+        opIdToContainerRuntime_MS.put(opId,contOpDuration_MS);
+        opIdToProcessingTime_MS.put(opId,opProcessingDuration_MS);
+        opIdToBeforeDTDuration_MS.put(opId,beforeDTDuration_MS);
+        opIdToAfterDTDuration_MS.put(opId,afterDTDuration_MS);
 
-        cont.setUse(endTime_MS);
-        cont.startofUse_MS = Math.min(cont.startofUse_MS,startContTime_MS);    //set the start of use at the container
-
+        ///////set used In cluster
         cluster.contUsed.add(contId);
 
-        cont.opsschedule.add(new Slot(opId, startContTime_MS, endTime_MS)); //add a new scheduled slot for the operator
+        //////add scheduled Slot////////
+        cont.opsschedule.add(new Slot(opId, startProcessingTime_MS, endProcessingTime_MS)); //add a new scheduled slot for the operator
 
+        //////Update Stats
         stats = new Statistics(this);
+
+    }
+
+    public Long calculateNetworkDelayBetweenOps(Long parentId, Long childId){
+        long netdelay = 0L;
+        if(assignments.get(parentId) == assignments.get(childId)){
+            return netdelay;
+        }
+        for(Edge e: graph.edges.get(parentId)){
+            if(e.to == childId){
+                netdelay =  (long) (Math.ceil(e.data.size_B / RuntimeConstants.network_speed_B_MS));
+                break;
+            }
+        }
+        return netdelay;
+    }
+
+    public long calculateNetworkDelayBetweenOps(Long parentId, Long contParentId, Long childId, Long contChildId){
+        long netdelay = 0L;
+        if(contParentId == contChildId){
+            return netdelay;
+        }
+        for(Edge e: graph.edges.get(parentId)){
+            if(e.to == childId){
+                netdelay =  (long) (Math.ceil(e.data.size_B / RuntimeConstants.network_speed_B_MS));
+                break;
+            }
+        }
+        return netdelay;
+    }
+
+    public Long calculateDelayDistributedStorage(Long parentId, Long childId, Long childContId){
+
+        if(assignments.get(parentId) == childContId){ //remove to transfer always to distributed storage
+            return 0L;
+        }
+        return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
     }
 
     @Override public int compareTo(Plan other) {  //TODO ji is this right?
@@ -297,8 +375,8 @@ public class Plan implements Comparable<Plan> {
 //            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
 //             }
 //
-//        for(Long opId: opIdtoStartEnd_MS.keySet())
-//            System.out.println( "op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+//        for(Long opId: opIdtoStartEndProcessing_MS.keySet())
+//            System.out.println( "op " + opId + " (" + (opIdtoStartEndProcessing_MS.get(opId).b - opIdtoStartEndProcessing_MS.get(opId).a) + ") [ " + opIdtoStartEndProcessing_MS.get(opId).a + " - " + opIdtoStartEndProcessing_MS.get(opId).b + " ]");
 
     }
 

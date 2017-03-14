@@ -19,7 +19,6 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
     public String name;
 
 
-
     containerType(double container_memory_B, double container_CPU, double containerDisk_B, double container_price, String name) {
 
         this.container_CPU = container_CPU;
@@ -54,7 +53,6 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
         return prevCType;
     }
 
-
     public static containerType getNextLarger(containerType cType){
 
         int next=0;
@@ -73,5 +71,25 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
         return nextCType;
     }
 
+    //is ct1 smaller than ct2
+    public static boolean isSmaller(containerType ct1, containerType ct2){
+
+        boolean seenct1 = false;
+        boolean seenct2 = false;
+
+        containerType nextCType=containerType.getLargest();
+        for (containerType nextCT:containerType.values())
+        {
+            if(nextCT==ct1 && seenct2){
+                return false;
+            }
+            if(nextCT==ct1 && !seenct2){
+                return true;
+            }
+
+        }
+
+        return false;
+    }
 
 }

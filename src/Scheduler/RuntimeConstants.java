@@ -42,6 +42,9 @@ public class RuntimeConstants {
     public static double precisionError = 0.0000000001;
 
 
+    public static double distributed_storage_speed_B_MS = 104857.6;
+
+
 
 
 }

@@ -15,6 +15,7 @@ public class DAG {
     public ArrayList<Operator> operatorsList;
 
     public HashMap<Long,ArrayList<Edge>> edges;
+    public HashMap<Long, HashMap<Long,Edge>> edgesMap;
     private HashMap<Long,ArrayList<Edge>> reverseEdges;
 
     private Long nextId;
@@ -28,6 +29,7 @@ public class DAG {
         operators = new HashMap<>();
         edges = new HashMap<>();
         reverseEdges = new HashMap<>();
+        edgesMap = new HashMap<>();
 //        nameToFile = new HashMap<>();
         nextId = 0L;
         operatorsList = new ArrayList<>();
@@ -44,6 +46,8 @@ public class DAG {
         edges.put(nextId,new ArrayList<Edge>());
         reverseEdges.put(nextId,new ArrayList<Edge>());
 
+        edgesMap.put(nextId,new HashMap<Long, Edge>());
+
         return nextId++;
     }
 
@@ -56,6 +60,7 @@ public class DAG {
 //            edges.put(from,new ArrayList<Long>());
 //        }
         edges.get(e.from).add(e);
+        edgesMap.get(e.from).put(e.to,e);
 
 //        if(!reverseEdges.containsKey(to)){
 //            reverseEdges.put(to,new ArrayList<Long>());
@@ -67,6 +72,8 @@ public class DAG {
     public ArrayList<Edge> getChildren(Long node){
         return edges.get(node);
     }
+
+    public Edge getEdge(Long from, Long to){ return edgesMap.get(from).get(to);}
 
     public ArrayList<Edge> getParents(Long node){
         return reverseEdges.get(node);
