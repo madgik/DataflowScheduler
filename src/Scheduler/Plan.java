@@ -371,12 +371,15 @@ public class Plan implements Comparable<Plan> {
     }
 
     public void printAssignments() {
-//        for(Long contId: this.contAssignments.keySet()) {
-//            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-//             }
-//
-//        for(Long opId: opIdtoStartEndProcessing_MS.keySet())
-//            System.out.println( "op " + opId + " (" + (opIdtoStartEndProcessing_MS.get(opId).b - opIdtoStartEndProcessing_MS.get(opId).a) + ") [ " + opIdtoStartEndProcessing_MS.get(opId).a + " - " + opIdtoStartEndProcessing_MS.get(opId).b + " ]");
+        for(Long contId: this.contAssignments.keySet()) {
+            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
+        }
+
+        for(Long opId: opIdtoStartEnd_MS.keySet()) {
+            System.out.println("op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
+            System.out.println("dataTransfer for op " + opId + " (" + (dataTransfer_MS.get(opId).b - dataTransfer_MS.get(opId).a) + ") [ " + dataTransfer_MS.get(opId).a + " - " + dataTransfer_MS.get(opId).b + " ]");
+
+        }
 
     }
 
