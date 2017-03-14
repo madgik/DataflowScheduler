@@ -217,6 +217,12 @@ public class paretoNoHomogen implements Scheduler {
             contOps.put(opContID, opsPerCont);
 
         }
+
+        //contSlack = avg opSlack //TODO: check this is needed here
+        for(Long contId: contSlack.keySet()) {
+            double contAvgSlack = contSlack.get(contId) /(double) contOps.get(contId);
+            contSlack.put(contId, contAvgSlack);
+        }
     }
 
     private SolutionSpace homoToHetero(SolutionSpace plans) {
