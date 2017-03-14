@@ -85,15 +85,15 @@ public class paretoNoHomogen implements Scheduler {
         }
 
         System.out.println("//////////DEC///////");
-//        skylinePlans_DEC.print();
+        skylinePlans_DEC.print();
 //        skylinePlans_DEC.plot("DEC");
         mpinfo.add("DEC",skylinePlans_DEC.results);
         System.out.println("//////////INC///////");
-//        skylinePlans_INC.print();
+        skylinePlans_INC.print();
 //        skylinePlans_INC.plot("INC");
         mpinfo.add("INC",skylinePlans_INC.results);
         System.out.println("//////////INCDEC///////");
-//        skylinePlans_INCDEC.print();
+        skylinePlans_INCDEC.print();
 //        skylinePlans_INCDEC.plot("INCDEC");
         mpinfo.add("INCDEC",skylinePlans_INCDEC.results);
 
@@ -103,12 +103,16 @@ public class paretoNoHomogen implements Scheduler {
         skylinePlans.addAll(skylinePlans_INC.results);
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
+        System.out.println("//////////ALL///////");
+        skylinePlans.sort();
+        skylinePlans.print();
 
         paretoPlans.addAll(computeSkyline(skylinePlans));
 
 
+
         System.out.println("//////////PARETO///////");
-//        paretoPlans.print();
+        paretoPlans.print();
 //        paretoPlans.plot("pareto");
         mpinfo.add("pareto",paretoPlans.results);
 
@@ -469,14 +473,14 @@ public class paretoNoHomogen implements Scheduler {
                     continue;
                 }
 
-                System.out.println("\nnewly created plans");
+//                System.out.println("\nnewly created plans");
                 scheduleToCandidateContainers(nextOpID, plan, cType,allCandidates);//allCanditates is an out param
             }
             plans.clear();
 
-            for(Plan p:allCandidates){
-                p.printInfo();
-            }
+//            for(Plan p:allCandidates){
+//                p.printInfo();
+//            }
 
 //            if(prevPrune+3 == opsAssigned){
 //                plans = computeSkyline(allCandidates);

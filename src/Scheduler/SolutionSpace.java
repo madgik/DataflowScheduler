@@ -45,11 +45,11 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public void print() {
-        System.out.println("////////////////Space");
+//        System.out.println("////////////////Solutio");
         for(Plan p:results){
             p.printInfo();
         }
-        System.out.println("/////////////////Space size: "+results.size());
+        System.out.println("/////////////////size: "+results.size());
     }
 
     public void plot(String n){
