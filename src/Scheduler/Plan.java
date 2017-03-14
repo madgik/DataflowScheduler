@@ -28,7 +28,7 @@ public class Plan implements Comparable<Plan> {
     public HashMap<Long, Long> opIdToRuntimeAssigned_MS; //runtime for the assigned container;
     public HashMap<Long, Long> opIdToRuntimeAssignedNODT_MS;
     public HashMap<Long, Long> opIdToearliestStartTime_MS; //not sure if we should use it
-    public static boolean backfilling = false;
+    public static boolean backfilling = true;
 
 
     public Plan(DAG graph, Cluster cluster) {
@@ -206,11 +206,15 @@ public class Plan implements Comparable<Plan> {
 
             for (int i = 0; i < cont.freeSlots.size() && !backfilled; ++i) {
 
+
+
                 Slot fs = cont.freeSlots.get(i);
 
                 if (fs.end_MS - fs.start_MS >= runspanCont && // if the slot is big enough
                     fs.start_MS >= startContTime_MS) { //and the slot starts after the earliest cont start time
 
+                    System.out.println(fs.end_MS + " " + fs.start_MS  + " " +  runspanCont  + " " +  // if the slot is big enough
+                            startContTime_MS);
                     backfilled = true;
 
                     if (startContTime_MS < fs.start_MS) {                     //free slot is not available when the op is ready
@@ -240,7 +244,7 @@ public class Plan implements Comparable<Plan> {
 
         ///////////////////NO BACKFILLING/////////////////////////
 
-        if (!backfilling && !backfilled) {
+        if (!backfilling || (backfilling && !backfilled) ) {
 
             if (startContTime_MS < contFirstAvailTime) {                   //cont is not available when the op is ready
                 long pushForward = contFirstAvailTime- startContTime_MS;  //so we push the op start,contStart, end times
