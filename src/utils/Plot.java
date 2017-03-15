@@ -54,9 +54,9 @@ public class Plot extends ApplicationFrame {
 
     }
 
-    public Plot(MultiplePlotInfo info) {
+    public Plot(MultiplePlotInfo info, String name) {
 
-        super("MultiplePlot");
+        super(name);
 
         final XYSeriesCollection data = new XYSeriesCollection();
         for(XYSeries s: info.series){
@@ -118,8 +118,8 @@ public class Plot extends ApplicationFrame {
     }
 
 
-    public static void plotMultiple(MultiplePlotInfo info){
-        final Plot demo = new Plot(info);
+    public static void plotMultiple(MultiplePlotInfo info,String name){
+        final Plot demo = new Plot(info,name);
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);

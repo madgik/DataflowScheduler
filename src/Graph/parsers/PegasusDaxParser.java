@@ -41,8 +41,8 @@ public class PegasusDaxParser {
     }
 
 
-    double multiply_by_time = 1.0;
-    int multiply_by_data = 1;
+    double multiply_by_time = 1000.0;
+    int multiply_by_data = 10000;
 
     public PegasusDaxParser() {
     }

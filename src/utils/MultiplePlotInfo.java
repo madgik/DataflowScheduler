@@ -18,7 +18,7 @@ public class MultiplePlotInfo {
     public void add(String name, ArrayList<Plan> ps){
         XYSeries xy = new XYSeries(name);
         for(Plan p:ps){
-            xy.add((Number)p.stats.runtime_MS,(Number)p.stats.money);
+            xy.add((Number)(p.stats.runtime_MS / 60000),(Number)p.stats.money);
         }
         series.add(xy);
     }

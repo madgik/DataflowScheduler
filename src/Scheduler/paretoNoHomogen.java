@@ -85,15 +85,15 @@ public class paretoNoHomogen implements Scheduler {
         }
 
         System.out.println("//////////DEC///////");
-        skylinePlans_DEC.print();
+//        skylinePlans_DEC.print();
 //        skylinePlans_DEC.plot("DEC");
         mpinfo.add("DEC",skylinePlans_DEC.results);
         System.out.println("//////////INC///////");
-        skylinePlans_INC.print();
+//        skylinePlans_INC.print();
 //        skylinePlans_INC.plot("INC");
         mpinfo.add("INC",skylinePlans_INC.results);
         System.out.println("//////////INCDEC///////");
-        skylinePlans_INCDEC.print();
+//        skylinePlans_INCDEC.print();
 //        skylinePlans_INCDEC.plot("INCDEC");
         mpinfo.add("INCDEC",skylinePlans_INCDEC.results);
 
@@ -104,15 +104,15 @@ public class paretoNoHomogen implements Scheduler {
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
         System.out.println("//////////ALL///////");
-        skylinePlans.sort();
-        skylinePlans.print();
+//        skylinePlans.sort();
+//        skylinePlans.print();
 
         paretoPlans.addAll(computeSkyline(skylinePlans));
 
 
 
         System.out.println("//////////PARETO///////");
-        paretoPlans.print();
+//        paretoPlans.print();
 //        paretoPlans.plot("pareto");
         mpinfo.add("pareto",paretoPlans.results);
 
@@ -152,10 +152,10 @@ public class paretoNoHomogen implements Scheduler {
         System.out.println("//////////RESULT///////");
 
         space.print();
-        space.plot("space");
+//        space.plot("space");
         mpinfo.add("space",space.results);
 
-        plotMultiple(mpinfo);
+//        plotMultiple(mpinfo);
         return space;
 
     }
@@ -509,7 +509,7 @@ public class paretoNoHomogen implements Scheduler {
             newPlan.assignOperator(opId, contId,backfilling);
             planEstimations.add(newPlan);
 
-            newPlan.printAssignments();
+//            newPlan.printAssignments();
         }
         if(plan.cluster.contUsed.size()<maxContainers){  //add a nwe container of contType and assign the op to that
 //            for(containerType ctype: contType) {//uncomment to add every ctype
@@ -518,7 +518,7 @@ public class paretoNoHomogen implements Scheduler {
                 newPlan.assignOperator(opId, newContId, backfilling);
                 planEstimations.add(newPlan);
 
-                newPlan.printAssignments();
+//                newPlan.printAssignments();
 //            }
         }
 

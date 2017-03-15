@@ -135,7 +135,7 @@ public class Moheft implements Scheduler {
         long endCPU = System.currentTimeMillis();
         space.setOptimizationTime(endCPU - startCPU);
         space.print();
-        space.plot("space");
+//        space.plot("space");
 
         return space;
     }
