@@ -8,6 +8,7 @@ import utils.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Created by johnchronis on 2/18/17.
@@ -306,80 +307,80 @@ public class Plan implements Comparable<Plan> {
     }
 
 
-//    public void updateSlots(Operator op, Plan plan) {
-//
-//
-//        Long opId = op.getId();
-//        HashMap <Long, Long> opLST = new HashMap<>();
-//
-//        LinkedList<Long> opsToUpdate = new LinkedList<>();
-//        opsToUpdate.addLast(opId);
-//
-//        while(!opsToUpdate.isEmpty()) {
-//
-//            Long opIdToUpdate= opsToUpdate.removeFirst();
-//
-//            //add succ at vm
-//            Long succId=-1L;
-//            Long succStartTime=Long.MAX_VALUE;
-//
-//            Long predId=-1L;
-//            Long predStartTime=Long.MIN_VALUE;
-//
-//            //TODO: use any new data structures instead to find succ/predecessor at vm
-//
-//            //find the successor and predecessor (if any) at the assigned vm
-//            for(Long opIdNext: plan.contAssignments.keySet())
-//            {
-//                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a>=plan.opIdtoStartEndProcessing_MS.get(opId).a);
-//                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a<=succStartTime) {
-//                    succId=opIdNext;
-//                    succStartTime= plan.opIdtoStartEndProcessing_MS.get(opIdNext).a;
-//                }
-//
-//
-//                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a<plan.opIdtoStartEndProcessing_MS.get(opId).a);
-//                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a>=predStartTime) {
-//                    predId=opIdNext;
-//                    predStartTime= plan.opIdtoStartEndProcessing_MS.get(opIdNext).a;
-//                }
-//            }
-//
-//            //add succesor at vm to the list for updating
-//            if(succId>=0L)
-//            opsToUpdate.add(succId);
-//
-////add children to the list for updating
-//            if(!graph.getChildren(opId).isEmpty())
-//                for (Edge outEdge : graph.getChildren(opId)) {
-//                    succId = outEdge.to;
-//                    if(!opsToUpdate.contains(succId))
-//                        opsToUpdate.addLast(succId);
-//                }
-//
-////if there is a predecessor at vm est is the finish time of the predecessor
-//            Long est=0L;
-//            if(predId>=0)
-//                est= plan.opIdtoStartEndProcessing_MS.get(predId).b;
-//
-//            //update est if the op has any parents. TODO: data transfer 0 if they are assigned at the new VM after "migration"
-//            for(Edge inEdge:graph.getParents(opId)){
-//                predId = inEdge.from;
-//                Long predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
-//                        plan.opIdToAfterDTDuration_MS.get(predId) +
-//                        plan.opIdToBeforeDTDuration_MS.get(opId);
-//                est = Math.max(predEndTime,est);
-//            }
-//
-//            //new ctype assigned
-//            containerType cType = plan.cluster.getContainer(plan.assignments.get(opId)).contType;
-//            long opProcessingDuration_MS = (int) Math.ceil(op.getRunTime_MS() / cType.container_CPU);
-//            plan.opIdToProcessingTime_MS.put(opId,opProcessingDuration_MS );
-//            plan.opIdtoStartEndProcessing_MS.put(opId, new Pair<>(est, est+opProcessingDuration_MS));
-//            //update startendstructures with data transfers
-//        }
-//
-//    }
+    public void updateSlots(Operator op, Plan plan) {
+
+
+        Long opId = op.getId();
+        HashMap <Long, Long> opLST = new HashMap<>();
+
+        LinkedList<Long> opsToUpdate = new LinkedList<>();
+        opsToUpdate.addLast(opId);
+
+        while(!opsToUpdate.isEmpty()) {
+
+            Long opIdToUpdate= opsToUpdate.removeFirst();
+
+            //add succ at vm
+            Long succId=-1L;
+            Long succStartTime=Long.MAX_VALUE;
+
+            Long predId=-1L;
+            Long predStartTime=Long.MIN_VALUE;
+
+            //TODO: use any new data structures instead to find succ/predecessor at vm
+
+            //find the successor and predecessor (if any) at the assigned vm
+            for(Long opIdNext: plan.contAssignments.keySet())
+            {
+                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a>=plan.opIdtoStartEndProcessing_MS.get(opId).a);
+                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a<=succStartTime) {
+                    succId=opIdNext;
+                    succStartTime= plan.opIdtoStartEndProcessing_MS.get(opIdNext).a;
+                }
+
+
+                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a<plan.opIdtoStartEndProcessing_MS.get(opId).a);
+                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a>=predStartTime) {
+                    predId=opIdNext;
+                    predStartTime= plan.opIdtoStartEndProcessing_MS.get(opIdNext).a;
+                }
+            }
+
+            //add succesor at vm to the list for updating
+            if(succId>=0L)
+            opsToUpdate.add(succId);
+
+//add children to the list for updating
+            if(!graph.getChildren(opId).isEmpty())
+                for (Edge outEdge : graph.getChildren(opId)) {
+                    succId = outEdge.to;
+                    if(!opsToUpdate.contains(succId))
+                        opsToUpdate.addLast(succId);
+                }
+
+//if there is a predecessor at vm est is the finish time of the predecessor
+            Long est=0L;
+            if(predId>=0)
+                est= plan.opIdtoStartEndProcessing_MS.get(predId).b;
+
+            //update est if the op has any parents. TODO: data transfer 0 if they are assigned at the new VM after "migration"
+            for(Edge inEdge:graph.getParents(opId)){
+                predId = inEdge.from;
+                Long predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
+                        plan.opIdToAfterDTDuration_MS.get(predId) +
+                        plan.opIdToBeforeDTDuration_MS.get(opId);
+                est = Math.max(predEndTime,est);
+            }
+
+            //new ctype assigned
+            containerType cType = plan.cluster.getContainer(plan.assignments.get(opId)).contType;
+            long opProcessingDuration_MS = (int) Math.ceil(op.getRunTime_MS() / cType.container_CPU);
+            plan.opIdToProcessingTime_MS.put(opId,opProcessingDuration_MS );
+            plan.opIdtoStartEndProcessing_MS.put(opId, new Pair<>(est, est+opProcessingDuration_MS));
+            //update startendstructures with data transfers
+        }
+
+    }
 
     public Long calculateNetworkDelayBetweenOps(Long parentId, Long childId){
         long netdelay = 0L;

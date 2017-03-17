@@ -19,44 +19,44 @@ public class Main {
 
     public static void main(String[] args)  {
 
-        File loadFile = new File(Main.class.getResource("2_Q5_6_10.2dat.cleanplan").getPath());
+//        File loadFile = new File(Main.class.getResource("2_Q5_6_10.2dat.cleanplan").getPath());
+//
+//        JsonOptiqueParser parser = new JsonOptiqueParser();
+//        DAG graph=null;
+//        try {
+//            graph = parser.parse(loadFile.getAbsolutePath());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+//
+//        Cluster cluster = new Cluster();
+//
+//        Scheduler sched = new paretoNoHomogen(graph,cluster);
+//
+//        SolutionSpace solutions = sched.schedule();
+//
+//        mpinfo.add("pareto",solutions.results);
+//
+//
+//        Cluster clusterM = new Cluster();
+//
+//        Scheduler schedM = new Moheft(graph,clusterM);
+//
+//        SolutionSpace solutionsM = schedM.schedule();
+//
+//
+//        mpinfo.add("moheft",solutionsM.results);
+//
+//        plotMultiple(mpinfo,"opti");
+//
+//        System.out.println("pareto opti time -> "+solutions.optimizationTime_MS);
+//        System.out.println("moheft opti time -> "+solutionsM.optimizationTime_MS);
 
-        JsonOptiqueParser parser = new JsonOptiqueParser();
-        DAG graph=null;
-        try {
-            graph = parser.parse(loadFile.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
-
-        Cluster cluster = new Cluster();
-
-        Scheduler sched = new paretoNoHomogen(graph,cluster);
-
-        SolutionSpace solutions = sched.schedule();
-
-        mpinfo.add("pareto",solutions.results);
-
-
-        Cluster clusterM = new Cluster();
-
-        Scheduler schedM = new Moheft(graph,clusterM);
-
-        SolutionSpace solutionsM = schedM.schedule();
-
-
-        mpinfo.add("moheft",solutionsM.results);
-
-        plotMultiple(mpinfo,"opti");
-
-        System.out.println("pareto opti time -> "+solutions.optimizationTime_MS);
-        System.out.println("moheft opti time -> "+solutionsM.optimizationTime_MS);
-
-        //runMontage();
-        //        runLIGO();
-        //        runCyberShake();
+        runMontage();
+        runLIGO();
+        runCyberShake();
 
         //TODO: Run the simulation to validate the results for the space of solutions
     }
@@ -64,12 +64,12 @@ public class Main {
 
     static void runMontage(){
 
-        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
-        //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
+//        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
+//        //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax(loadFile.toURL().toString());
+            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.100.0.dax");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,12 +102,12 @@ public class Main {
     }
 
     static void runCyberShake(){
-        File loadFile = new File(Main.class.getResource("CyberShake.n.100.0.dax").getFile());
+//        File loadFile = new File(Main.class.getResource("CyberShake.n.100.0.dax").getFile());
         //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax(loadFile.toURL().toString());
+            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/CyberShake.n.100.0.dax");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,12 +139,12 @@ public class Main {
     }
 
     static void runLIGO(){
-        File loadFile = new File(Main.class.getResource("LIGO.n.100.0.dax").getFile());
+//        File loadFile = new File(Main.class.getResource("LIGO.n.100.0.dax").getFile());
         //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax(loadFile.toURL().toString());
+            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/LIGO.n.100.0.dax");
         } catch (Exception e) {
             e.printStackTrace();
         }

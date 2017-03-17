@@ -144,8 +144,20 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.addAll(skylinePlans);
 
+        SolutionSpace beforeMigrate = new SolutionSpace();
+        beforeMigrate.addAll(computeSkyline(paretoPlans));
 
-        space.addAll(computeSkyline(paretoPlans));
+        for(Plan p:beforeMigrate){
+            space.addAll(migrateToFreeSlots(p));
+        }
+
+        MultiplePlotInfo mp = new MultiplePlotInfo();
+        mp.add("befMigrate", beforeMigrate.results);
+        mp.add("afterMigrate", space.results);
+        plotMultiple(mp,"migration");
+
+
+        //        space.addAll(computeSkyline(paretoPlans));
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
@@ -154,7 +166,9 @@ public class paretoNoHomogen implements Scheduler {
 
         space.print();
 //        space.plot("space");
-        mpinfo.add("space",space.results);
+        mpinfo.add("final space",space.results);
+
+
 
 //        plotMultiple(mpinfo);
         return space;
@@ -864,7 +878,7 @@ public class paretoNoHomogen implements Scheduler {
     }
 
 
-    public SolutionSpace transform(Plan p ) {
+    public SolutionSpace migrateToFreeSlots(Plan p ) {
         //for every plan get the most critical ops and move it, then
         // get the next critical ops and move that and so on
 
@@ -882,69 +896,126 @@ public class paretoNoHomogen implements Scheduler {
 
         HashMap<Long, Long> opEST;
 
-        for (Plan plan : plans) {
 
-            HashMap<Long, Long> opSlack = new HashMap<>();
-            ArrayList<Long> opSortedBySlack = new ArrayList<>();
-
-            computeSlackOps(p, opSlack, opSortedBySlack);
-
-            for (Long opId : opSortedBySlack) {
-
-                newSlot = null;
-//                System.out.println("slack " + opId + " " + opSlack.get(opId));
-
-                oldContId = plan.assignments.get(opId);
-
-                oldContType = plan.cluster.getContainer(oldContId).contType;
-                //for every other cont see if it is eligible
-                for (Long contId : plan.cluster.containers.keySet()) {
-                    if (contId == oldContId)
-                        break;
-                    Container newCont = plan.cluster.getContainer(contId);
-                    if (!isSmaller(oldContType, newCont.contType)) {
-                        break;
-                    }
-                    Collections.sort(newCont.freeSlots);
-                    opEST = computeEST(plan);
-                    for (Slot fs : newCont.freeSlots) {
-                        Long newstartTime = Long.MAX_VALUE;
-                        //find first free slot that can host the operator
-                        //add a condition to prune assignemtns worst than the current TODO
-//                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
-//                        Long networkDelay = plan.calculateNetworkDelay(opId,contId);
-                        Long opProcessingDuration_MS = plan.opIdToProcessingTime_MS.get(opId);
-                        Long earliestStartTime_MS = plan.opIdToearliestStartTime_MS.get(opId);
-                        Long beforeDTDuration_MS = plan.opIdToBeforeDTDuration_MS.get(opId);
-                        if (fs.end_MS-fs.start_MS >= opProcessingDuration_MS &&
-                            earliestStartTime_MS + beforeDTDuration_MS <= fs.end_MS - opProcessingDuration_MS){
-//                            && fs.start_MS >= opEST.get(opId)) { //use the EST TODO check
+       while(plans.size()>0) {
 
 
-                            newSlot = fs;
+           for (Plan plan : plans) {
+
+               HashMap<Long, Long> opSlack = new HashMap<>();
+               ArrayList<Long> opSortedBySlack = new ArrayList<>();
+
+               computeSlackOps(p, opSlack, opSortedBySlack);
+
+               for (Long opId : opSortedBySlack) {
+
+                   newSlot = null;
+                   //                System.out.println("slack " + opId + " " + opSlack.get(opId));
+
+                   oldContId = plan.assignments.get(opId);
+
+                   oldContType = plan.cluster.getContainer(oldContId).contType;
+                   //for every other cont see if it is eligible
+                   for (Long contId : plan.cluster.containers.keySet()) {
+                       if (contId == oldContId)
+                           break;
+                       Container newCont = plan.cluster.getContainer(contId);
+                       if (!isSmaller(oldContType, newCont.contType)) {
+                           break;
+                       }
+                       Collections.sort(newCont.freeSlots);
+                       opEST = computeEST(plan);
+                       for (Slot fs : newCont.freeSlots) {
+                           Long newstartTime = Long.MAX_VALUE;
+                           //find first free slot that can host the operator
+                           //add a condition to prune assignemtns worst than the current TODO
+                           //                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
+                           //                        Long networkDelay = plan.calculateNetworkDelay(opId,contId);
+                           Long opProcessingDuration_MS = plan.opIdToProcessingTime_MS.get(opId);
+                           Long earliestStartTime_MS = plan.opIdToearliestStartTime_MS.get(opId);
+                           Long beforeDTDuration_MS = plan.opIdToBeforeDTDuration_MS.get(opId);
+                           if (fs.end_MS - fs.start_MS >= opProcessingDuration_MS
+                               && earliestStartTime_MS + beforeDTDuration_MS
+                               <= fs.end_MS - opProcessingDuration_MS) {
+                               //                            && fs.start_MS >= opEST.get(opId)) { //use the EST TODO check
 
 
-                        }
-                    }
-                    //create new plan with the new assignment
-                    if (newSlot != null) {
-                        newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));
-                    }
+                               newSlot = fs;
 
-                }
-            }
-            results.addAll(plans);//TODO check this logic
-            plans.clear();
-            plans.addAll(newPlans);
-            newPlans.clear();
-//            I save all the produced pland
-        }
+
+                           }
+                       }
+                       //create new plan with the new assignment
+                       if (newSlot != null) {
+
+                           Plan newPlan = new Plan(graph, new Cluster());
+                           newPlan.vmUpgrading = plan.vmUpgrading;
+                           for (Container contcont : plan.cluster.containersList) {
+                               newPlan.cluster.addContainer(contcont.contType);
+                           }
+
+                           //assign all the ops again to the new plan
+                           HashSet<Long> opsAssignedSet = new HashSet<>();
+                           HashSet<Long> readyOps = new HashSet<>();
+
+                           findRoots(readyOps);
+
+                           while (readyOps.size() > 0) {//iterate on the ready to schedule ops
+
+                               long nextOpID = nextOperator(readyOps);
+
+                               if (opId == nextOpID) {
+                                   newPlan.assignOperator(nextOpID, contId, false);
+                               } else {
+                                   newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID),
+                                       false);
+                               }
+
+
+                               findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
+                           }
+                           //                        newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));
+                           if(newPlan.stats.money<p.stats.money && newPlan.stats.runtime_MS < p.stats.runtime_MS)
+                           newPlans.add(newPlan);
+                       }
+
+                   }
+               }
+
+           }
+           System.out.println(newPlans.size());
+           results.addAll(plans);//TODO check this logic
+           plans.clear();
+           plans.addAll(newPlans);
+           newPlans.clear();
+       }
+        System.out.println("ending");
         return results;
     }
 
-
-
+//    ArrayList<Long> findSuccesors(Long opId, Plan plan){
+//        ArrayList<Long> succesors = new ArrayList<>();
 //
+//        Long contId = plan.assignments.get(opId);
+//
+//        Long startTime = plan.opIdtoStartEndProcessing_MS.get(opId);
+//
+//        ArrayList<Long> samecont = new ArrayList<>();
+//
+//        ///find all scheduled in the same cont after opId
+//        for(Long oid : plan.contAssignments.get(contId)) {
+//            if (plan.assignments.get()){
+//                samecont.add(oid);
+//        }
+//        }
+//
+//
+//        ///find all children
+//
+//
+//        return succesors;
+//    }
+
     private Plan migrateOperator(Plan plan, Long opId, Long contId, Slot newSlot, Long opEST) {
         Plan newPlan  = new Plan(plan);
 
