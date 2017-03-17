@@ -222,7 +222,8 @@ public class Plan implements Comparable<Plan> {
 
                 Slot fs = cont.freeSlots.get(i);
 
-                if ( earliestStartTime_MS + beforeDTDuration_MS <= fs.end_MS - opProcessingDuration_MS){
+                if (  fs.end_MS-fs.start_MS >= opProcessingDuration_MS &&
+                    earliestStartTime_MS + beforeDTDuration_MS <= fs.end_MS - opProcessingDuration_MS){
 //                    Math.max(fs.start_MS,earliestStartTime_MS) + opProcessingDuration_MS >= fs.end_MS ){ //if operator fits
 
                     backfilled = true;

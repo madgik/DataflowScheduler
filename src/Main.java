@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String[] args)  {
 
-        File loadFile = new File(Main.class.getResource("2_Q1_6_10.1dat.cleanplan").getPath());
+        File loadFile = new File(Main.class.getResource("2_Q5_6_10.2dat.cleanplan").getPath());
 
         JsonOptiqueParser parser = new JsonOptiqueParser();
         DAG graph=null;

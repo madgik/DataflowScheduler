@@ -8,6 +8,7 @@ import utils.Pair;
 
 import java.util.*;
 
+import static Scheduler.containerType.isSmaller;
 import static utils.Plot.plotMultiple;
 
 /**
@@ -842,225 +843,232 @@ public class paretoNoHomogen implements Scheduler {
         return opEST;
     }
 
-//    //output opSlack,opSortedBySlack
-//    public HashMap<Long, Long> computeSlackOps(Plan plan, final HashMap<Long,Long> opSlack,ArrayList<Long> opSortedBySlack){
-//        HashMap<Long, Long> opLST = computeLST(plan);
-//        HashMap<Long, Long> opEST = computeEST(plan);
-//
-//        for(Long opId : graph.operators.keySet()){
-//            Long LST = opLST.get(opId);
-//            Long EST = opEST.get(opId);
-//            opSlack.put(opId,LST-EST);
-//            opSortedBySlack.add(opId);
-//        }
-//
-//        Collections.sort(opSortedBySlack, new Comparator<Long>() {
-//            @Override public int compare(Long o1, Long o2) {
-//                return (int) (opSlack.get(o1) - opSlack.get(o2));
-//            }
-//        });
-//        return opEST;
-//    }
-//
-//    //output opEST
-//    public SolutionSpace transform(Plan p ) {
-//        //for every plan get the most critical ops and move it, then
-//        // get the next critical ops and move that and so on
-//
-//        SolutionSpace plans = new SolutionSpace();
-//        plans.add(p);
-//        SolutionSpace newPlans = new SolutionSpace();
-//
-//        SolutionSpace results  = new SolutionSpace();
-//
-//        HashMap<Long, Long> opSlack = new HashMap<>();
-//        ArrayList<Long> opSortedBySlack = new ArrayList<>();
-//        computeSlackOps(p, opSlack, opSortedBySlack);
-//
-//        Long oldContId;
-//        containerType oldContType;
-//        Slot newSlot = null;
-//
-//        HashMap<Long, Long> opEST;
-//
-//        for (Long opId : opSortedBySlack) {
-//
-//            for (Plan plan : plans) {
-//
-//                newSlot = null;
+    //output opSlack,opSortedBySlack
+    public HashMap<Long, Long> computeSlackOps(Plan plan, final HashMap<Long,Long> opSlack,ArrayList<Long> opSortedBySlack){
+        HashMap<Long, Long> opLST = computeLST(plan);
+        HashMap<Long, Long> opEST = computeEST(plan);
+
+        for(Long opId : graph.operators.keySet()){
+            Long LST = opLST.get(opId);
+            Long EST = opEST.get(opId);
+            opSlack.put(opId,LST-EST);
+            opSortedBySlack.add(opId);
+        }
+
+        Collections.sort(opSortedBySlack, new Comparator<Long>() {
+            @Override public int compare(Long o1, Long o2) {
+                return (int) (opSlack.get(o1) - opSlack.get(o2));
+            }
+        });
+        return opEST;
+    }
+
+
+    public SolutionSpace transform(Plan p ) {
+        //for every plan get the most critical ops and move it, then
+        // get the next critical ops and move that and so on
+
+        SolutionSpace plans = new SolutionSpace();
+        plans.add(p);
+        SolutionSpace newPlans = new SolutionSpace();
+
+        SolutionSpace results  = new SolutionSpace();
+
+
+
+        Long oldContId;
+        containerType oldContType;
+        Slot newSlot = null;
+
+        HashMap<Long, Long> opEST;
+
+        for (Plan plan : plans) {
+
+            HashMap<Long, Long> opSlack = new HashMap<>();
+            ArrayList<Long> opSortedBySlack = new ArrayList<>();
+
+            computeSlackOps(p, opSlack, opSortedBySlack);
+
+            for (Long opId : opSortedBySlack) {
+
+                newSlot = null;
 //                System.out.println("slack " + opId + " " + opSlack.get(opId));
-//                oldContId = plan.assignments.get(opId);
-//
-//                oldContType = plan.cluster.getContainer(oldContId).contType;
-//                //for every other cont see if it is eligible
-//                for (Long contId : plan.cluster.containers.keySet()) {
-//                    if (contId == oldContId)
-//                        break;
-//                    Container newCont = plan.cluster.getContainer(contId);
-//                    if (!isSmaller(oldContType, newCont.contType)) {
-//                        break;
-//                    }
-//                    Collections.sort(newCont.freeSlots);
-//                    opEST = computeEST(plan);
-//                    for (Slot fs : newCont.freeSlots) {
-//                        Long newstartTime = Long.MAX_VALUE;
-//                        //find first free slot that can host the operator
-//                        //add a condition to prune assignemtns worst than the current TODO
+
+                oldContId = plan.assignments.get(opId);
+
+                oldContType = plan.cluster.getContainer(oldContId).contType;
+                //for every other cont see if it is eligible
+                for (Long contId : plan.cluster.containers.keySet()) {
+                    if (contId == oldContId)
+                        break;
+                    Container newCont = plan.cluster.getContainer(contId);
+                    if (!isSmaller(oldContType, newCont.contType)) {
+                        break;
+                    }
+                    Collections.sort(newCont.freeSlots);
+                    opEST = computeEST(plan);
+                    for (Slot fs : newCont.freeSlots) {
+                        Long newstartTime = Long.MAX_VALUE;
+                        //find first free slot that can host the operator
+                        //add a condition to prune assignemtns worst than the current TODO
 //                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
 //                        Long networkDelay = plan.calculateNetworkDelay(opId,contId);
-//                        if (fs.end_MS - fs.start_MS >= newRuntimeNODT // if the slot is big enough
-//                            && fs.end_MS - newRuntimeNODT >= opEST.get(opId)){
-////                            && fs.start_MS >= opEST.get(opId)) { //use the EST TODO check
-//                            if (newstartTime > fs.start_MS) {
-//                                newstartTime = fs.start_MS;
-//                                newSlot = fs;
-//                            }
-//
-//                        }
-//                    }
-//                    //create new plan with the new assignment
-//                    if (newSlot != null) {
-//                        newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));
-//                    }
-//
-//                }
-//            }
-//            results.addAll(plans);//TODO check this logic
-//            plans.clear();
-//            plans.addAll(newPlans);
-//            newPlans.clear();
-////            I save all the produced pland
-//        }
-//        return results;
-//    }
-//
+                        Long opProcessingDuration_MS = plan.opIdToProcessingTime_MS.get(opId);
+                        Long earliestStartTime_MS = plan.opIdToearliestStartTime_MS.get(opId);
+                        Long beforeDTDuration_MS = plan.opIdToBeforeDTDuration_MS.get(opId);
+                        if (fs.end_MS-fs.start_MS >= opProcessingDuration_MS &&
+                            earliestStartTime_MS + beforeDTDuration_MS <= fs.end_MS - opProcessingDuration_MS){
+//                            && fs.start_MS >= opEST.get(opId)) { //use the EST TODO check
 
 
+                            newSlot = fs;
+
+
+                        }
+                    }
+                    //create new plan with the new assignment
+                    if (newSlot != null) {
+                        newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));
+                    }
+
+                }
+            }
+            results.addAll(plans);//TODO check this logic
+            plans.clear();
+            plans.addAll(newPlans);
+            newPlans.clear();
+//            I save all the produced pland
+        }
+        return results;
+    }
+
+
+
 //
-//    private Plan migrateOperator(Plan plan, Long opId, Long contId, Slot newSlot, Long opEST) {
-//        Plan newPlan  = new Plan(plan);
-//
-//        Long est = Long.MIN_VALUE;
-//        if(graph.getParents(opId).isEmpty()){
-//            est = 0L;
-//        }else{
-//            for(Edge inEdge:graph.getParents(opId)){
-//                Long preId = inEdge.from;
-//
-//                Long preEndTime = plan.opIdtoStartEndProcessing_MS.get(preId).b;
-//
-//                est = Math.max(preEndTime,est);
-//            }
-//        }
-//
-//        Container oldCont = plan.cluster.getContainer(plan.assignments.get(opId));
-//
-//        Long OLDopStart = plan.opIdtoStartEndProcessing_MS.get(opId).a;
-//        Long OLDopEnd  = plan.opIdtoStartEndProcessing_MS.get(opId).b;
-//        Long OLDopContStart;
-//
-//        oldCont.freeSlots.add(new Slot(plan.opIdtoStartEndProcessing_MS.get(opId).a,plan.opIdtoStartEndProcessing_MS.get(opId).b));
-//        Slot opsOldSlot = null;
-//        for(Slot ops: oldCont.opsschedule){
-//            if(ops.opId == opId){
-//                opsOldSlot = ops;
-//                OLDopContStart = ops.start_MS;
-//            }
-//        }
-//        oldCont.opsschedule.remove(opsOldSlot);
-//
-//        ///old cont cleaned/////
-//
-//        plan.opIdtoStartEndProcessing_MS.remove(opId);
-//        plan.opIdToProcessingTime_MS.remove(opId);
-//        plan.opIdToContainerRuntime_MS.remove(opId);
-//        plan.opIdToearliestStartTime_MS.remove(opId);
-//        plan.contAssignments.get(oldCont.id).remove(opId);
-//        ////plan cleaned/////
-//
-//        ///move to change the assignment/////
-//
-//        plan.assignments.put(opId,contId);
-//
-//        plan.contAssignments.get(contId).add(opId);
-//
-//        Container newCont = plan.cluster.getContainer(contId);
-//
-//        newCont.freeSlots.remove(newSlot);
-//
-//        Long actualContStartTime = newSlot.start_MS;
-//        if(opEST>actualContStartTime){ //add possible free slot before op start
-//            actualContStartTime = opEST;
-//            newCont.freeSlots.add(new Slot(newSlot.start_MS,actualContStartTime-1));
-//        }
-//
-//
-//
-//        long startTime_MS = actualContStartTime;
-//        long timeNow_MS = actualContStartTime;
-//        long startContTime_MS = actualContStartTime;
-//
-//        Container cont = cluster.getContainer(contId);
-//
-//        ////////////DATA TRANSFER TIMES//////////////////
-//
-//        long networkDelay_MS = 0;
-//        for (Edge link : graph.getParents(opId)) {
-//            long fromId = link.from;
-//            long fromContId = plan.assignments.get(fromId);
-//            if (fromContId != contId) {
-//
-//                long dtTime_MS =
-//                    (long) (Math.ceil(link.data.size_B / RuntimeConstants.network_speed_B_MS));
-//
-//                networkDelay_MS += dtTime_MS;
-//            }
-//        }
-//
-//        timeNow_MS += networkDelay_MS;
-//        startContTime_MS = timeNow_MS;         //cont runtime starts now
-//
-//
-//        Operator op = graph.getOperator(opId);
-//        long runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
-//        timeNow_MS += runTime;
-//
-//        long endTime_MS = timeNow_MS;
-//
-//        long runspan = endTime_MS - startTime_MS;
-//
-//        long runspanCont = endTime_MS - startContTime_MS;
-//
-//
-//
-//
-//        plan.opIdToearliestStartTime_MS.put(opId, startTime_MS);
-//
-//        plan.opIdtoStartEndProcessing_MS.put(opId, new Pair<>(startTime_MS, endTime_MS)); //runtime + disk times + network delay
-//
-//        plan.opIdToContainerRuntime_MS.put(opId,endTime_MS - startTime_MS);
-//
-//        plan.opIdToProcessingTime_MS.put(opId,endTime_MS - startContTime_MS);
-//
-//        cont.setUsedUpTo(endTime_MS);
-//        cont.startofUse_MS = Math.min(cont.startofUse_MS,startContTime_MS);    //set the start of use at the container
-//
-//        cluster.contUsed.add(contId);
-//
-//        cont.opsschedule.add(new Slot(opId, startContTime_MS, endTime_MS)); //add a new scheduled slot for the operator
-//
-//        plan.stats = new Statistics(plan);
-//
-//
-//        //add to newCont.opschedule
-//
-//        //add possible free slot before op start
-//
-//
-//        ///find all ops with start time after opID and change them
-//
-//        return newPlan;
-//    }
+    private Plan migrateOperator(Plan plan, Long opId, Long contId, Slot newSlot, Long opEST) {
+        Plan newPlan  = new Plan(plan);
+
+        Long est = Long.MIN_VALUE;
+        if(graph.getParents(opId).isEmpty()){
+            est = 0L;
+        }else{
+            for(Edge inEdge:graph.getParents(opId)){
+                Long preId = inEdge.from;
+
+                Long preEndTime = plan.opIdtoStartEndProcessing_MS.get(preId).b;
+
+                est = Math.max(preEndTime,est);
+            }
+        }
+
+        Container oldCont = plan.cluster.getContainer(plan.assignments.get(opId));
+
+        Long OLDopStart = plan.opIdtoStartEndProcessing_MS.get(opId).a;
+        Long OLDopEnd  = plan.opIdtoStartEndProcessing_MS.get(opId).b;
+        Long OLDopContStart;
+
+        oldCont.freeSlots.add(new Slot(plan.opIdtoStartEndProcessing_MS.get(opId).a,plan.opIdtoStartEndProcessing_MS.get(opId).b));
+        Slot opsOldSlot = null;
+        for(Slot ops: oldCont.opsschedule){
+            if(ops.opId == opId){
+                opsOldSlot = ops;
+                OLDopContStart = ops.start_MS;
+            }
+        }
+        oldCont.opsschedule.remove(opsOldSlot);
+
+        ///old cont cleaned/////
+
+        plan.opIdtoStartEndProcessing_MS.remove(opId);
+        plan.opIdToProcessingTime_MS.remove(opId);
+        plan.opIdToContainerRuntime_MS.remove(opId);
+        plan.opIdToearliestStartTime_MS.remove(opId);
+        plan.contAssignments.get(oldCont.id).remove(opId);
+        ////plan cleaned/////
+
+        ///move to change the assignment/////
+
+        plan.assignments.put(opId,contId);
+
+        plan.contAssignments.get(contId).add(opId);
+
+        Container newCont = plan.cluster.getContainer(contId);
+
+        newCont.freeSlots.remove(newSlot);
+
+        Long actualContStartTime = newSlot.start_MS;
+        if(opEST>actualContStartTime){ //add possible free slot before op start
+            actualContStartTime = opEST;
+            newCont.freeSlots.add(new Slot(newSlot.start_MS,actualContStartTime-1));
+        }
+
+
+
+        long startTime_MS = actualContStartTime;
+        long timeNow_MS = actualContStartTime;
+        long startContTime_MS = actualContStartTime;
+
+        Container cont = cluster.getContainer(contId);
+
+        ////////////DATA TRANSFER TIMES//////////////////
+
+        long networkDelay_MS = 0;
+        for (Edge link : graph.getParents(opId)) {
+            long fromId = link.from;
+            long fromContId = plan.assignments.get(fromId);
+            if (fromContId != contId) {
+
+                long dtTime_MS =
+                    (long) (Math.ceil(link.data.size_B / RuntimeConstants.network_speed_B_MS));
+
+                networkDelay_MS += dtTime_MS;
+            }
+        }
+
+        timeNow_MS += networkDelay_MS;
+        startContTime_MS = timeNow_MS;         //cont runtime starts now
+
+
+        Operator op = graph.getOperator(opId);
+        long runTime = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
+        timeNow_MS += runTime;
+
+        long endTime_MS = timeNow_MS;
+
+        long runspan = endTime_MS - startTime_MS;
+
+        long runspanCont = endTime_MS - startContTime_MS;
+
+
+
+
+        plan.opIdToearliestStartTime_MS.put(opId, startTime_MS);
+
+        plan.opIdtoStartEndProcessing_MS.put(opId, new Pair<>(startTime_MS, endTime_MS)); //runtime + disk times + network delay
+
+        plan.opIdToContainerRuntime_MS.put(opId,endTime_MS - startTime_MS);
+
+        plan.opIdToProcessingTime_MS.put(opId,endTime_MS - startContTime_MS);
+
+        cont.setUsedUpTo(endTime_MS);
+        cont.startofUse_MS = Math.min(cont.startofUse_MS,startContTime_MS);    //set the start of use at the container
+
+        cluster.contUsed.add(contId);
+
+        cont.opsschedule.add(new Slot(opId, startContTime_MS, endTime_MS)); //add a new scheduled slot for the operator
+
+        plan.stats = new Statistics(plan);
+
+
+        //add to newCont.opschedule
+
+        //add possible free slot before op start
+
+
+        ///find all ops with start time after opID and change them
+
+        return newPlan;
+    }
 
     private void computeHomoRankings(containerType cType)
     {
