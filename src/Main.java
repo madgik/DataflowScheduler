@@ -54,10 +54,11 @@ public class Main {
 //        System.out.println("pareto opti time -> "+solutions.optimizationTime_MS);
 //        System.out.println("moheft opti time -> "+solutionsM.optimizationTime_MS);
 
-//        runMontage();
-//        runLIGO();
-//        runCyberShake();
-        runSIPHT();
+//        runSIPHT();
+        runMontage();
+        runLIGO();
+        runCyberShake();
+
 
 
         //TODO: Run the simulation to validate the results for the space of solutions
@@ -69,7 +70,7 @@ public class Main {
 
         //        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
         //        //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
-        PegasusDaxParser parser = new PegasusDaxParser();
+        PegasusDaxParser parser = new PegasusDaxParser(100,1);
         DAG graph=null;
         try {
             graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/SIPHT.n.100.0.dax");
@@ -99,7 +100,7 @@ public class Main {
         plotMultiple(mpinfo,"SIPHT");
 
         System.out.println("pareto SIPHT time -> "+solutions.optimizationTime_MS);
-        System.out.println("moheft montage time -> "+solutionsM.optimizationTime_MS);
+        System.out.println("moheft SIPHT time -> "+solutionsM.optimizationTime_MS);
 
 
     }
@@ -184,7 +185,7 @@ public class Main {
     static void runLIGO(){
 //        File loadFile = new File(Main.class.getResource("LIGO.n.100.0.dax").getFile());
         //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
-        PegasusDaxParser parser = new PegasusDaxParser();
+        PegasusDaxParser parser = new PegasusDaxParser(100,1);
         DAG graph=null;
         try {
             graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/LIGO.n.100.0.dax");

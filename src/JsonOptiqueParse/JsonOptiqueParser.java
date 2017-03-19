@@ -21,6 +21,11 @@ public class JsonOptiqueParser {
     private Long mult_data = 50L;
     private Long mult_time = 10L;
 
+    public JsonOptiqueParser(long mulDATA, long multTime){
+        mult_data = mulDATA;
+        mult_time = multTime;
+    }
+
 
     public DAG parse(String filepath){
 

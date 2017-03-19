@@ -44,8 +44,12 @@ public class PegasusDaxParser {
     double multiply_by_time = 1000.0;
     int multiply_by_data = 1;
 
-    public PegasusDaxParser() {
+    public PegasusDaxParser(double mulTIME,int mulDATA) {
+        multiply_by_data = mulDATA;
+        multiply_by_time = mulTIME;
+
     }
+    public PegasusDaxParser(){}
 
     public  DAG parseDax(String url) throws Exception {
         DAG graph = new DAG();
