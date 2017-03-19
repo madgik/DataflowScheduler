@@ -144,20 +144,21 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.addAll(skylinePlans);
 
-        SolutionSpace beforeMigrate = new SolutionSpace();
-        beforeMigrate.addAll(computeSkyline(paretoPlans));
+//        SolutionSpace beforeMigrate = new SolutionSpace();
+//        beforeMigrate.addAll(computeSkyline(paretoPlans));
+//
+//        for(Plan p:beforeMigrate){
+//            space.addAll(migrateToFreeSlots(p));
+//        }
+//
+//        MultiplePlotInfo mp = new MultiplePlotInfo();
+//        mp.add("befMigrate", beforeMigrate.results);
+//        mp.add("afterMigrate", space.results);
+//        plotMultiple(mp,"migration");
 
-        for(Plan p:beforeMigrate){
-            space.addAll(migrateToFreeSlots(p));
-        }
+        space.addAll(computeSkyline(paretoPlans));
+//moh
 
-        MultiplePlotInfo mp = new MultiplePlotInfo();
-        mp.add("befMigrate", beforeMigrate.results);
-        mp.add("afterMigrate", space.results);
-        plotMultiple(mp,"migration");
-
-
-        //        space.addAll(computeSkyline(paretoPlans));
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
@@ -947,36 +948,36 @@ public class paretoNoHomogen implements Scheduler {
                        }
                        //create new plan with the new assignment
                        if (newSlot != null) {
-
-                           Plan newPlan = new Plan(graph, new Cluster());
-                           newPlan.vmUpgrading = plan.vmUpgrading;
-                           for (Container contcont : plan.cluster.containersList) {
-                               newPlan.cluster.addContainer(contcont.contType);
-                           }
-
-                           //assign all the ops again to the new plan
-                           HashSet<Long> opsAssignedSet = new HashSet<>();
-                           HashSet<Long> readyOps = new HashSet<>();
-
-                           findRoots(readyOps);
-
-                           while (readyOps.size() > 0) {//iterate on the ready to schedule ops
-
-                               long nextOpID = nextOperator(readyOps);
-
-                               if (opId == nextOpID) {
-                                   newPlan.assignOperator(nextOpID, contId, false);
-                               } else {
-                                   newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID),
-                                       false);
-                               }
-
-
-                               findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
-                           }
-                           //                        newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));
-                           if(newPlan.stats.money<p.stats.money && newPlan.stats.runtime_MS < p.stats.runtime_MS)
-                           newPlans.add(newPlan);
+//
+//                           Plan newPlan = new Plan(graph, new Cluster());
+//                           newPlan.vmUpgrading = plan.vmUpgrading;
+//                           for (Container contcont : plan.cluster.containersList) {
+//                               newPlan.cluster.addContainer(contcont.contType);
+//                           }
+//
+//                           //assign all the ops again to the new plan
+//                           HashSet<Long> opsAssignedSet = new HashSet<>();
+//                           HashSet<Long> readyOps = new HashSet<>();
+//
+//                           findRoots(readyOps);
+//
+//                           while (readyOps.size() > 0) {//iterate on the ready to schedule ops
+//
+//                               long nextOpID = nextOperator(readyOps);
+//
+//                               if (opId == nextOpID) {
+//                                   newPlan.assignOperator(nextOpID, contId, false);
+//                               } else {
+//                                   newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID),
+//                                       false);
+//                               }
+//
+//
+//                               findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
+//                           }
+                             newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));
+//                           if(newPlan.stats.money<p.stats.money && newPlan.stats.runtime_MS < p.stats.runtime_MS)
+//                           newPlans.add(newPlan);
                        }
 
                    }

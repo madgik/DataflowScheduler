@@ -54,11 +54,54 @@ public class Main {
 //        System.out.println("pareto opti time -> "+solutions.optimizationTime_MS);
 //        System.out.println("moheft opti time -> "+solutionsM.optimizationTime_MS);
 
-        runMontage();
-        runLIGO();
-        runCyberShake();
+//        runMontage();
+//        runLIGO();
+//        runCyberShake();
+        runSIPHT();
+
 
         //TODO: Run the simulation to validate the results for the space of solutions
+    }
+
+
+
+    static void runSIPHT(){
+
+        //        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
+        //        //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
+        PegasusDaxParser parser = new PegasusDaxParser();
+        DAG graph=null;
+        try {
+            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/SIPHT.n.100.0.dax");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph,cluster);
+
+        SolutionSpace solutions = sched.schedule();
+
+        mpinfo.add("pareto",solutions.results);
+
+        Cluster clusterM = new Cluster();
+
+        Scheduler schedM = new Moheft(graph,clusterM);
+
+        SolutionSpace solutionsM = schedM.schedule();
+
+
+        mpinfo.add("moheft",solutionsM.results);
+
+        plotMultiple(mpinfo,"SIPHT");
+
+        System.out.println("pareto SIPHT time -> "+solutions.optimizationTime_MS);
+        System.out.println("moheft montage time -> "+solutionsM.optimizationTime_MS);
+
+
     }
 
 
