@@ -90,6 +90,7 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
     }
 
     public static containerType getSmallest(){
+
         return A;
     }
 

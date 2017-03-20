@@ -997,28 +997,7 @@ public class paretoNoHomogen implements Scheduler {
         return results;
     }
 
-//    ArrayList<Long> findSuccesors(Long opId, Plan plan){
-//        ArrayList<Long> succesors = new ArrayList<>();
 //
-//        Long contId = plan.assignments.get(opId);
-//
-//        Long startTime = plan.opIdtoStartEndProcessing_MS.get(opId);
-//
-//        ArrayList<Long> samecont = new ArrayList<>();
-//
-//        ///find all scheduled in the same cont after opId
-//        for(Long oid : plan.contAssignments.get(contId)) {
-//            if (plan.assignments.get()){
-//                samecont.add(oid);
-//        }
-//        }
-//
-//
-//        ///find all children
-//
-//
-//        return succesors;
-//    }
 
     private Plan migrateOperator(Plan plan, Long opId, Long contId, Slot newSlot, Long opEST) {
         Plan newPlan  = new Plan(plan);

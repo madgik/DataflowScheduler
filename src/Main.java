@@ -20,10 +20,10 @@ public class Main {
     public static void main(String[] args)  {
 
 
-//        runCyberShake();
-//        runSIPHT();
+        runCyberShake();
+////        runSIPHT();
 //        runMontage();
-//        runLIGO();
+////        runLIGO();
 
 //        File loadFile = new File(Main.class.getResource("Example.dax").getPath());
 //
@@ -150,7 +150,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.25.0.dax");
+            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.100.0.dax");
         } catch (Exception e) {
             e.printStackTrace();
         }
