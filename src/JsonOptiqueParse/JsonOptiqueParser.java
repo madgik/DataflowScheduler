@@ -25,6 +25,9 @@ public class JsonOptiqueParser {
         mult_data = mulDATA;
         mult_time = multTime;
     }
+    public JsonOptiqueParser(){
+
+    }
 
 
     public DAG parse(String filepath){

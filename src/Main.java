@@ -19,7 +19,13 @@ public class Main {
 
     public static void main(String[] args)  {
 
-//        File loadFile = new File(Main.class.getResource("2_Q5_6_10.2dat.cleanplan").getPath());
+
+//        runCyberShake();
+//        runSIPHT();
+//        runMontage();
+//        runLIGO();
+
+//        File loadFile = new File(Main.class.getResource("Example.dax").getPath());
 //
 //        JsonOptiqueParser parser = new JsonOptiqueParser();
 //        DAG graph=null;
@@ -51,19 +57,50 @@ public class Main {
 //
 //        plotMultiple(mpinfo,"opti");
 //
-//        System.out.println("pareto opti time -> "+solutions.optimizationTime_MS);
-//        System.out.println("moheft opti time -> "+solutionsM.optimizationTime_MS);
-
-//        runSIPHT();
-        runMontage();
-        runLIGO();
-        runCyberShake();
-
-
+//        System.out.println("pareto Example time -> "+solutions.optimizationTime_MS);
+//        System.out.println("moheft Example time -> "+solutionsM.optimizationTime_MS);
+//
 
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
+
+    static void runOpti(){
+        File loadFile = new File(Main.class.getResource("2_Q5_6_10.2dat.cleanplan").getPath());
+
+                JsonOptiqueParser parser = new JsonOptiqueParser();
+                DAG graph=null;
+                try {
+                    graph = parser.parse(loadFile.getAbsolutePath());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+                Cluster cluster = new Cluster();
+
+                Scheduler sched = new paretoNoHomogen(graph,cluster);
+
+                SolutionSpace solutions = sched.schedule();
+
+                mpinfo.add("pareto",solutions.results);
+
+
+                Cluster clusterM = new Cluster();
+
+                Scheduler schedM = new Moheft(graph,clusterM);
+
+                SolutionSpace solutionsM = schedM.schedule();
+
+
+                mpinfo.add("moheft",solutionsM.results);
+
+                plotMultiple(mpinfo,"opti");
+
+                System.out.println("pareto opti time -> "+solutions.optimizationTime_MS);
+                System.out.println("moheft opti time -> "+solutionsM.optimizationTime_MS);
+    }
 
 
     static void runSIPHT(){
@@ -113,7 +150,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.100.0.dax");
+            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.25.0.dax");
         } catch (Exception e) {
             e.printStackTrace();
         }

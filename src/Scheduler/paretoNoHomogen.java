@@ -546,10 +546,13 @@ public class paretoNoHomogen implements Scheduler {
         containerType contType= containerType.getSmallest();//maybe check for every container later
         Plan plan = new Plan(graph,cluster);
 
+        plan.cluster.addContainer(contType.getSmallest());
+        plan.vmUpgrading = "increasing";
 
         for (Operator op : graph.getOperators()) {
             plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id,backfilling);
         }
+        plan.printAssignments();
         return plan;
     }
 

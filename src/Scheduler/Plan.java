@@ -5,10 +5,7 @@ import Graph.Edge;
 import Graph.Operator;
 import utils.Pair;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Created by johnchronis on 2/18/17.
@@ -204,7 +201,11 @@ public class Plan implements Comparable<Plan> {
 
         contOpDuration_MS = beforeDTDuration_MS + opProcessingDuration_MS + afterDTDuration_MS;
 
-        earliestStartTime_MS = dependenciesEnd_MS + 1;
+        if(graph.getParents(opId).size()>0){
+        earliestStartTime_MS = dependenciesEnd_MS + 1;}
+        else{
+            earliestStartTime_MS = dependenciesEnd_MS;
+        }
 
         opIdToearliestStartTime_MS.put(opId, dependenciesEnd_MS+1);
 
@@ -267,7 +268,10 @@ public class Plan implements Comparable<Plan> {
 
             } else if( earliestStartTime_MS > contFirstAvailTime_MS ){           //if starContTime is after the cont was available
                          // add possible free Slot
-                cont.freeSlots.add(new Slot(contFirstAvailTime_MS,earliestStartTime_MS+beforeDTDuration_MS));
+                if( cont.opsschedule.size() > 0){
+                    cont.freeSlots.add(new Slot(contFirstAvailTime_MS,earliestStartTime_MS+beforeDTDuration_MS));
+                }
+
             }
 
 
@@ -432,16 +436,107 @@ public class Plan implements Comparable<Plan> {
     public void printInfo() {
         //        System.out.println("------Plan Info----");
         StringBuilder i = new StringBuilder();
+        Formatter formatter = new Formatter(i, Locale.US);
+
+
+
+
         i.append(stats.runtime_MS).append(" ").append(stats.money).append(" ").append("conts ")
             .append(cluster.containersList.size()).append("  ");
+
+        System.out.format("%d %5.2f", stats.runtime_MS, stats.money);
+
+
+        long usedTimeSum =0;
+        long freeTimeSum = 0;
+        double minUtil = 10.0;
+        double maxUtil = -5.0;
+        double AvgUtil= 0;
+        double UtilQuantum = 0;
+        int countfs =0;
+
+
+        for(Container c:cluster.containersList){
+            long dtTime = 0;
+            long proTime = 0;
+            long contTime = 0;
+            long ftime = 0;
+            double Util =0.0;
+            double Util2 =0.0;
+
+
+            for(Long opId: graph.operators.keySet()){
+                if(assignments.get(opId) == c.id){
+                    dtTime += opIdToBeforeDTDuration_MS.get(opId) + opIdToAfterDTDuration_MS.get(opId);
+                    proTime += opIdToProcessingTime_MS.get(opId);
+                }
+            }
+            contTime = c.UsedUpTo_MS - c.startofUse_MS;
+            Util = (double)(dtTime+proTime) / (double)contTime;
+
+            for(Slot s: c.freeSlots){
+                countfs++;
+                freeTimeSum+=s.end_MS - s.start_MS;
+                ftime += s.end_MS - s.start_MS;
+
+            }
+
+            Util2 = (double)(contTime - ftime) / (double)contTime;
+
+            double Util3;
+            long o=0;
+
+            for(Slot s: c.opsschedule){
+                usedTimeSum+= s.end_MS - s.start_MS;
+                o += s.end_MS - s.start_MS;
+
+            }
+
+            Util3 = (double)(o) / (double)contTime;
+
+
+            if(Math.abs(Util-Util2)>0.2 || Math.abs(Util-Util3)>0.2 || Math.abs(Util3-Util2)>0.2 ){
+                try {
+                    throw new Exception("Problem!!!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            minUtil = Math.min(minUtil,Util);
+            maxUtil = Math.max(maxUtil,Util);
+
+            AvgUtil+=Util;
+
+        }
+
+
+        AvgUtil = (double) AvgUtil / cluster.containersList.size();
+
+
+
+
+        i.append("\t\t\t");
+        i.append(" AvgU: ").append(AvgUtil);
+        i.append(" MaxU: ").append(maxUtil);
+        i.append(" MinU: ").append(minUtil);
+        i.append(" #fs: ").append(countfs);
+
+
+        System.out.format(" AvgU: %3.2f -MaxU: %3.2f -MinU: %3.2f -#fs: %d ",AvgUtil,maxUtil,minUtil,countfs);
+
+        System.out.format(" -- #Conts: %d",cluster.containersList.size());
 
         for (containerType ct : cluster.countTypes.keySet()) {
             i.append(ct.name).append("(").append(cluster.countTypes.get(ct)).append(")")
                 .append(" ");
+
+            System.out.format(" %s(%d) ",ct.name,cluster.countTypes.get(ct));
         }
 
+        System.out.format("%n");
 
-        System.out.println(i.toString());
+//        System.out.println(i.toString());
         //        System.out.println("------Plan Info END----");
 
     }
@@ -451,9 +546,8 @@ public class Plan implements Comparable<Plan> {
 //            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
 //        }
 //
-//        for(Long opId: opIdtoStartEnd_MS.keySet()) {
-//            System.out.println("op " + opId + " (" + (opIdtoStartEnd_MS.get(opId).b - opIdtoStartEnd_MS.get(opId).a) + ") [ " + opIdtoStartEnd_MS.get(opId).a + " - " + opIdtoStartEnd_MS.get(opId).b + " ]");
-//            System.out.println("dataTransfer for op " + opId + " (" + (dataTransfer_MS.get(opId).b - dataTransfer_MS.get(opId).a) + ") [ " + dataTransfer_MS.get(opId).a + " - " + dataTransfer_MS.get(opId).b + " ]");
+//        for(Long opId: opIdToProcessingTime_MS.keySet()) {
+//            System.out.println("op " + opId + " (" + (opIdtoStartEndProcessing_MS.get(opId).b - opIdtoStartEndProcessing_MS.get(opId).a) + ") [ " + opIdtoStartEndProcessing_MS.get(opId).a + " - " + opIdtoStartEndProcessing_MS.get(opId).b + " ]");
 //
 //        }
 

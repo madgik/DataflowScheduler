@@ -20,6 +20,7 @@ public class Container {
     public ArrayList<Slot> opsschedule;
 
     public ArrayList<Slot> freeSlots;
+    //be carefull to remove the first slot if the first op is moved!!!
 
 
     public Container(long cid,containerType ctype){
@@ -27,8 +28,8 @@ public class Container {
         name = "c"+ String.valueOf(cid);
         contType = ctype;
 
-        startofUse_MS = 0;
-        startofUseDT_MS = 0;
+        startofUse_MS = -1;
+        startofUseDT_MS = -1;
         UsedUpTo_MS = 0;
         UsedUpToDT_MS = 0;
 
@@ -37,6 +38,9 @@ public class Container {
         opsschedule = new ArrayList<>();
         freeSlots = new ArrayList<>();
     }
+
+
+
 
     public Container(Container c) {
         id = c.id;
@@ -57,21 +61,41 @@ public class Container {
 
         freeSlots = new ArrayList<>();
         for(int i=0;i<c.freeSlots.size();++i){
-            opsschedule.add(new Slot(c.freeSlots.get(i)));
+            freeSlots.add(new Slot(c.freeSlots.get(i)));
         }
     }
 
-    public void setUsedUpToDT(long time){UsedUpToDT_MS = Math.max(UsedUpToDT_MS,time);}
+    public void setUsedUpToDT(long time){
+        UsedUpToDT_MS = Math.max(UsedUpToDT_MS,time);
+    }
 
     public void setUsedUpTo(long time){
         UsedUpTo_MS = Math.max(UsedUpTo_MS,time);
     }
 
-    public void setStart(long time){startofUse_MS = Math.min(startofUse_MS,time);}
+    public void setStart(long time){
+        if(startofUse_MS==-1){
+            startofUse_MS=time;
+        }
+            else{
 
-    public void setStartDT(long time){startofUseDT_MS = Math.min(startofUseDT_MS,time);}
+            startofUse_MS = Math.min(startofUse_MS,time);
+        }
+    }
 
-    public Long getFirstAvailTime_atEnd_MS(){return UsedUpTo_MS+1;}
+    public void setStartDT(long time) {
+        if (startofUseDT_MS == -1) {
+            startofUseDT_MS = time;
+        } else {
+            startofUseDT_MS = Math.min(startofUseDT_MS, time);
+        }
+
+    }
+
+    public Long getFirstAvailTime_atEnd_MS(){
+        if(UsedUpTo_MS==0)return 0L;
+        return UsedUpTo_MS+1;
+    }
 
 
 
