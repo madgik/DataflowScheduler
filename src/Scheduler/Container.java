@@ -94,7 +94,7 @@ public class Container {
 
     public Long getFirstAvailTime_atEnd_MS(){
         if(UsedUpTo_MS==0)return 0L;
-        return UsedUpTo_MS+1;
+        return UsedUpTo_MS;//+1;
     }
 
 

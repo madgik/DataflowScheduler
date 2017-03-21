@@ -31,6 +31,8 @@ public class Plan implements Comparable<Plan> {
 
     public HashMap<Long,Long> opIdToAfterDTDuration_MS;
 
+    public HashMap<Long,Stack<Long>> contIdToSortedOps = null;
+
 
 
     public Plan(DAG graph, Cluster cluster) {
@@ -147,7 +149,7 @@ public class Plan implements Comparable<Plan> {
             long fromOpEndTimePLUSDTTime =
                 opIdtoStartEndProcessing_MS.get(fromId).b + calculateDelayDistributedStorage(fromId,opId,contId);
 
-            dependenciesEnd_MS = Math.max(dependenciesEnd_MS,fromOpEndTimePLUSDTTime+1);
+            dependenciesEnd_MS = Math.max(dependenciesEnd_MS,fromOpEndTimePLUSDTTime);//+1);
 
         }
 
@@ -177,7 +179,8 @@ public class Plan implements Comparable<Plan> {
 
 
         for (Edge edge : graph.getParents(opId)) {
-            long transferTime = (long) Math.ceil(edge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
+
+            long transferTime = calculateDelayDistributedStorage(edge.from,opId,contId);//(long) Math.ceil(edge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
 
             beforeDTDuration_MS = Math.max(beforeDTDuration_MS, transferTime);
         }
@@ -201,13 +204,15 @@ public class Plan implements Comparable<Plan> {
 
         contOpDuration_MS = beforeDTDuration_MS + opProcessingDuration_MS + afterDTDuration_MS;
 
-        if(graph.getParents(opId).size()>0){
-        earliestStartTime_MS = dependenciesEnd_MS + 1;}
-        else{
-            earliestStartTime_MS = dependenciesEnd_MS;
-        }
+//        if(graph.getParents(opId).size()>0){
+//        earliestStartTime_MS = dependenciesEnd_MS ;}//+ 1;}
+//        else{
+//            earliestStartTime_MS = dependenciesEnd_MS;
+//        }
 
-        opIdToearliestStartTime_MS.put(opId, dependenciesEnd_MS+1);
+        earliestStartTime_MS = dependenciesEnd_MS;
+
+        opIdToearliestStartTime_MS.put(opId, dependenciesEnd_MS);//+1);
 
 
         ////////////////BACKFILLING/////////////////////////////////
@@ -422,10 +427,26 @@ public class Plan implements Comparable<Plan> {
         return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
     }
 
+    public Long calculateDelayDistributedStorage(Long parentId, Long childId,  Long parentContId,Long childContId){
+
+        if(childContId == parentContId){ //remove to transfer always to distributed storage
+            return 0L;
+        }
+        return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
+    }
+
+    public Long calculateDelayDistributedStorage(Long parentId, Long childId){
+
+        if(assignments.get(parentId) == assignments.get(childId) ){ //remove to transfer always to distributed storage
+            return 0L;
+        }
+        return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
+    }
+
     @Override public int compareTo(Plan other) {  //TODO ji is this right?
         if (stats.runtime_MS == other.stats.runtime_MS) {
             if (Math.abs(stats.money - other.stats.money) < RuntimeConstants.precisionError) {
-                return Long.compare(stats.containersUsed, other.stats.containersUsed);
+                Long.compare(stats.containersUsed, other.stats.containersUsed);//TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
             }
             return Double.compare(stats.money, other.stats.money);
         } else {
@@ -499,7 +520,7 @@ public class Plan implements Comparable<Plan> {
                 try {
                     throw new Exception("Problem!!!");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                   // e.printStackTrace();
                 }
             }
 
@@ -542,14 +563,14 @@ public class Plan implements Comparable<Plan> {
     }
 
     public void printAssignments() {
-//        for(Long contId: this.contAssignments.keySet()) {
-//            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-//        }
-//
-//        for(Long opId: opIdToProcessingTime_MS.keySet()) {
-//            System.out.println("op " + opId + " (" + (opIdtoStartEndProcessing_MS.get(opId).b - opIdtoStartEndProcessing_MS.get(opId).a) + ") [ " + opIdtoStartEndProcessing_MS.get(opId).a + " - " + opIdtoStartEndProcessing_MS.get(opId).b + " ]");
-//
-//        }
+        for(Long contId: this.contAssignments.keySet()) {
+            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
+        }
+
+        for(Long opId: opIdToProcessingTime_MS.keySet()) {
+            System.out.println("op " + opId + " (" + (opIdtoStartEndProcessing_MS.get(opId).b - opIdtoStartEndProcessing_MS.get(opId).a) + ") [ " + opIdtoStartEndProcessing_MS.get(opId).a + " - " + opIdtoStartEndProcessing_MS.get(opId).b + " ]");
+
+        }
 
     }
 
@@ -557,4 +578,18 @@ public class Plan implements Comparable<Plan> {
         return (1.0 - alphaPar) * stats.quanta + alphaPar * (stats.runtime_MS);
     }
 
+    public void calculateOrderingofOperatorsInContainers() {
+        if(this.contIdToSortedOps == null) {
+            contIdToSortedOps = new HashMap<>();
+            for (Container c : cluster.containers.values()) {
+                contIdToSortedOps.put(c.id, new Stack<Long>());
+                Collections.sort(c.opsschedule);
+                Collections.reverse(c.opsschedule);
+                for (Slot s : c.opsschedule) {
+                    contIdToSortedOps.get(c.id).push(s.opId);
+                }
+            }
+
+        }
+    }
 }

@@ -20,10 +20,11 @@ public class Main {
     public static void main(String[] args)  {
 
 
-        runCyberShake();
-////        runSIPHT();
-//        runMontage();
-////        runLIGO();
+//        runExample();
+//        runCyberShake();
+//        runSIPHT();
+        runMontage();
+//        runLIGO();
 
 //        File loadFile = new File(Main.class.getResource("Example.dax").getPath());
 //
@@ -64,6 +65,44 @@ public class Main {
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
+    static void runExample(){
+
+        //        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
+        //        //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
+        PegasusDaxParser parser = new PegasusDaxParser(1,1);
+        DAG graph=null;
+        try {
+            graph = parser.parseDax(Main.class.getResource("Example.dax").getFile());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph,cluster);
+
+        SolutionSpace solutions = sched.schedule();
+
+        mpinfo.add("pareto",solutions.results);
+
+        Cluster clusterM = new Cluster();
+
+        Scheduler schedM = new Moheft(graph,clusterM);
+
+        SolutionSpace solutionsM = schedM.schedule();
+
+
+        mpinfo.add("moheft",solutionsM.results);
+
+        plotMultiple(mpinfo,"Example");
+
+        System.out.println("pareto Example time -> "+solutions.optimizationTime_MS);
+        System.out.println("moheft Example time -> "+solutionsM.optimizationTime_MS);
+
+
+    }
 
     static void runOpti(){
         File loadFile = new File(Main.class.getResource("2_Q5_6_10.2dat.cleanplan").getPath());
@@ -110,7 +149,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser(100,1);
         DAG graph=null;
         try {
-            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/SIPHT.n.100.0.dax");
+            graph = parser.parseDax(Main.class.getResource("SIPHT.n.100.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,7 +189,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.100.0.dax");
+            graph = parser.parseDax(Main.class.getResource("MONTAGE.n.25.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -188,7 +227,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph=null;
         try {
-            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/CyberShake.n.100.0.dax");
+            graph = parser.parseDax(Main.class.getResource("CyberShake.n.100.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -225,7 +264,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser(100,1);
         DAG graph=null;
         try {
-            graph = parser.parseDax("/Users/johnchronis/Desktop/MyScheduler/resources/LIGO.n.100.0.dax");
+            graph = parser.parseDax(Main.class.getResource("LIGO.n.100.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }

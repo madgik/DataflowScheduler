@@ -18,16 +18,16 @@ public class Moheft implements Scheduler {
 
     ///rankingks
 
-    public static LinkedList<Long> opsSorted = new LinkedList<>();
+    public LinkedList<Long> opsSorted = new LinkedList<>();
 
 
 
     protected int skylinePlansToKeep =100;
     protected int skylinePruningOption = 2;
 
-    public int maxContainers = 100;
+    public int maxContainers = 10000000;
 
-    public boolean backfilling = true;
+    public boolean backfilling = false;
 
     private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
 
