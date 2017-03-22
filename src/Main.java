@@ -217,7 +217,7 @@ public class Main {
     static void runCyberShake(){
 //        File loadFile = new File(Main.class.getResource("CyberShake.n.100.0.dax").getFile());
         //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
-        PegasusDaxParser parser = new PegasusDaxParser();
+        PegasusDaxParser parser = new PegasusDaxParser(100,100);
         DAG graph=null;
         try {
             graph = parser.parseDax(Main.class.getResource("CyberShake.n.100.0.dax").getFile());
@@ -254,7 +254,7 @@ public class Main {
     static void runLIGO(){
 //        File loadFile = new File(Main.class.getResource("LIGO.n.100.0.dax").getFile());
         //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
-        PegasusDaxParser parser = new PegasusDaxParser(100,1);
+        PegasusDaxParser parser = new PegasusDaxParser(10,1);
         DAG graph=null;
         try {
             graph = parser.parseDax(Main.class.getResource("LIGO.n.100.0.dax").getFile());

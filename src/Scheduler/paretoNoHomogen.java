@@ -136,9 +136,9 @@ public class paretoNoHomogen implements Scheduler {
         beforeMigrate.addAll(computeSkyline(paretoPlans));
 
 
-        space.addAll(beforeMigrate);
+        //space.addAll(beforeMigrate);
 //        for(Plan p:beforeMigrate){
-//            space.addAll(migrateToFreeSlots(p));
+//            space.addAll(migrateCriticalOpsToConts(p));
 //        }
 
 
@@ -377,6 +377,9 @@ public class paretoNoHomogen implements Scheduler {
 
             plansInner.addAll(skylinePlansNew.results);
 
+
+            for(Plan pToChange: plansInner)
+            migrateCriticalOpsToConts(pToChange);
 
             skylinePlansNew.clear();
         }
@@ -872,10 +875,10 @@ public class paretoNoHomogen implements Scheduler {
         };
          Collections.sort(opsSorted, levelRankComparator);  //should it be the same as 297????
 
-        System.out.println("sorting");
-        for(Long op: opsSorted)
-            System.out.println(op);
-//
+//        System.out.println("sorting");
+//        for(Long op: opsSorted)
+//            System.out.println(op);
+////
 //        Comparator<Operator> slackComparator = new Comparator<Operator>() {
 //            @Override
 //            public int compare(Operator op1, Operator op2) {
@@ -909,7 +912,72 @@ public class paretoNoHomogen implements Scheduler {
 //        for(Long opId: opsSortedReversed())
 //        System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
 
+
         for(Long opId: opsSortedReversed()) {
+            Long lst = Long.MAX_VALUE;
+
+
+            //also checks succ at container
+            long succStart = Long.MAX_VALUE;
+            Long succId = null;
+            Long contId = plan.assignments.get(opId);
+            for(Long nextOpId: plan.contAssignments.get(contId)) {
+                if(plan.opIdtoStartEndProcessing_MS.get(nextOpId).a<succStart && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
+                    succStart = plan.opIdtoStartEndProcessing_MS.get(nextOpId).a;
+                    succId = nextOpId;
+                }
+
+            }
+
+            if(succId!=null)
+                lst = Math.min(lst, succStart - plan.opIdToBeforeDTDuration_MS.get(succId));
+
+
+            if (graph.getChildren(opId).isEmpty()) { //if exit node
+//                System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId));
+
+                lst = plan.stats.runtime_MS - plan.opIdToProcessingTime_MS.get(opId);
+            }else {
+                for (Edge outEdge : graph.getChildren(opId)) {
+                    succId = outEdge.to;
+
+                    Long succStartTime =  plan.opIdtoStartEndProcessing_MS.get(succId).a;
+
+                    long templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
+
+//                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + succId + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId) + " dt before succ: " + plan.opIdToBeforeDTDuration_MS.get(succId) + " starting at " + succStartTime);
+
+//TODO: add somewhere +1 for data transfer? It starts at the next interval every time...
+                    lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId,succId)  - plan.opIdToProcessingTime_MS.get(opId), lst);
+                    //lst = Math.min(succStartTime - plan.opIdToAfterDTDuration_MS.get(opId) - plan.opIdToProcessingTime_MS.get(opId), lst);
+                }
+            }
+
+
+
+
+//            System.out.println(opId + " lst " + lst);
+
+            opLST.put(opId, lst);
+        }
+
+        return opLST;
+    }
+
+
+    public HashMap<Long, Long> computeLST(Plan plan, Long opToAssignId) {
+
+        HashMap <Long, Long> opLST = new HashMap<>();
+
+//        System.out.println("\nfor plan makespan " + plan.stats.runtime_MS );
+//        for(Long opId: opsSortedReversed())
+//            System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
+
+        for(Long opId: opsSortedReversed()) {
+
+
+            if(opToAssignId==opId)
+                break;
             Long lst = Long.MAX_VALUE;
             if (graph.getChildren(opId).isEmpty()) { //if exit node
 //                System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId));
@@ -931,50 +999,7 @@ public class paretoNoHomogen implements Scheduler {
                 }
             }
 
-//            System.out.println(opId + " lst " + lst);
-
-            opLST.put(opId, lst);
-        }
-
-        return opLST;
-    }
-
-
-    public HashMap<Long, Long> computeLST(Plan plan, Long opToAssignId) {
-
-        HashMap <Long, Long> opLST = new HashMap<>();
-
-        System.out.println("\nfor plan makespan " + plan.stats.runtime_MS );
-        for(Long opId: opsSortedReversed())
-            System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
-
-        for(Long opId: opsSortedReversed()) {
-
-
-            if(opToAssignId==opId)
-                break;
-            Long lst = Long.MAX_VALUE;
-            if (graph.getChildren(opId).isEmpty()) { //if exit node
-                System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId));
-
-                lst = plan.stats.runtime_MS - plan.opIdToProcessingTime_MS.get(opId);
-            }else {
-                for (Edge outEdge : graph.getChildren(opId)) {
-                    Long succId = outEdge.to;
-
-                    Long succStartTime =  plan.opIdtoStartEndProcessing_MS.get(succId).a;
-
-                    long templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
-
-                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + succId + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId) + " dt before succ: " + plan.opIdToBeforeDTDuration_MS.get(succId) + " starting at " + succStartTime);
-
-//TODO: add somewhere +1 for data transfer? It starts at the next interval every time...
-                    lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId,succId)  - plan.opIdToProcessingTime_MS.get(opId), lst);
-                    //lst = Math.min(succStartTime - plan.opIdToAfterDTDuration_MS.get(opId) - plan.opIdToProcessingTime_MS.get(opId), lst);
-                }
-            }
-
-            System.out.println(opId + " so lst " + lst);
+//            System.out.println(opId + " so lst " + lst);
 
             opLST.put(opId, lst);
 
@@ -994,13 +1019,30 @@ public class paretoNoHomogen implements Scheduler {
 
 
             Long est = Long.MIN_VALUE;
+
+
+            //also checks succ at container
+            long predEndTime = Long.MIN_VALUE;
+            Long predId = null;
+            Long contId = plan.assignments.get(opId);
+            for(Long nextOpId: plan.contAssignments.get(contId)) {
+                if(plan.opIdtoStartEndProcessing_MS.get(nextOpId).b>predEndTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).b <= plan.opIdtoStartEndProcessing_MS.get(opId).a) {
+                    predEndTime = plan.opIdtoStartEndProcessing_MS.get(nextOpId).b;
+                    predId = nextOpId;
+                }
+
+            }
+
+            if(predId!=null)
+                est = Math.max(est, predEndTime + plan.opIdToBeforeDTDuration_MS.get(contId));
+
             if(graph.getParents(opId).isEmpty()){
                 est = 0L;
             }else{
                 for(Edge inEdge:graph.getParents(opId)){
-                    Long predId = inEdge.from;
-
-                    Long predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
+                    predId = inEdge.from;
+//TODO: remove 2* and add after/before once. calculateDelay returns 0 if not parent child
+                    predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
                             //opIdToAfterDTDuration_MS.get(predId) +//This dt is computed only for parents not vm pred even if it was to be included
                             2*(plan.calculateDelayDistributedStorage(predId,opId,plan.assignments.get(opId)));//plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: do we need any +/-1?
 
@@ -1036,13 +1078,13 @@ public class paretoNoHomogen implements Scheduler {
                         2*(plan.calculateDelayDistributedStorage(predId,opId,plan.assignments.get(opId)));//plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: do we need any +/-1?
 
 
-                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + predId + " dt after pred: " + plan.opIdToAfterDTDuration_MS.get(predId) + " finishing at " + predEndTime);
+//                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + predId + " dt after pred: " + plan.opIdToAfterDTDuration_MS.get(predId) + " finishing at " + predEndTime);
 
                     est = Math.max(predEndTime,est);
                 }
             }
             opEST.put(opId,est);
-            System.out.println(opId + " est " + est);
+//            System.out.println(opId + " est " + est);
         }
         return opEST;
     }
@@ -1057,7 +1099,7 @@ public class paretoNoHomogen implements Scheduler {
             Long EST = opEST.get(opId);
             opSlack.put(opId,LST-EST);
             opSortedBySlack.add(opId);
-            System.out.println(opId + " slack " + (LST-EST));
+          //  System.out.println(opId + " slack " + (LST-EST));
         }
 
         Collections.sort(opSortedBySlack, new Comparator<Long>() {
@@ -1208,12 +1250,11 @@ public class paretoNoHomogen implements Scheduler {
 //        return results;
 //    }
 
-
-    public SolutionSpace migrateToFreeSlots(Plan p ) {
+    public SolutionSpace migrateCriticalOpsToConts(Plan p) {
         System.out.println("MIGRATE///////////////////");
         p.printInfo();
-        p.printAssignments();
-        System.out.println("MIGRATE1///////////////////");
+//        p.printAssignments();
+//        System.out.println("MIGRATE1///////////////////");
 
         //for every plan get the most critical ops and move it, then
         // get the next critical ops and move that and so on
@@ -1231,156 +1272,294 @@ public class paretoNoHomogen implements Scheduler {
         HashMap<Long, Long> opEST;
         HashMap<Long, Long> opLST;
 
-       while(plans.size()>0) {
+        if(plans.size()>0) {
 
-           for (Plan plan : plans) {
+            LinkedList opsMigrated = new LinkedList();
+            for (Plan plan : plans) {
 
-               //  System.out.println( plan.cluster.containers.size());
-               if(plan.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
-                   continue;
+                System.out.println("next plan - migration");
+                plan.printInfo();
+                //  System.out.println( plan.cluster.containers.size());
+                if(plan.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
+                    continue;
 
 
-               HashMap<Long, Long> opSlack = new HashMap<>();
-               ArrayList<Long> opSortedBySlack = new ArrayList<>();
+                HashMap<Long, Long> opSlack = new HashMap<>();
+                ArrayList<Long> opSortedBySlack = new ArrayList<>();
 
-               computeSlackOps(p, opSlack, opSortedBySlack);
+                computeSlackOps(p, opSlack, opSortedBySlack);
 
-               int opsMigrated=0;
-               for (Long opId : opSortedBySlack) {
+//                int opsMigrated=0;
+                for (Long opId : opSortedBySlack) {
 
-                   opsMigrated++;
-                   if(opsMigrated>0.10*opSortedBySlack.size())
-                       break;
-                   newSlot = null;
-                   System.out.println("slack " + opId + " " + opSlack.get(opId));
 
-                   oldContId = plan.assignments.get(opId);
 
-                   oldContType = plan.cluster.getContainer(oldContId).contType;
-                   //for every other cont see if it is eligible
-                   for (Long contId : plan.cluster.containers.keySet()) {//TODO: an idea is to sort containers as well in this step and break sooner
-                       if (contId == oldContId)
+                    if(opSlack.get(opId)>0)
+                        break;
+
+                    if(opsMigrated.contains(opId))
+                        continue;
+                    else
+                     opsMigrated.add(opId);
+//                    opsMigrated++;
+//                    if(opsMigrated>0.10*opSortedBySlack.size())
+//                        break;
+
+
+                    newSlot = null;
+                    //System.out.println("slack " + opId + " " + opSlack.get(opId));
+
+                    oldContId = plan.assignments.get(opId);
+
+                    oldContType = plan.cluster.getContainer(oldContId).contType;
+                    //for every other cont see if it is eligible. TODO: sort by util and break loop when no savings
+                    for (Long contId : plan.cluster.containers.keySet()) {//TODO: an idea is to sort containers as well in this step and break sooner
+                        if (contId == oldContId)
+                            continue;//break;//TODO: break or continue?
+                        Container newCont = plan.cluster.getContainer(contId);
+
+                        if (!containerType.isSmaller(oldContType, newCont.contType)) {
                            continue;//break;//TODO: break or continue?
-                       Container newCont = plan.cluster.getContainer(contId);
-                       /*if (!isSmaller(oldContType, newCont.contType)) {
-                           continue;//break;//TODO: break or continue?
-                       }*/
-                       Collections.sort(newCont.freeSlots);
-
-
-
-                       //create a tmpPlan with the new assignment of the operator (startTime is not determined yet)
-
-                       Plan tPlan = new Plan(plan);
-                       tPlan.assignments.put(opId,contId);
-//                       tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
-                       Slot torm =null;
-                       for(Slot s:tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule)
-                       {
-                           if(s.opId == opId){
-                               torm = s;
-                           }
                        }
-                       tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
+                        Collections.sort(newCont.freeSlots);
 
-                       opEST = computeEST(tPlan, opId);//if plan is updated, it needs to be computed every time a new op is migrated
-                       opLST = computeLST(tPlan,opId);
+                        //create a tmpPlan with the new assignment of the operator (startTime is not determined yet)
 
-                       for (Slot fs : newCont.freeSlots) {
-                           Long newstartTime = Long.MAX_VALUE;
-                           //find first free slot that can host the operator
-                           //TODO: add a condition to prune assignments worst than the current
-                           //                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
-                           //                        Long networkDelay = plan.calculateNetworkDelay(opId,contId);
-                           Long opProcessingDuration_MS = plan.opIdToProcessingTime_MS.get(opId);
-                           Long earliestStartTime_MS = plan.opIdToearliestStartTime_MS.get(opId);//TODO: difference between opEST and this?
-                           Long beforeDTDuration_MS = plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: add plan.calculateDelayDistributedStorage(opId,...) instaed?
+                        Plan tPlan = new Plan(plan);
+                        tPlan.assignments.put(opId,contId);
+//                       tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
+                        Slot torm =null;
+                        for(Slot s:tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule)
+                        {
+                            if(s.opId == opId){
+                                torm = s;
+                            }
+                        }
+                        tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
+
+                        opEST = computeEST(tPlan, opId);//if plan is updated, it needs to be computed every time a new op is migrated
+                        opLST = computeLST(tPlan,opId);
+
+                        for (Slot fs : newCont.freeSlots) {
+                            Long newstartTime = Long.MAX_VALUE;
+                            //find first free slot that can host the operator
+                            //TODO: add a condition to prune assignments worst than the current
+                            //                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
+                            //                        Long networkDelay = plan.calculateNetworkDelay(opId,contId);
+                            Long opProcessingDuration_MS = plan.opIdToProcessingTime_MS.get(opId);
+                            Long earliestStartTime_MS = plan.opIdToearliestStartTime_MS.get(opId);//TODO: difference between opEST and this?
+                            Long beforeDTDuration_MS = plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: add plan.calculateDelayDistributedStorage(opId,...) instaed?
 
 
-                           Long lft = Long.MAX_VALUE;
-                           for(Edge childEge :graph.getChildren(opId)){
+                            Long lft = Long.MAX_VALUE;
+                            for(Edge childEge :graph.getChildren(opId)){
                                 Long childId = childEge.to;
                                 lft = Math.min(lft,  opLST.get(childId) - 2*tPlan.calculateDelayDistributedStorage(opId, childId, contId, tPlan.assignments.get(childId)));
-                           }
+                            }
 
-if(fs.start_MS+opProcessingDuration_MS<=lft && fs.start_MS>=earliestStartTime_MS)
-    newSlot = fs;
-//
-//                           Long LET = Long.MAX_VALUE;
-//                           for(Edge childEge :graph.getChildren(opId)){
-//                                Long childId = childEge.to;
-//                                LET = Math.min(LET,      );
-//                           }
-//
-//
-//                           if (fs.end_MS - fs.start_MS >= opProcessingDuration_MS
-//                               && earliestStartTime_MS + beforeDTDuration_MS   <= fs.end_MS - opProcessingDuration_MS
-//                                   ){
-//                               if(earliestStartTime_MS+beforeDTDuration_MS+opProcessingDuration_MS+afterDT <= min(startTimeChildren))
-//
-//
-//
-//                               newSlot = fs;
-//
-//
-//                           }
-                       }
-                       //create new plan with the new assignment
-                       if (newSlot != null) {
-                           System.out.println("found");
-//
-//                           Plan newPlan = new Plan(graph, new Cluster());
-//                           newPlan.vmUpgrading = plan.vmUpgrading;
-//                           for (Container contcont : plan.cluster.containersList) {
-//                               newPlan.cluster.addContainer(contcont.contType);
-//                           }
-//
-//                           //assign all the ops again to the new plan
-//                           HashSet<Long> opsAssignedSet = new HashSet<>();
-//                           HashSet<Long> readyOps = new HashSet<>();
-//
-//                           findRoots(readyOps);
-//
-//                           while (readyOps.size() > 0) {//iterate on the ready to schedule ops
-//
-//                               long nextOpID = nextOperator(readyOps);
-//
-//                               if (opId == nextOpID) {
-//                                   newPlan.assignOperator(nextOpID, contId, false);
-//                               } else {
-//                                   newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID),
-//                                       false);
-//                               }
-//
-//
-//                               findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
-//                           }
-//                           System.out.println("it is " + plan.cluster.containers.get(contId).contType);
-                         //  plan.cluster.getContainer(contId);
-                             newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));//TODO: opEST or plan.opIdToearliestStartTime_MS?
-                           System.out.println("MIGRATE11111111///////////////////");
-                           newPlans.results.get(0).printInfo();
-                           newPlans.results.get(0).printAssignments();
-                           System.out.println("MIGRATE22222222///////////////////");
-                           plan.printInfo();
-                           plan.printAssignments();
-//                           if(newPlan.stats.money<p.stats.money && newPlan.stats.runtime_MS < p.stats.runtime_MS)
-//                           newPlans.add(newPlan);
-                       }
+                            if(fs.start_MS+opProcessingDuration_MS<=lft && fs.start_MS>=earliestStartTime_MS) {
+                                newSlot = fs;
 
-                   }
-               }
+                            }
 
-           }
-        //   System.out.println(newPlans.size());
-           results.addAll(plans);//TODO check this logic
-           plans.clear();
-           plans.addAll(newPlans);
-           newPlans.clear();
-       }
+                        }
+                        //create new plan with the new assignment
+                        if (newSlot != null) {
+                            newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));//TODO: opEST or plan.opIdToearliestStartTime_MS?
+
+                        }
+
+                    }
+                }
+
+            }
+
+            System.out.println(newPlans.size());
+            for(Plan pnew: newPlans)
+                pnew.printInfo();
+            results.addAll(plans);//TODO check this logic, add only if better/different from older one
+            plans.clear();
+            plans.addAll(newPlans);
+            newPlans.clear();
+        }
 //        System.out.println("ending");
         return results;
     }
+
+//    public SolutionSpace migrateToFreeSlots(Plan p ) {
+//        System.out.println("MIGRATE///////////////////");
+//        p.printInfo();
+//        p.printAssignments();
+//        System.out.println("MIGRATE1///////////////////");
+//
+//        //for every plan get the most critical ops and move it, then
+//        // get the next critical ops and move that and so on
+//
+//        SolutionSpace plans = new SolutionSpace();
+//        plans.add(p);
+//        SolutionSpace newPlans = new SolutionSpace();
+//
+//        SolutionSpace results  = new SolutionSpace();
+//
+//        Long oldContId;
+//        containerType oldContType;
+//        Slot newSlot = null;
+//
+//        HashMap<Long, Long> opEST;
+//        HashMap<Long, Long> opLST;
+//
+//       if(plans.size()>0) {
+//
+//           for (Plan plan : plans) {
+//
+//               System.out.println("migration at plan");
+//               plan.printInfo();
+//               //  System.out.println( plan.cluster.containers.size());
+//               if(plan.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
+//                   continue;
+//
+//
+//               HashMap<Long, Long> opSlack = new HashMap<>();
+//               ArrayList<Long> opSortedBySlack = new ArrayList<>();
+//
+//               computeSlackOps(p, opSlack, opSortedBySlack);
+//
+//               int opsMigrated=0;
+//               for (Long opId : opSortedBySlack) {
+//
+//                   opsMigrated++;
+//                   if(opsMigrated>0.10*opSortedBySlack.size())
+//                       break;
+//                   newSlot = null;
+////                   System.out.println("slack " + opId + " " + opSlack.get(opId));
+//
+//                   oldContId = plan.assignments.get(opId);
+//
+//                   oldContType = plan.cluster.getContainer(oldContId).contType;
+//                   //for every other cont see if it is eligible
+//                   for (Long contId : plan.cluster.containers.keySet()) {//TODO: an idea is to sort containers as well in this step and break sooner
+//                       if (contId == oldContId)
+//                           continue;//break;//TODO: break or continue?
+//                       Container newCont = plan.cluster.getContainer(contId);
+//                       /*if (!isSmaller(oldContType, newCont.contType)) {
+//                           continue;//break;//TODO: break or continue?
+//                       }*/
+//                       Collections.sort(newCont.freeSlots);
+//
+//
+//
+//                       //create a tmpPlan with the new assignment of the operator (startTime is not determined yet)
+//
+//                       Plan tPlan = new Plan(plan);
+//                       tPlan.assignments.put(opId,contId);
+////                       tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
+//                       Slot torm =null;
+//                       for(Slot s:tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule)
+//                       {
+//                           if(s.opId == opId){
+//                               torm = s;
+//                           }
+//                       }
+//                       tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
+//
+//                       opEST = computeEST(tPlan, opId);//if plan is updated, it needs to be computed every time a new op is migrated
+//                       opLST = computeLST(tPlan,opId);
+//
+//                       for (Slot fs : newCont.freeSlots) {
+//                           Long newstartTime = Long.MAX_VALUE;
+//                           //find first free slot that can host the operator
+//                           //TODO: add a condition to prune assignments worst than the current
+//                           //                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
+//                           //                        Long networkDelay = plan.calculateNetworkDelay(opId,contId);
+//                           Long opProcessingDuration_MS = plan.opIdToProcessingTime_MS.get(opId);
+//                           Long earliestStartTime_MS = plan.opIdToearliestStartTime_MS.get(opId);//TODO: difference between opEST and this?
+//                           Long beforeDTDuration_MS = plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: add plan.calculateDelayDistributedStorage(opId,...) instaed?
+//
+//
+//                           Long lft = Long.MAX_VALUE;
+//                           for(Edge childEge :graph.getChildren(opId)){
+//                                Long childId = childEge.to;
+//                                lft = Math.min(lft,  opLST.get(childId) - 2*tPlan.calculateDelayDistributedStorage(opId, childId, contId, tPlan.assignments.get(childId)));
+//                           }
+//
+//if(fs.start_MS+opProcessingDuration_MS<=lft && fs.start_MS>=earliestStartTime_MS)
+//    newSlot = fs;
+////
+////                           Long LET = Long.MAX_VALUE;
+////                           for(Edge childEge :graph.getChildren(opId)){
+////                                Long childId = childEge.to;
+////                                LET = Math.min(LET,      );
+////                           }
+////
+////
+////                           if (fs.end_MS - fs.start_MS >= opProcessingDuration_MS
+////                               && earliestStartTime_MS + beforeDTDuration_MS   <= fs.end_MS - opProcessingDuration_MS
+////                                   ){
+////                               if(earliestStartTime_MS+beforeDTDuration_MS+opProcessingDuration_MS+afterDT <= min(startTimeChildren))
+////
+////
+////
+////                               newSlot = fs;
+////
+////
+////                           }
+//                       }
+//                       //create new plan with the new assignment
+//                       if (newSlot != null) {
+//                           System.out.println("found");
+////
+////                           Plan newPlan = new Plan(graph, new Cluster());
+////                           newPlan.vmUpgrading = plan.vmUpgrading;
+////                           for (Container contcont : plan.cluster.containersList) {
+////                               newPlan.cluster.addContainer(contcont.contType);
+////                           }
+////
+////                           //assign all the ops again to the new plan
+////                           HashSet<Long> opsAssignedSet = new HashSet<>();
+////                           HashSet<Long> readyOps = new HashSet<>();
+////
+////                           findRoots(readyOps);
+////
+////                           while (readyOps.size() > 0) {//iterate on the ready to schedule ops
+////
+////                               long nextOpID = nextOperator(readyOps);
+////
+////                               if (opId == nextOpID) {
+////                                   newPlan.assignOperator(nextOpID, contId, false);
+////                               } else {
+////                                   newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID),
+////                                       false);
+////                               }
+////
+////
+////                               findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
+////                           }
+////                           System.out.println("it is " + plan.cluster.containers.get(contId).contType);
+//                         //  plan.cluster.getContainer(contId);
+//                             newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));//TODO: opEST or plan.opIdToearliestStartTime_MS?
+//                           System.out.println("MIGRATE11111111///////////////////");
+//                           newPlans.results.get(0).printInfo();
+//                           newPlans.results.get(0).printAssignments();
+//                           System.out.println("MIGRATE22222222///////////////////");
+//                           plan.printInfo();
+//                           plan.printAssignments();
+////                           if(newPlan.stats.money<p.stats.money && newPlan.stats.runtime_MS < p.stats.runtime_MS)
+////                           newPlans.add(newPlan);
+//                       }
+//
+//                   }
+//               }
+//
+//           }
+//        //   System.out.println(newPlans.size());
+//           results.addAll(plans);//TODO check this logic
+//           plans.clear();
+//           plans.addAll(newPlans);
+//           newPlans.clear();
+//       }
+////        System.out.println("ending");
+//        return results;
+//    }
 
 //
 

@@ -435,7 +435,7 @@ public class Plan implements Comparable<Plan> {
         return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
     }
 
-    public Long calculateDelayDistributedStorage(Long parentId, Long childId){
+    public Long calculateDelayDistributedStorage(Long parentId, Long childId){//TODO: if not parent-child set?
 
         if(assignments.get(parentId) == assignments.get(childId) ){ //remove to transfer always to distributed storage
             return 0L;
