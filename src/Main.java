@@ -1,17 +1,10 @@
 import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
 import JsonOptiqueParse.JsonOptiqueParser;
-import JsonOptiqueParse.JsonPlan;
-import Scheduler.Cluster;
-import Scheduler.Scheduler;
 import Scheduler.*;
-import com.google.gson.Gson;
 import utils.MultiplePlotInfo;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 
 import static utils.Plot.plotMultiple;
 
@@ -186,10 +179,10 @@ public class Main {
 
 //        File loadFile = new File(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
 //        //Example.dax//MONTAGE.25.0.dax//"MONTAGE.n.100.0.dax"//"Example.dax"
-        PegasusDaxParser parser = new PegasusDaxParser();
+        PegasusDaxParser parser = new PegasusDaxParser(1,1);
         DAG graph=null;
         try {
-            graph = parser.parseDax(Main.class.getResource("MONTAGE.n.25.0.dax").getFile());
+            graph = parser.parseDax(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }

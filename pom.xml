@@ -15,16 +15,7 @@
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <dependencies>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jcommon</artifactId>
-            <version>1.0.23</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.0.19</version>
-        </dependency>
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -43,12 +34,7 @@
             <!-- Visualization deps -->
 
             <!-- Json deps-->
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.2.4</version>
-                <type>jar</type>
-            </dependency>
+
             <!-- commons deps -->
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -130,7 +116,26 @@
                 <version>4.4</version>
                 <type>jar</type>
             </dependency>
-             <!--Apache Hadoop deps-->
+        <!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
+        <dependency>
+            <groupId>jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>1.0.21</version>
+        </dependency>
+
+
+        <!--Apache Hadoop deps-->
 
 
     </dependencies>

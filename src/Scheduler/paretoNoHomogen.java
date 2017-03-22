@@ -8,9 +8,6 @@ import utils.Pair;
 
 import java.util.*;
 
-import static Scheduler.containerType.isSmaller;
-import static utils.Plot.plotMultiple;
-
 /**
  * Created by johnchronis on 2/19/17.
  */
@@ -20,16 +17,7 @@ public class paretoNoHomogen implements Scheduler {
     public Cluster cluster;
     public DAG graph;
 
-    ///rankingks
-//    private HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
-//    private HashMap<Long, Double> t_rank = new HashMap<>();
-//    private HashMap<Long, Double> sum_rank = new HashMap<>();
-//    private HashMap<Long, Double> slacktime = new HashMap<>();
-//    private LinkedList<Long> opsSumRankSorted = new LinkedList<>();
-//    private Integer opsInfluential=-5;//10;//check from derivative ranking
-//    private LinkedList<Long> opsBySlack = new LinkedList<>();
-///   private HashMap<Long, Double> opSlack = new HashMap<>();
-//    private HashMap<Long, Integer> opIDsInfluential= new HashMap<>();
+
     public LinkedList<Long> opsSorted = new LinkedList<>();
 
     public int maxContainers = 10000000;
@@ -147,9 +135,13 @@ public class paretoNoHomogen implements Scheduler {
         SolutionSpace beforeMigrate = new SolutionSpace();
         beforeMigrate.addAll(computeSkyline(paretoPlans));
 
-        for(Plan p:beforeMigrate){
-            space.addAll(migrateToFreeSlots(p));
-        }
+
+        space.addAll(beforeMigrate);
+//        for(Plan p:beforeMigrate){
+//            space.addAll(migrateToFreeSlots(p));
+//        }
+
+
 //
 //        MultiplePlotInfo mp = new MultiplePlotInfo();
 //        mp.add("befMigrate", beforeMigrate.results);
@@ -364,7 +356,7 @@ public class paretoNoHomogen implements Scheduler {
                     //use Double.compare
                     if(newPlan.stats.money >= plan.stats.money && newPlan.stats.runtime_MS >= plan.stats.runtime_MS)//we could use a threshold. e.g. if savings less than 0.1%
                     {
-                        break; //no more containers for this plan are going to be modified
+                       // break; //no more containers for this plan are going to be modified
                     }
                     skylinePlansNew.add(newPlan);
 //
@@ -719,80 +711,89 @@ public class paretoNoHomogen implements Scheduler {
     }
 
     private void computeRankings(){
+       final HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
+        final HashMap<Long, Double> t_rank = new HashMap<>();
+        final HashMap<Long, Double> sum_rank = new HashMap<>();
+        final HashMap<Long, Double> slacktime = new HashMap<>();
+        final  LinkedList<Long> opsSumRankSorted = new LinkedList<>();
+        final LinkedList<Long> opsBySlack = new LinkedList<>();
+///   private HashMap<Long, Double> opSlack = new HashMap<>();
 
-//        HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
-//
         final TopologicalSorting topOrder = new TopologicalSorting(graph);
-//        int numLevels=0;
-//
-//        for (Long opId : topOrder.iterator()) {
-//            int level=0;
-//            for (Edge parentEdge: graph.getParents(opId)) {
-//
-//                Integer plevel=opLevel.get(parentEdge.from);
-//                level=Math.max(plevel+1, level);
-//            }
-//            opLevel.put(opId, level);
-//            numLevels=Math.max(level+1, numLevels);
-//            if(opLevelperLevel.containsKey(level))
-//                opLevelperLevel.put(level, opLevelperLevel.get(level)+1);
-//            else
-//                opLevelperLevel.put(level, 1);
-//
-//             System.out.println("op "+ opId + " level " +level);
-//
-//        }
-//
-//
-//        Double crPathLength=0.0;
-//        for (Long opId : topOrder.iteratorReverse()) {
-//            double maxRankChild=0.0;
-//            for (Edge childEdge: graph.getChildren(opId)) {
-//                double comCostChild = 0.0;
-//                for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
-//                    if(parentofChildEdge.from==opId) {
-//                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
-//                    }
-//                }
-//                //assumptions for output data and communication cost
-//                maxRankChild = Math.max(maxRankChild, comCostChild+b_rank.get(childEdge.to));
-//            }
-//
-//            double wcur=0.0;
-//            for(containerType contType: containerType.values())
-//                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
-//            int types= containerType.values().length;
-//            double w=wcur/(double)types;//average execution cost for operator op
-//            b_rank.put(opId, (w+maxRankChild));
-//
-//        }
-//
-//        for (Long opId : topOrder.iterator()) {
-//            double maxRankParent=0.0;
-//            for (Edge inLink: graph.getParents(opId)) {
-////                ConcreteOperator opParent=graph.getOperator(inLink.from.getopID());
-//                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
-//                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from));
-//            }
-//
-//            double wcur=0.0;
-//            for(containerType contType: containerType.values())
-//                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
-//            int types= containerType.values().length;
-//            double w=wcur/(double)types;//average execution cost for operator op
-//            t_rank.put(opId, (w+maxRankParent));
-//            Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
-//            sum_rank.put(opId, opRank);
-//            crPathLength =Math.max(crPathLength, opRank);
-//        }
-//
-//        for (Long op : topOrder.iterator()) {
-//            opsSumRankSorted.add(op);
-//            opsBySlack.add(op);
-//            Double opRank=sum_rank.get(op);
-//            double opSlacktime = crPathLength - opRank;
-//            slacktime.put(op, opSlacktime);
-//        }
+
+        HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
+
+
+        int numLevels=0;
+
+        for (Long opId : topOrder.iterator()) {
+            int level=0;
+            for (Edge parentEdge: graph.getParents(opId)) {
+
+                Integer plevel=opLevel.get(parentEdge.from);
+                level=Math.max(plevel+1, level);
+            }
+            opLevel.put(opId, level);
+            numLevels=Math.max(level+1, numLevels);
+            if(opLevelperLevel.containsKey(level))
+                opLevelperLevel.put(level, opLevelperLevel.get(level)+1);
+            else
+                opLevelperLevel.put(level, 1);
+
+             System.out.println("op "+ opId + " level " +level);
+
+        }
+
+
+        Double crPathLength=0.0;
+        for (Long opId : topOrder.iteratorReverse()) {
+            double maxRankChild=0.0;
+            for (Edge childEdge: graph.getChildren(opId)) {
+                double comCostChild = 0.0;
+                for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
+                    if(parentofChildEdge.from==opId) {
+                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
+                    }
+                }
+                //assumptions for output data and communication cost
+                maxRankChild = Math.max(maxRankChild, comCostChild+b_rank.get(childEdge.to));
+            }
+
+            double wcur=0.0;
+            for(containerType contType: containerType.values())
+                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
+            int types= containerType.values().length;
+            double w=wcur/(double)types;//average execution cost for operator op
+            b_rank.put(opId, (w+maxRankChild));
+
+        }
+
+        for (Long opId : topOrder.iterator()) {
+            double maxRankParent=0.0;
+            for (Edge inLink: graph.getParents(opId)) {
+//                Operator opParent=graph.getOperator(inLink.from.getopID());
+                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
+                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from));
+            }
+
+            double wcur=0.0;
+            for(containerType contType: containerType.values())
+                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
+            int types= containerType.values().length;
+            double w=wcur/(double)types;//average execution cost for operator op
+            t_rank.put(opId, (w+maxRankParent));
+            Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
+            sum_rank.put(opId, opRank);
+            crPathLength =Math.max(crPathLength, opRank);
+        }
+
+        for (Long op : topOrder.iterator()) {
+            opsSumRankSorted.add(op);
+            opsBySlack.add(op);
+            Double opRank=sum_rank.get(op);
+            double opSlacktime = crPathLength - opRank;
+            slacktime.put(op, opSlacktime);
+        }
 
 
 
@@ -836,20 +837,62 @@ public class paretoNoHomogen implements Scheduler {
                     return 0;
             }
         };
-        Collections.sort(opsSorted, rankComparator);
+//        Collections.sort(opsSorted, rankComparator);
 
 
 
-//        int cur_id=0;
-//        for (Long cur_op : opsBySlack) {
-//            //    System.out.println("inf op " + cur_op.getopID() + " slack " + slacktime.get(cur_op));
-//            //    System.out.println("inf op " + cur_op.getopID() + " rank " +  sum_rank.get(cur_op) + " level " + opLevel.get(cur_op));
-//            if (cur_id<opsInfluential) {
-//                // System.out.println("added op " + cur_op.getopID() + " rank " +  sum_rank.get(cur_op) + " b_rank " + b_rank.get(cur_op) + " t_rank " + t_rank.get(cur_op));
-//                cur_id++;
-//                opIDsInfluential.put(cur_op, 1);
+
+        Comparator<Long> sumrankComparator = new Comparator<Long>() {
+            @Override
+            public int compare(Long op1, Long op2) {
+                double r1 = sum_rank.get(op1);
+                double r2 = sum_rank.get(op2);
+                if (r1 < r2)//TODO: add precision error
+                    return -1;
+                else if (r1 > r2)
+                    return 1;
+                else
+                    return 0;
+            }
+        };
+        Collections.sort(opsSorted, sumrankComparator);
+
+        Comparator<Long> levelRankComparator = new Comparator<Long>() {
+            @Override
+            public int compare(Long op1, Long op2) {
+                double r1 = opLevel.get(op1);
+                double r2 = opLevel.get(op2);
+                if (r1 < r2)//TODO: add precision error
+                    return -1;
+                else if (r1 > r2)
+                    return 1;
+                else
+                    return 0;
+            }
+        };
+         Collections.sort(opsSorted, levelRankComparator);  //should it be the same as 297????
+
+        System.out.println("sorting");
+        for(Long op: opsSorted)
+            System.out.println(op);
+//
+//        Comparator<Operator> slackComparator = new Comparator<Operator>() {
+//            @Override
+//            public int compare(Operator op1, Operator op2) {
+//                double r1 = slacktime.get(op1);
+//                double r2 = slacktime.get(op2);
+//                if (r1 < r2)//TODO: add precision error
+//                    return -1;
+//                else if (r1 > r2)
+//                    return 1;
+//                else
+//                    return 0;
 //            }
-//        }///remove
+//        };
+//        // Collections.sort(opsBySlack, slackComparator);
+//
+//
+
 
 
 
@@ -1556,43 +1599,43 @@ if(fs.start_MS+opProcessingDuration_MS<=lft && fs.start_MS>=earliestStartTime_MS
         return newPlan;
     }
 
-    private void computeHomoRankings(containerType cType)
-    {
-        final TopologicalSorting topOrder = new TopologicalSorting(graph);
-
-        final HashMap<Long, Double> rankU = new HashMap<>();
-
-        for (Long opId : topOrder.iteratorReverse()) {
-
-            double maxRankChild=0.0;
-            for (Edge outLink: graph.getChildren(opId)) {
-                double comCostChild = Math.ceil(outLink.data.size_B / RuntimeConstants.network_speed_B_MS);
-                //assumptions for output data and communication cost
-                maxRankChild = Math.max(maxRankChild, comCostChild+rankU.get(outLink.to));
-            }
-
-            double w=graph.getOperator(opId).getRunTime_MS()/cType.container_CPU;
-            rankU.put(opId, (w+maxRankChild));
-
-        }
-        for (Long opId : topOrder.iterator())
-            opsSorted.add(opId);
-
-        Comparator<Long> rankComparator = new Comparator<Long>() {
-            @Override
-            public int compare(Long op1, Long op2) {
-                double r1 = rankU.get(op1);
-                double r2 = rankU.get(op2);
-                if (r1 > r2)
-                    return -1;
-                else if (r1 < r2)
-                    return 1;
-                else
-                    return 0;
-            }
-        };
-        Collections.sort(opsSorted, rankComparator);
-    }
+//    private void computeHomoRankings(containerType cType)
+//    {
+//        final TopologicalSorting topOrder = new TopologicalSorting(graph);
+//
+//        final HashMap<Long, Double> rankU = new HashMap<>();
+//
+//        for (Long opId : topOrder.iteratorReverse()) {
+//
+//            double maxRankChild=0.0;
+//            for (Edge outLink: graph.getChildren(opId)) {
+//                double comCostChild = Math.ceil(outLink.data.size_B / RuntimeConstants.network_speed_B_MS);
+//                //assumptions for output data and communication cost
+//                maxRankChild = Math.max(maxRankChild, comCostChild+rankU.get(outLink.to));
+//            }
+//
+//            double w=graph.getOperator(opId).getRunTime_MS()/cType.container_CPU;
+//            rankU.put(opId, (w+maxRankChild));
+//
+//        }
+//        for (Long opId : topOrder.iterator())
+//            opsSorted.add(opId);
+//
+//        Comparator<Long> rankComparator = new Comparator<Long>() {
+//            @Override
+//            public int compare(Long op1, Long op2) {
+//                double r1 = rankU.get(op1);
+//                double r2 = rankU.get(op2);
+//                if (r1 > r2)
+//                    return -1;
+//                else if (r1 < r2)
+//                    return 1;
+//                else
+//                    return 0;
+//            }
+//        };
+//        Collections.sort(opsSorted, rankComparator);
+//    }
     public Iterable<Long> opsSortedReversed() {
         return new Iterable<Long>() {
             @Override

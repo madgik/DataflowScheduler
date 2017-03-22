@@ -36,9 +36,9 @@ public class PegasusDaxParser {
             }
         });
     private  final Logger LOG = Logger.getLogger(PegasusDaxParser.class);
-
-    static {
-    }
+//
+//    static {
+//    }
 
 
     double multiply_by_time = 1000.0;
