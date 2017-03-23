@@ -8,6 +8,8 @@ import utils.Pair;
 
 import java.util.*;
 
+import static Scheduler.containerType.isSmaller;
+
 /**
  * Created by johnchronis on 2/19/17.
  */
@@ -18,7 +20,7 @@ public class paretoNoHomogen implements Scheduler {
     public DAG graph;
 
 
-    public LinkedList<Long> opsSorted = new LinkedList<>();
+    public LinkedList<Long> opsSorted ;
 
     public int maxContainers = 10000000;
 
@@ -31,6 +33,7 @@ public class paretoNoHomogen implements Scheduler {
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
+        this.opsSorted = new LinkedList<>();
     }
 
     @Override
@@ -77,10 +80,12 @@ public class paretoNoHomogen implements Scheduler {
 //        skylinePlans_DEC.print();
 ////        skylinePlans_DEC.plot("DEC");
 //        mpinfo.add("DEC",skylinePlans_DEC.results);
+//
 //        System.out.println("//////////INC///////");
 //        skylinePlans_INC.print();
 ////        skylinePlans_INC.plot("INC");
 //        mpinfo.add("INC",skylinePlans_INC.results);
+//
 //        System.out.println("//////////INCDEC///////");
 //        skylinePlans_INCDEC.print();
 ////        skylinePlans_INCDEC.plot("INCDEC");
@@ -100,7 +105,7 @@ public class paretoNoHomogen implements Scheduler {
 
 
 
-        System.out.println("//////////PARETO///////");
+//        System.out.println("//////////PARETO///////");
 //        paretoPlans.print();
 //        paretoPlans.plot("pareto");
         mpinfo.add("pareto",paretoPlans.results);
@@ -155,7 +160,7 @@ public class paretoNoHomogen implements Scheduler {
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
-        System.out.println("//////////RESULT///////");
+//        System.out.println("//////////RESULT///////");
 
         space.print();
 //        space.plot("space");

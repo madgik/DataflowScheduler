@@ -15,6 +15,16 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 //    G(1.0, 14.89, 1.0,  1.34,"G"),//m2.2xlarge
 //    H(1.0, 27.25, 1.0,  2.68,"H");//m2.xlarge
 
+//    A( 0.92,    0.085,  "A"),//m1.small     //2.8
+//    //    B( 3.43,    0.17,   "B"),//c1.medium    //0.34
+//    C( 4.08,    0.34,   "C"),//m1.large     //1.8
+//    //    D( 5.15,    0.57,    "D"),//c1.medium    //1.8
+//    E( 7.05,    0.57,      "E"),//m2.xlarge    //2.6
+//    //    F( 8.78,    0.68,   "F"),//c1.xlarge  //0.35
+//    G( 15.9,   1.34,   "G"),//m2.2xlarge   //2.6
+//    H( 27.25,   2.68,   "H");//m2.xlarge    //2.6
+
+
     A( 0.92/0.92,    0.085/0.085,  "A"),//m1.small     //2.8
 //    B( 3.43,    0.17,   "B"),//c1.medium    //0.34
     C( 4.08/0.92,    0.34/0.085,   "C"),//m1.large     //1.8
@@ -26,8 +36,11 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 
     //commented those out so they have around 2gbs of mem per vcpu
 
-    //ec2
-
+//    ec2
+//    A(1.0, 0.92, 1.0, 0.085,"small"),//m1.small
+//    B(1.0, 3.43, 1.0, 0.17,"medium"),//c1.medium
+//    C(1.0, 4.08, 1.0, 0.34,"large"),//m1.large
+//    D(1.0, 5.15, 1.0, 0.68,"xlarge");//c1.medium
 
 
 

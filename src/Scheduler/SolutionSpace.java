@@ -1,11 +1,10 @@
 package Scheduler;
 
 import utils.Pair;
+import utils.plotUtility;
 
 import java.util.*;
 
-import static utils.Plot.plotPlans;
-import static utils.Plot.plotPoints;
 
 /**
  * Created by johnchronis on 2/19/17.
@@ -57,7 +56,9 @@ public class SolutionSpace implements Iterable<Plan> {
         for(Plan p: results){
             a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
         }
-        plotPoints(n,a);
+        plotUtility plot = new plotUtility();
+
+        plot.plotPoints(n,a);
     }
 
     public void clear(){

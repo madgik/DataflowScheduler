@@ -48,6 +48,10 @@ public class Cluster {
             countTypes.put(newcont.contType, ++ccount);
         }
 
+        for(Long d:c.contUsed){
+            contUsed.add(d);
+        }
+
     }
 
     public long addContainer(containerType ctype){

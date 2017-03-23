@@ -29,6 +29,8 @@ public class Plot extends ApplicationFrame {
      *
      * @param title  the frame title.
      */
+
+
     public Plot(final String title, ArrayList<Pair<Long,Double>> mydata) {
 
         super(title);
@@ -80,71 +82,5 @@ public class Plot extends ApplicationFrame {
 
     }
 
-
-    // ****************************************************************************
-    // * JFREECHART DEVELOPER GUIDE                                               *
-    // * The JFreeChart Developer Guide, written by David Gilbert, is available   *
-    // * to purchase from Object Refinery Limited:                                *
-    // *                                                                          *
-    // * http://www.object-refinery.com/jfreechart/guide.html                     *
-    // *                                                                          *
-    // * Sales are used to provide funding for the JFreeChart project - please    *
-    // * support us so that we can continue developing free software.             *
-    // ****************************************************************************
-
-    /**
-     * Starting point for the demonstration application.
-     *
-     * @param args  ignored.
-     */
-
-    public static void plotPoints(String n,ArrayList<Pair<Long,Double>> a){
-        final Plot demo = new Plot(n,a);
-        demo.pack();
-        RefineryUtilities.centerFrameOnScreen(demo);
-        demo.setVisible(true);
-
-    }
-
-    public static void plotPlans(String n,List<Plan> b) {
-        ArrayList<Pair<Long,Double>> a = new ArrayList<>();
-        for(Plan p: b){
-            a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
-        }
-        final Plot demo = new Plot(n, a);
-        demo.pack();
-        RefineryUtilities.centerFrameOnScreen(demo);
-        demo.setVisible(true);
-
-    }
-
-
-    public static void plotMultiple(MultiplePlotInfo info,String name){
-        final Plot demo = new Plot(info,name);
-        demo.pack();
-        RefineryUtilities.centerFrameOnScreen(demo);
-        demo.setVisible(true);
-
-    }
-
-
-
-
-
-
-    public static void main(final String[] args) {
-
-        ArrayList<Pair<Long,Double>> a = new ArrayList<>();
-        a.add(new Pair(1,1));
-        a.add(new Pair(2,2));
-        a.add(new Pair(3,3));
-        a.add(new Pair(4,9));
-
-        final Plot demo = new Plot("XY Series Demo",a);
-        demo.pack();
-        RefineryUtilities.centerFrameOnScreen(demo);
-        demo.setVisible(true);
-
-    }
 
 }

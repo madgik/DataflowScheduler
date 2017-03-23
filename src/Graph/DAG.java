@@ -11,6 +11,8 @@ public class DAG {
 
     public String name;
 
+    public long sumdata_B;
+
     public HashMap<Long,Operator> operators;
     public ArrayList<Operator> operatorsList;
 
@@ -93,7 +95,15 @@ public class DAG {
         }
     }
 
-//    public void addFile(Data data){
+    public int sumEdges() {
+        int sum=0;
+        for(ArrayList<Edge> a:edges.values()){
+            sum+=a.size();
+        }
+        return sum;
+    }
+
+    //    public void addFile(Data data){
 //        nameToFile.put(data.name,data);
 //    }
 //

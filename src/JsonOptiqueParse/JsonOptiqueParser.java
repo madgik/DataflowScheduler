@@ -21,14 +21,13 @@ public class JsonOptiqueParser {
     private Long mult_data = 50L;
     private Long mult_time = 10L;
 
-    public JsonOptiqueParser(long mulDATA, long multTime){
-        mult_data = mulDATA;
-        mult_time = multTime;
+    public JsonOptiqueParser(long mulTime, long mulData){
+        mult_data = mulData;
+        mult_time = mulTime  ;
     }
     public JsonOptiqueParser(){
 
     }
-
 
     public DAG parse(String filepath){
 
@@ -54,6 +53,9 @@ public class JsonOptiqueParser {
 
         for(Operator opjp : jp.getOperators()){
 
+            if(opjp.getResources().getTimeMS() == 0){
+                opjp.getResources().setTimeMS(10);
+            }
             ResourcesRequirements
                 re = new ResourcesRequirements(opjp.getResources().getTimeMS() * mult_time, -1);
 
@@ -83,9 +85,9 @@ public class JsonOptiqueParser {
 
         }
 
-        System.out.println("data GB sum "+sumdata/1000000000);
         System.out.println("ops#  "+graph.getOperators().size());
         System.out.println("links#  "+jp.getOpLinks().size());
+        graph.sumdata_B = sumdata;
         return graph;
     }
 

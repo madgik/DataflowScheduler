@@ -3,6 +3,7 @@ package Scheduler;
 import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
+import org.apache.commons.math.stat.descriptive.rank.Max;
 import utils.Pair;
 
 import java.util.*;
@@ -465,7 +466,7 @@ public class Plan implements Comparable<Plan> {
         i.append(stats.runtime_MS).append(" ").append(stats.money).append(" ").append("conts ")
             .append(cluster.containersList.size()).append("  ");
 
-        System.out.format("%d %5.2f", stats.runtime_MS, stats.money);
+        System.out.format("%10d %06.2f", stats.runtime_MS, stats.money);
 
 
         long usedTimeSum =0;
@@ -475,6 +476,10 @@ public class Plan implements Comparable<Plan> {
         double AvgUtil= 0;
         double UtilQuantum = 0;
         int countfs =0;
+        double AvgQUtil = 0;
+        double MinQUtil = 10.0;
+        double MaxQUtil = -5.0;
+
 
 
         for(Container c:cluster.containersList){
@@ -482,8 +487,11 @@ public class Plan implements Comparable<Plan> {
             long proTime = 0;
             long contTime = 0;
             long ftime = 0;
-            double Util =0.0;
-            double Util2 =0.0;
+            double Util = 0.0;
+            double Util2 = 0.0;
+            double QUtil = 0.0;
+            double Util3;
+
 
 
             for(Long opId: graph.operators.keySet()){
@@ -495,6 +503,12 @@ public class Plan implements Comparable<Plan> {
             contTime = c.UsedUpTo_MS - c.startofUse_MS;
             Util = (double)(dtTime+proTime) / (double)contTime;
 
+            int quantaUsed = (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS);
+            QUtil = (double)(dtTime+proTime) / (double)(quantaUsed*RuntimeConstants.quantum_MS);
+
+
+
+
             for(Slot s: c.freeSlots){
                 countfs++;
                 freeTimeSum+=s.end_MS - s.start_MS;
@@ -504,7 +518,6 @@ public class Plan implements Comparable<Plan> {
 
             Util2 = (double)(contTime - ftime) / (double)contTime;
 
-            double Util3;
             long o=0;
 
             for(Slot s: c.opsschedule){
@@ -524,15 +537,26 @@ public class Plan implements Comparable<Plan> {
                 }
             }
 
+
+
             minUtil = Math.min(minUtil,Util);
             maxUtil = Math.max(maxUtil,Util);
 
+            MinQUtil = Math.min(MinQUtil,QUtil);
+            MaxQUtil = Math.max(MaxQUtil,QUtil);
+
+
+            AvgQUtil+=QUtil;
             AvgUtil+=Util;
 
         }
 
 
-        AvgUtil = (double) AvgUtil / cluster.containersList.size();
+        int a = cluster.containersList.size();
+        int b = cluster.contUsed.size();
+
+        AvgUtil = (double) AvgUtil / cluster.contUsed.size();
+        AvgQUtil = (double) AvgQUtil / cluster.contUsed.size();
 
 
 
@@ -544,7 +568,7 @@ public class Plan implements Comparable<Plan> {
         i.append(" #fs: ").append(countfs);
 
 
-        System.out.format(" AvgU: %3.2f -MaxU: %3.2f -MinU: %3.2f -#fs: %d ",AvgUtil,maxUtil,minUtil,countfs);
+        System.out.format(" || noQ Q (Avg,Max,Min) (%3.2f, %3.2f, %3.2f) (%3.2f, %3.2f, %3.2f) #fs: %3d ",AvgUtil,maxUtil,minUtil,AvgQUtil,MinQUtil,MaxQUtil,countfs);
 
         System.out.format(" -- #Conts: %d",cluster.containersList.size());
 

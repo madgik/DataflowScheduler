@@ -40,6 +40,7 @@ public class PegasusDaxParser {
 //    static {
 //    }
 
+    long sumdata;
 
     double multiply_by_time = 1000.0;
     int multiply_by_data = 1;
@@ -47,12 +48,17 @@ public class PegasusDaxParser {
     public PegasusDaxParser(double mulTIME,int mulDATA) {
         multiply_by_data = mulDATA;
         multiply_by_time = mulTIME;
+        sumdata=0;
 
     }
-    public PegasusDaxParser(){}
+    public PegasusDaxParser(){
+        sumdata=0;
+    }
 
     public  DAG parseDax(String url) throws Exception {
+        sumdata=0;
         DAG graph = new DAG();
+        graph.name = url+multiply_by_time+"_"+multiply_by_data;
         ArrayList<Edge> edges = new ArrayList<>();
         HashMap<Long,HashMap<Long,Edge>> fEdges = new HashMap<>();
 
@@ -145,6 +151,8 @@ public class PegasusDaxParser {
 
 
                 long data_B = dataSize*multiply_by_data;
+
+                sumdata+=data_B;
 
                 String filename = useElement.getAttribute("file");
                 //                if(!filenameToFile.containsKey(filename)){
@@ -370,6 +378,7 @@ public class PegasusDaxParser {
 //        System.out.println("////////");
 //
 
+        graph.sumdata_B = sumdata;
         return graph;
     }
 

@@ -18,10 +18,19 @@ public class Statistics {
         quanta = 0;
         money = 0;
         for(Container c:plan.cluster.containersList){
+            if(!plan.cluster.contUsed.contains(c.id)){
+                if(c.startofUse_MS>-1){
+                    try {
+                        throw new Exception("BUGSSS");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                continue;}
             runtime_MS = Math.max(c.UsedUpTo_MS,runtime_MS);
             int localQuanta = (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS);
             if(localQuanta == 0 ){
-                System.out.println("porep");
+                System.out.println("NO QUANTA IS USED IN CONTAINER");
             }
 //            if(c.UsedUpTo_MS>0){
 //                localQuanta+=1;

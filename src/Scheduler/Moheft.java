@@ -18,7 +18,7 @@ public class Moheft implements Scheduler {
 
     ///rankingks
 
-    public LinkedList<Long> opsSorted = new LinkedList<>();
+    public  LinkedList<Long> opsSorted ;
 
 
 
@@ -38,6 +38,7 @@ public class Moheft implements Scheduler {
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
+        this.opsSorted = new LinkedList<>();
     }
 
 
