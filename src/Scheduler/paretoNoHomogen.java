@@ -137,8 +137,10 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.addAll(skylinePlans);
 
-        SolutionSpace beforeMigrate = new SolutionSpace();
-        beforeMigrate.addAll(computeSkyline(paretoPlans));
+        space.addAll(computeSkyline(paretoPlans));
+
+//        SolutionSpace beforeMigrate = new SolutionSpace();
+//        beforeMigrate.addAll(computeSkyline(paretoPlans));
 
 
         //space.addAll(beforeMigrate);
@@ -379,7 +381,8 @@ public class paretoNoHomogen implements Scheduler {
 
 
             SolutionSpace modifiedPlans=new SolutionSpace();
-            for(Plan pToChange: skylinePlansNew)
+         //   SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
+            for(Plan pToChange: skylinePlansNew)//skylineToModify) //
                 modifiedPlans = migrateCriticalOpsToConts(pToChange);
             if(modifiedPlans!=null)
             skylinePlansNew.addAll(modifiedPlans);
@@ -927,7 +930,8 @@ public class paretoNoHomogen implements Scheduler {
 //        for(Long opId: opsSortedReversed())
 //        System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
 
-
+        System.out.println("lst");
+        plan.printAssignments();
         for(Long opId: opsSortedReversed()) {
             Long lst = Long.MAX_VALUE;
 
@@ -1265,8 +1269,9 @@ public class paretoNoHomogen implements Scheduler {
 //        return results;
 //    }
 
-    public SolutionSpace migrateCriticalOpsToConts(Plan p) {
-//        System.out.println("MIGRATE///////////////////");
+    public SolutionSpace migrateCriticalOpsToConts(Plan p) {//TODO: check if plan has different contTypes else break;
+
+p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////");
 //        p.printInfo();
 //        p.printAssignments();
 //        System.out.println("MIGRATE1///////////////////");
@@ -1275,6 +1280,7 @@ public class paretoNoHomogen implements Scheduler {
         // get the next critical ops and move that and so on
 
         SolutionSpace plans = new SolutionSpace();
+
         plans.add(p);
         SolutionSpace newPlans = new SolutionSpace();
 
@@ -1287,33 +1293,53 @@ public class paretoNoHomogen implements Scheduler {
         HashMap<Long, Long> opEST;
         HashMap<Long, Long> opLST;
 
-        if(plans.size()>0) {
+        if(p.stats.containersUsed==1 || p.cluster.countTypes.size() ==1)//TODO: || p.stats. types of vms ==1 do not migrate ops but only to diff types
+        return results;
 
-            LinkedList opsMigrated = new LinkedList();
-            for (Plan plan : plans) {
+    //    if(plans.size()>0) {
+//
+//            LinkedList opsMigrated = new LinkedList();
+         //   for (Plan plan : plans) {
 
-//                System.out.println("next plan - migration");
-//                plan.printInfo();
+
                 //  System.out.println( plan.cluster.containers.size());
-                if(plan.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
-                    continue;
 
 
-                HashMap<Long, Long> opSlack = new HashMap<>();
-                ArrayList<Long> opSortedBySlack = new ArrayList<>();
 
-                computeSlackOps(p, opSlack, opSortedBySlack);
+                HashMap<Long, Long> opSlackInitial = new HashMap<>();
+                ArrayList<Long> opsToMigrateOrdered = new ArrayList<>();
+
+
+                computeSlackOps(p, opSlackInitial, opsToMigrateOrdered);
 
 //                int opsMigrated=0;
-                for (Long opId : opSortedBySlack) {
+                for (Long opId : opsToMigrateOrdered) {
 
-                    if(opSlack.get(opId)>0)
-                        break;
+                    for (Plan plan : plans) {
 
-                    if(opsMigrated.contains(opId))
+
+//                        System.out.println("next plan - migration");
+//                        plan.printInfo();
+
+                        HashMap<Long, Long> opSlack = new HashMap<>();
+                        ArrayList<Long> opSortedBySlack = new ArrayList<>();
+
+                        computeSlackOps(plan, opSlack, opSortedBySlack);
+
+
+                        if(plan.stats.containersUsed==1 || plan.cluster.countTypes.size() ==1)//TODO: || p.stats. types of vms ==1 do not migrate ops but only to diff types
+                            continue;
+//                        if(p.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
+//                            return null;
+
+                    if (plan.opsMigrated.size()> 0.10*opSortedBySlack.size() && opSlack.get(opId) > 0) {
+                        continue;
+                    }
+
+                    if (plan.opsMigrated.contains(opId))
                         continue;
                     else
-                     opsMigrated.add(opId);
+                        plan.opsMigrated.add(opId);
 //                    opsMigrated++;
 //                    if(opsMigrated>0.10*opSortedBySlack.size())
 //                        break;
@@ -1328,33 +1354,32 @@ public class paretoNoHomogen implements Scheduler {
                     //for every other cont see if it is eligible. TODO: sort by util and break loop when no savings
                     for (Long contId : plan.cluster.containers.keySet()) {//TODO: an idea is to sort containers as well in this step and break sooner
                         if (contId == oldContId)
-                            continue;//break;//TODO: break or continue?
+                            continue;
                         Container newCont = plan.cluster.getContainer(contId);
 
                         if (!containerType.isSmaller(oldContType, newCont.contType)) {
-                           continue;//break;//TODO: break or continue?
-                       }
+                            continue;
+                        }
                         Collections.sort(newCont.freeSlots);
 
                         //create a tmpPlan with the new assignment of the operator (startTime is not determined yet)
 
                         Plan tPlan = new Plan(plan);
-                        tPlan.assignments.put(opId,contId);
+                        tPlan.assignments.put(opId, contId);
 //                       tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
-                        Slot torm =null;
-                        for(Slot s:tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule)
-                        {
-                            if(s.opId == opId){
+                        Slot torm = null;
+                        for (Slot s : tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule) {
+                            if (s.opId == opId) {
                                 torm = s;
                             }
                         }
                         tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
 
                         opEST = computeEST(tPlan, opId);//if plan is updated, it needs to be computed every time a new op is migrated
-                        opLST = computeLST(tPlan,opId);
+                        opLST = computeLST(tPlan, opId);
 
                         for (Slot fs : newCont.freeSlots) {
-                            Long newstartTime = Long.MAX_VALUE;
+//                            Long newstartTime = Long.MAX_VALUE;
                             //find first free slot that can host the operator
                             //TODO: add a condition to prune assignments worst than the current
                             //                        Long newRuntimeNODT = (long) Math.ceil(graph.getOperator(opId).getRunTime_MS() / newCont.contType.container_CPU);
@@ -1365,12 +1390,12 @@ public class paretoNoHomogen implements Scheduler {
 
 
                             Long lft = Long.MAX_VALUE;
-                            for(Edge childEge :graph.getChildren(opId)){
+                            for (Edge childEge : graph.getChildren(opId)) {
                                 Long childId = childEge.to;
-                                lft = Math.min(lft,  opLST.get(childId) - 2*tPlan.calculateDelayDistributedStorage(opId, childId, contId, tPlan.assignments.get(childId)));
+                                lft = Math.min(lft, opLST.get(childId) - 2 * tPlan.calculateDelayDistributedStorage(opId, childId, contId, tPlan.assignments.get(childId)));
                             }
 
-                            if(fs.start_MS+opProcessingDuration_MS<=lft && fs.start_MS>=earliestStartTime_MS) {
+                            if (fs.start_MS + opProcessingDuration_MS <= lft && fs.start_MS >= earliestStartTime_MS) {
                                 newSlot = fs;
 
                             }
@@ -1380,20 +1405,30 @@ public class paretoNoHomogen implements Scheduler {
                         if (newSlot != null) {
                             Plan newPlan = migrateOperator(plan, opId, contId, newSlot, opEST.get(opId));
 
-                            if(newPlan.stats.money<p.stats.money  ||  newPlan.stats.runtime_MS<p.stats.runtime_MS) {
+                            if (newPlan.stats.money < p.stats.money || newPlan.stats.runtime_MS < p.stats.runtime_MS) {
                                 newPlans.add(newPlan);//TODO: opEST or plan.opIdToearliestStartTime_MS?
                                 //
+
                                 System.out.println("old plan" + p.stats.money + " " + p.stats.runtime_MS);
                                 p.printInfo();
+                                p.printAssignments();
                                 System.out.println("migrated op " + opId);
-                                System.out.println("new plan" + newPlan.stats.money + " " + newPlan.stats.runtime_MS);
-                                newPlan.printInfo();
+                                System.out.println("new plan " + newPlan.stats.money + " " + newPlan.stats.runtime_MS);
+//                                newPlan.printInfo();
+                                newPlan.printAssignments();
                                 //
                             }
 
                         }
 
                     }
+
+                }
+                    if(newPlans.size()>0)
+                    results.addAll(newPlans);
+                    plans.clear();
+                    plans.addAll(newPlans);
+                    newPlans.clear();
                 }
 
 //                if(newPlans.size()>0) {
@@ -1404,16 +1439,23 @@ public class paretoNoHomogen implements Scheduler {
 //                                pnew.printInfo();
 
 
-            }
+//            }
+//
 
+//            plans.addAll(newPlans);
+//            newPlans.clear();
+//            results.addAll(plans);//TODO check this logic, add only if better/different from older one
+//            plans.clear();
 
-            plans.addAll(newPlans);
-            newPlans.clear();
-            results.addAll(plans);//TODO check this logic, add only if better/different from older one
-            plans.clear();
-
-        }
-//        System.out.println("ending");
+     //   }
+//        if(results.size()>0) {
+//           // System.out.println("ending migrations");
+//            for (Plan pc : results) {
+//                pc.opsMigrated.clear();
+//                pc.printInfo();
+//            }
+//            System.out.println("ending migrations");
+//        }
         return results;
     }
 
@@ -1596,6 +1638,8 @@ public class paretoNoHomogen implements Scheduler {
 
     private Plan migrateOperator(Plan plan, Long opId, Long contId, Slot newSlot, Long opEST) {
 
+
+
         Plan newPlan = new Plan(graph,new Cluster());
 
         Plan tPlan = new Plan(plan);
@@ -1668,7 +1712,18 @@ public class paretoNoHomogen implements Scheduler {
 
             findNextReadyOps(readyOps, readyOpsInner, opsAssignedSet, tPlan);
         }
-//        System.out.println("newslot for " + opId + " " + newSlot.start_MS + " " + newSlot.end_MS);
+
+
+        System.out.println("/////////migrateOperator()");
+        plan.printAssignments();
+        System.out.println("////////new plan at migrateOperator()");
+        newPlan.printAssignments();
+        return newPlan;
+    }
+
+
+
+    //        System.out.println("newslot for " + opId + " " + newSlot.start_MS + " " + newSlot.end_MS);
 //        Plan newPlan  = new Plan(plan);
 //
 //
@@ -1806,8 +1861,12 @@ public class paretoNoHomogen implements Scheduler {
 //
 //        ///find all ops with start time after opID and change them
 
-        return newPlan;
-    }
+    //        System.out.println("migrateop");
+    //   newPlan.printInfo();
+//        newPlan.printAssignments();
+
+
+
 
 //    private void computeHomoRankings(containerType cType)
 //    {

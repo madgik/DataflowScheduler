@@ -20,6 +20,7 @@ public class Plan implements Comparable<Plan> {
     public Statistics stats;
     Statistics beforeStats;
     String vmUpgrading;
+    public ArrayList<Long> opsMigrated = null;
 
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEndProcessing_MS;
 
@@ -51,6 +52,8 @@ public class Plan implements Comparable<Plan> {
         opIdToProcessingTime_MS = new HashMap<>();
         opIdToBeforeDTDuration_MS = new HashMap<>();
         opIdToAfterDTDuration_MS = new HashMap<>();
+
+        opsMigrated = new ArrayList<>();
 
     }
 
@@ -110,6 +113,13 @@ public class Plan implements Comparable<Plan> {
         }
 
         this.cluster = new Cluster(p.cluster);
+
+        opsMigrated = new ArrayList<>();
+        for(Long opId: p.opsMigrated){
+            opsMigrated.add(opId);
+        }
+
+
 
     }
 
