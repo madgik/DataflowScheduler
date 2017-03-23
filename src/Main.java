@@ -18,7 +18,7 @@ public class Main {
 //        runCyberShake(1, 1);
 //        runSIPHT(100,  1);
 //        runMontage(1, 1);
-        runLIGO(100, 100);
+        runLIGO(1, 1);
 //        runOpti("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 //        runOpti("2_Q2_6_2dat.cleanplan", 1300, 10);
 //        runOpti("2_Q3_6_5.4dat.cleanplan", 1300, 10);
@@ -198,6 +198,7 @@ public class Main {
         PegasusDaxParser parser = new PegasusDaxParser();
         DAG graph = null;
         try {
+
             graph = parser.parseDax(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();

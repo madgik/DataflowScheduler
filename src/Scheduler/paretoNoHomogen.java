@@ -361,7 +361,7 @@ public class paretoNoHomogen implements Scheduler {
                     //use Double.compare
                     if(newPlan.stats.money >= plan.stats.money && newPlan.stats.runtime_MS >= plan.stats.runtime_MS)//we could use a threshold. e.g. if savings less than 0.1%
                     {
-                       // break; //no more containers for this plan are going to be modified
+                        break; //no more containers for this plan are going to be modified
                     }
                     skylinePlansNew.add(newPlan);
 //
@@ -376,15 +376,25 @@ public class paretoNoHomogen implements Scheduler {
 
             plansInner.clear();
             plansInner.addAll(result.results);
+
+
+            SolutionSpace modifiedPlans=new SolutionSpace();
+            for(Plan pToChange: skylinePlansNew)
+                modifiedPlans = migrateCriticalOpsToConts(pToChange);
+            if(modifiedPlans!=null)
+            skylinePlansNew.addAll(modifiedPlans);
+
             result.addAll(computeNewSkyline(plansInner.results, skylinePlansNew.results));
+
+
+
 
             plansInner.clear();
 
             plansInner.addAll(skylinePlansNew.results);
 
 
-            for(Plan pToChange: plansInner)
-            migrateCriticalOpsToConts(pToChange);
+
 
             skylinePlansNew.clear();
         }
@@ -748,7 +758,7 @@ public class paretoNoHomogen implements Scheduler {
             else
                 opLevelperLevel.put(level, 1);
 
-             System.out.println("op "+ opId + " level " +level);
+//             System.out.println("op "+ opId + " level " +level);
 
         }
 
@@ -1256,8 +1266,8 @@ public class paretoNoHomogen implements Scheduler {
 //    }
 
     public SolutionSpace migrateCriticalOpsToConts(Plan p) {
-        System.out.println("MIGRATE///////////////////");
-        p.printInfo();
+//        System.out.println("MIGRATE///////////////////");
+//        p.printInfo();
 //        p.printAssignments();
 //        System.out.println("MIGRATE1///////////////////");
 
@@ -1282,8 +1292,8 @@ public class paretoNoHomogen implements Scheduler {
             LinkedList opsMigrated = new LinkedList();
             for (Plan plan : plans) {
 
-                System.out.println("next plan - migration");
-                plan.printInfo();
+//                System.out.println("next plan - migration");
+//                plan.printInfo();
                 //  System.out.println( plan.cluster.containers.size());
                 if(plan.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
                     continue;
@@ -1296,8 +1306,6 @@ public class paretoNoHomogen implements Scheduler {
 
 //                int opsMigrated=0;
                 for (Long opId : opSortedBySlack) {
-
-
 
                     if(opSlack.get(opId)>0)
                         break;
@@ -1370,22 +1378,40 @@ public class paretoNoHomogen implements Scheduler {
                         }
                         //create new plan with the new assignment
                         if (newSlot != null) {
-                            newPlans.add(migrateOperator(plan, opId, contId, newSlot, opEST.get(opId)));//TODO: opEST or plan.opIdToearliestStartTime_MS?
+                            Plan newPlan = migrateOperator(plan, opId, contId, newSlot, opEST.get(opId));
+
+                            if(newPlan.stats.money<p.stats.money  ||  newPlan.stats.runtime_MS<p.stats.runtime_MS) {
+                                newPlans.add(newPlan);//TODO: opEST or plan.opIdToearliestStartTime_MS?
+                                //
+                                System.out.println("old plan" + p.stats.money + " " + p.stats.runtime_MS);
+                                p.printInfo();
+                                System.out.println("migrated op " + opId);
+                                System.out.println("new plan" + newPlan.stats.money + " " + newPlan.stats.runtime_MS);
+                                newPlan.printInfo();
+                                //
+                            }
 
                         }
 
                     }
                 }
 
+//                if(newPlans.size()>0) {
+//                                plan.printInfo();
+//                                System.out.println("New plans " + newPlans.size());
+//                            }
+//                            for(Plan pnew: newPlans)
+//                                pnew.printInfo();
+
+
             }
 
-            System.out.println(newPlans.size());
-            for(Plan pnew: newPlans)
-                pnew.printInfo();
-            results.addAll(plans);//TODO check this logic, add only if better/different from older one
-            plans.clear();
+
             plans.addAll(newPlans);
             newPlans.clear();
+            results.addAll(plans);//TODO check this logic, add only if better/different from older one
+            plans.clear();
+
         }
 //        System.out.println("ending");
         return results;
