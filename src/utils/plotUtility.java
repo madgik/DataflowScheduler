@@ -34,8 +34,8 @@ public class plotUtility {
     }
 
 
-    public  void plotMultiple(MultiplePlotInfo info,String name){
-        final Plot demo = new Plot(info,name);
+    public  void plotMultiple(MultiplePlotInfo info,String name,String path, Boolean save){
+        final Plot demo = new Plot(info,name, path,  save);
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);
