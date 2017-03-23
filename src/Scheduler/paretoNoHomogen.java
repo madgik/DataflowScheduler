@@ -380,7 +380,7 @@ public class paretoNoHomogen implements Scheduler {
 
             SolutionSpace modifiedPlans=new SolutionSpace();
             SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
-            for(Plan pToChange: skylinePlansNew)//skylineToModify) //
+            for(Plan pToChange: skylineToModify) //
                 modifiedPlans = migrateCriticalOpsToConts(pToChange);
             if(modifiedPlans!=null)
             skylinePlansNew.addAll(modifiedPlans);
@@ -608,7 +608,7 @@ public class paretoNoHomogen implements Scheduler {
         for (Operator op : graph.getOperators()) {
             plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id,backfilling);
         }
-        plan.printAssignments();
+      //  plan.printAssignments();
         return plan;
     }
 
@@ -950,7 +950,7 @@ public class paretoNoHomogen implements Scheduler {
 //        System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
 
 //        System.out.println("lst");
-        plan.printAssignments();
+//        plan.printAssignments();
         for(Long opId: opsSortedReversed()) {
             Long lst = Long.MAX_VALUE;
 
@@ -1433,11 +1433,11 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 
                                 System.out.println("old plan" + p.stats.money + " " + p.stats.runtime_MS);
                                 p.printInfo();
-                                p.printAssignments();
+//                                p.printAssignments();
                                 System.out.println("migrated op " + opId);
                                 System.out.println("new plan " + newPlan.stats.money + " " + newPlan.stats.runtime_MS);
                                 newPlan.printInfo();
-                                newPlan.printAssignments();
+//                                newPlan.printAssignments();
                                 //
                             }
 
@@ -1686,9 +1686,9 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
         //tPlan.contAssignments.get(plan.assignments.get(opId)).remove(opId);
         tPlan.contAssignments.get(contId).add(opId);
 
-        if(newSlot.start_MS == 1644){
-            System.out.println("aa");
-        }
+//        if(newSlot.start_MS == 1644){
+//            System.out.println("aa");
+//        }
         tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
 
         Slot torm = null;
@@ -1727,23 +1727,23 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 
         findNextReadyOps(readyOps,readyOpsInner,opsAssignedSet, tPlan );
 
-        System.out.println("migrate opID "+opId +"............." + tPlan.assignments.get(opId));
+//        System.out.println("migrate opID "+opId +"............." + tPlan.assignments.get(opId));
 
         HashSet<Long> checking = new HashSet<>();
 
         while(readyOps.size()>0) {
 
             for (Long nextOpID : readyOps) {//iterate on the ready to schedule ops
-                if(checking.contains(nextOpID)){
-                    System.out.println("aaaaaaa");
-                }
-                checking.add(nextOpID);
-
-
-                    System.out.println(nextOpID+" ");
-                if(nextOpID == 6){
-                    System.out.println("EUREKA");
-                }
+//                if(checking.contains(nextOpID)){
+//                    System.out.println("aaaaaaa");
+//                }
+//                checking.add(nextOpID);
+//
+//
+//                    System.out.println(nextOpID+" ");
+//                if(nextOpID == 6){
+//                    System.out.println("EUREKA");
+//                }
                 opsAssigned++;
 //            long nextOpID = nextOperator(readyOps);
                 Operator nextOp = graph.getOperator(nextOpID);
@@ -1760,15 +1760,15 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
             findNextReadyOps(readyOps, readyOpsInner, opsAssignedSet, tPlan);
         }
 
-        System.out.println("EINAIISA?? "+opsAssigned+" "+graph.operators.size());
-        if(opsAssigned != graph.operators.size()){
-            System.out.println("NATO");
-        }
+//        System.out.println("EINAIISA?? "+opsAssigned+" "+graph.operators.size());
+//        if(opsAssigned != graph.operators.size()){
+//            System.out.println("NATO");
+//        }
 
-        System.out.println("/////////migrateOperator()");
-        plan.printAssignments();
-        System.out.println("////////new plan at migrateOperator()");
-        newPlan.printAssignments();
+//        System.out.println("/////////migrateOperator()");
+//        plan.printAssignments();
+//        System.out.println("////////new plan at migrateOperator()");
+//        newPlan.printAssignments();
         return newPlan;
     }
 

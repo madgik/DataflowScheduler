@@ -1,12 +1,9 @@
 import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
 import JsonOptiqueParse.JsonOptiqueParser;
-import Scheduler.Cluster;
-import Scheduler.Scheduler;
 import Scheduler.*;
 import utils.MultiplePlotInfo;
 import utils.plotUtility;
-import java.io.File;
 
 
 
@@ -197,7 +194,7 @@ public class Main {
         DAG graph = null;
         try {
 
-            graph = parser.parseDax(Main.class.getResource("MONTAGE.n.25.0.dax").getFile());
+            graph = parser.parseDax(Main.class.getResource("MONTAGE.n.100.0.dax").getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }

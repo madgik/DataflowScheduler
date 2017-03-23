@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4d6e9fc-fa75-41b9-b662-f5cedc4d96ab" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MyScheduler.iml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Main.java" afterPath="$PROJECT_DIR$/src/Main.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" afterPath="$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -37,7 +37,7 @@
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="199" column="42" selection-start-line="199" selection-start-column="42" selection-end-line="199" selection-end-column="42" />
+              <caret line="207" column="32" selection-start-line="207" selection-start-column="32" selection-end-line="207" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -48,22 +48,32 @@
       <file leaf-file-name="paretoNoHomogen.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334">
-              <caret line="1392" column="107" selection-start-line="1392" selection-start-column="38" selection-end-line="1392" selection-end-column="107" />
+            <state vertical-scroll-proportion="0.3659091">
+              <caret line="382" column="32" selection-start-line="382" selection-start-column="32" selection-end-line="382" selection-end-column="32" />
               <folding>
                 <element signature="e#10877#11444#0" expanded="true" />
                 <element signature="e#11443#11444#0" expanded="true" />
-                <element signature="e#31293#31679#0" expanded="true" />
-                <element signature="e#31678#31679#0" expanded="true" />
-                <element signature="e#31785#32204#0" expanded="true" />
-                <element signature="e#32203#32204#0" expanded="true" />
-                <element signature="e#32310#32727#0" expanded="true" />
-                <element signature="e#32726#32727#0" expanded="true" />
-                <element signature="e#42856#43031#0" expanded="true" />
-                <element signature="e#43030#43031#0" expanded="true" />
-                <element signature="e#77851#78021#0" expanded="true" />
-                <element signature="e#78020#78021#0" expanded="true" />
+                <element signature="e#31277#31663#0" expanded="true" />
+                <element signature="e#31662#31663#0" expanded="true" />
+                <element signature="e#31769#32188#0" expanded="true" />
+                <element signature="e#32187#32188#0" expanded="true" />
+                <element signature="e#32294#32711#0" expanded="true" />
+                <element signature="e#32710#32711#0" expanded="true" />
+                <element signature="e#42842#43017#0" expanded="true" />
+                <element signature="e#43016#43017#0" expanded="true" />
+                <element signature="e#77885#78055#0" expanded="true" />
+                <element signature="e#78054#78055#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Plan.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Scheduler/Plan.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.935484">
+              <caret line="598" column="23" selection-start-line="598" selection-start-column="23" selection-end-line="598" selection-end-column="23" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -385,7 +395,7 @@
     <property name="js.eslint.eslintPackage" value="" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
     <property name="last_opened_file_path" value="$USER_HOME$/Hscheduling" />
-    <property name="SearchEverywhereHistoryKey" value="montage&#9;FILE&#9;file:///home/ilia/MyScheduler/resources/MONTAGE.n.25.0.dax&#10;paret&#9;FILE&#9;file:///home/ilia/MyScheduler/src/Scheduler/paretoNoHomogen.java&#10;parse&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/JsonOptiqueParse/JsonOptiqueParser.java&#10;main&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Main.java&#10;mo&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Moheft.java&#10;conta&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/containerType.java&#10;Main&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Main.java&#10;Runt&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;DAG&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/DAG.java&#10;con&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/containerType.java&#10;plan&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Plan.java&#10;Slot&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Slot.java&#10;Solutio&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Plan&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Plan.java&#10;Solut&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Container&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Container.java&#10;monta&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.25.0.dax&#10;container&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Container.java&#10;r&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;Edge&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/Edge.java&#10;Opera&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/Operator.java&#10;ope&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/Operator.java&#10;clust&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Cluster.java&#10;Space&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Sl&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Slot.java&#10;quant&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Quantum.java&#10;Clu&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Cluster.java&#10;Contai&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Container.java&#10;solu&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;space&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Operator&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/Operator.java&#10;dax&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/parsers/PegasusDaxParser.java&#10;stat&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;runt&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;cont&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/containerType.java&#10;solutio&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Cluster&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Cluster.java&#10;bag&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/BagOfPlans.java&#10;pl&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java&#10;sta&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;stati&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java" />
+    <property name="SearchEverywhereHistoryKey" value="plan&#9;FILE&#9;file:///home/ilia/MyScheduler/src/Scheduler/Plan.java&#10;montage&#9;FILE&#9;file:///home/ilia/MyScheduler/resources/MONTAGE.n.25.0.dax&#10;paret&#9;FILE&#9;file:///home/ilia/MyScheduler/src/Scheduler/paretoNoHomogen.java&#10;parse&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/JsonOptiqueParse/JsonOptiqueParser.java&#10;main&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Main.java&#10;mo&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Moheft.java&#10;conta&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/containerType.java&#10;Main&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Main.java&#10;Runt&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;DAG&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/DAG.java&#10;con&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/containerType.java&#10;Slot&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Slot.java&#10;Solutio&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Plan&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Plan.java&#10;Solut&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Container&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Container.java&#10;monta&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/resources/MONTAGE.n.25.0.dax&#10;container&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Container.java&#10;r&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;Edge&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/Edge.java&#10;Opera&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/Operator.java&#10;ope&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Graph/Operator.java&#10;clust&#9;FILE&#9;file:///Users/johnchronis/Desktop/MyScheduler/src/Scheduler/Cluster.java&#10;Space&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Sl&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Slot.java&#10;quant&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Quantum.java&#10;Clu&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Cluster.java&#10;Contai&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Container.java&#10;solu&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;space&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Operator&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/Operator.java&#10;dax&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Graph/parsers/PegasusDaxParser.java&#10;stat&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;runt&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/RuntimeConstants.java&#10;cont&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/containerType.java&#10;solutio&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/SolutionSpace.java&#10;Cluster&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Cluster.java&#10;bag&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/BagOfPlans.java&#10;pl&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Plan.java&#10;sta&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java&#10;stati&#9;FILE&#9;file:///Users/johnchronis/code/MyScheduler/src/Scheduler/Statistics.java" />
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
@@ -870,7 +880,13 @@
       <option name="project" value="LOCAL" />
       <updated>1490215947498</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="migrateoperator: changed  plan. to tplan.  to fix bug">
+      <created>1490295965406</created>
+      <option name="number" value="00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1490295965406</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -895,7 +911,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16203336" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22231075" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12270916" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.48377126" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22565688" sideWeight="0.49507818" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969433" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -945,7 +961,8 @@
     <MESSAGE value="+1 in depstartTime" />
     <MESSAGE value="different computerankings (based on slack and level)" />
     <MESSAGE value="Initial effort for migrateCriticalOpsToConts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial effort for migrateCriticalOpsToConts" />
+    <MESSAGE value="migrateoperator: changed  plan. to tplan.  to fix bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="migrateoperator: changed  plan. to tplan.  to fix bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1004,16 +1021,16 @@
           <folding>
             <element signature="e#10877#11444#0" expanded="true" />
             <element signature="e#11443#11444#0" expanded="true" />
-            <element signature="e#31293#31679#0" expanded="true" />
-            <element signature="e#31678#31679#0" expanded="true" />
-            <element signature="e#31785#32204#0" expanded="true" />
-            <element signature="e#32203#32204#0" expanded="true" />
-            <element signature="e#32310#32727#0" expanded="true" />
-            <element signature="e#32726#32727#0" expanded="true" />
-            <element signature="e#42856#43031#0" expanded="true" />
-            <element signature="e#43030#43031#0" expanded="true" />
-            <element signature="e#77851#78021#0" expanded="true" />
-            <element signature="e#78020#78021#0" expanded="true" />
+            <element signature="e#31277#31663#0" expanded="true" />
+            <element signature="e#31662#31663#0" expanded="true" />
+            <element signature="e#31769#32188#0" expanded="true" />
+            <element signature="e#32187#32188#0" expanded="true" />
+            <element signature="e#32294#32711#0" expanded="true" />
+            <element signature="e#32710#32711#0" expanded="true" />
+            <element signature="e#42842#43017#0" expanded="true" />
+            <element signature="e#43016#43017#0" expanded="true" />
+            <element signature="e#77885#78055#0" expanded="true" />
+            <element signature="e#78054#78055#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1035,16 +1052,16 @@
           <folding>
             <element signature="e#10877#11444#0" expanded="true" />
             <element signature="e#11443#11444#0" expanded="true" />
-            <element signature="e#31293#31679#0" expanded="true" />
-            <element signature="e#31678#31679#0" expanded="true" />
-            <element signature="e#31785#32204#0" expanded="true" />
-            <element signature="e#32203#32204#0" expanded="true" />
-            <element signature="e#32310#32727#0" expanded="true" />
-            <element signature="e#32726#32727#0" expanded="true" />
-            <element signature="e#42856#43031#0" expanded="true" />
-            <element signature="e#43030#43031#0" expanded="true" />
-            <element signature="e#77851#78021#0" expanded="true" />
-            <element signature="e#78020#78021#0" expanded="true" />
+            <element signature="e#31277#31663#0" expanded="true" />
+            <element signature="e#31662#31663#0" expanded="true" />
+            <element signature="e#31769#32188#0" expanded="true" />
+            <element signature="e#32187#32188#0" expanded="true" />
+            <element signature="e#32294#32711#0" expanded="true" />
+            <element signature="e#32710#32711#0" expanded="true" />
+            <element signature="e#42842#43017#0" expanded="true" />
+            <element signature="e#43016#43017#0" expanded="true" />
+            <element signature="e#77885#78055#0" expanded="true" />
+            <element signature="e#78054#78055#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1353,8 +1370,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/Plan.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31958762">
-          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+        <state vertical-scroll-proportion="-2.935484">
+          <caret line="598" column="23" selection-start-line="598" selection-start-column="23" selection-end-line="598" selection-end-column="23" />
           <folding />
         </state>
       </provider>
@@ -1362,7 +1379,7 @@
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="199" column="42" selection-start-line="199" selection-start-column="42" selection-end-line="199" selection-end-column="42" />
+          <caret line="207" column="32" selection-start-line="207" selection-start-column="32" selection-end-line="207" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1371,21 +1388,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Scheduler/paretoNoHomogen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="1392" column="107" selection-start-line="1392" selection-start-column="38" selection-end-line="1392" selection-end-column="107" />
+        <state vertical-scroll-proportion="0.3659091">
+          <caret line="382" column="32" selection-start-line="382" selection-start-column="32" selection-end-line="382" selection-end-column="32" />
           <folding>
             <element signature="e#10877#11444#0" expanded="true" />
             <element signature="e#11443#11444#0" expanded="true" />
-            <element signature="e#31293#31679#0" expanded="true" />
-            <element signature="e#31678#31679#0" expanded="true" />
-            <element signature="e#31785#32204#0" expanded="true" />
-            <element signature="e#32203#32204#0" expanded="true" />
-            <element signature="e#32310#32727#0" expanded="true" />
-            <element signature="e#32726#32727#0" expanded="true" />
-            <element signature="e#42856#43031#0" expanded="true" />
-            <element signature="e#43030#43031#0" expanded="true" />
-            <element signature="e#77851#78021#0" expanded="true" />
-            <element signature="e#78020#78021#0" expanded="true" />
+            <element signature="e#31277#31663#0" expanded="true" />
+            <element signature="e#31662#31663#0" expanded="true" />
+            <element signature="e#31769#32188#0" expanded="true" />
+            <element signature="e#32187#32188#0" expanded="true" />
+            <element signature="e#32294#32711#0" expanded="true" />
+            <element signature="e#32710#32711#0" expanded="true" />
+            <element signature="e#42842#43017#0" expanded="true" />
+            <element signature="e#43016#43017#0" expanded="true" />
+            <element signature="e#77885#78055#0" expanded="true" />
+            <element signature="e#78054#78055#0" expanded="true" />
           </folding>
         </state>
       </provider>
