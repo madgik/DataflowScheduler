@@ -15,10 +15,10 @@ public class Main {
     public static void main(String[] args) {
 
 
-//        runCyberShake(1, 1);
+//        runCyberShake(500, 10);
 //        runSIPHT(100,  1);
-//        runMontage(1, 1);
-        runLIGO(100, 100);
+        runMontage(1, 1);
+//        runLIGO(1, 1);
 //        runOpti("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 //        runOpti("2_Q2_6_2dat.cleanplan", 1300, 10);
 //        runOpti("2_Q3_6_5.4dat.cleanplan", 1300, 10);
@@ -111,8 +111,6 @@ public class Main {
 
     static void runOpti(String s, int mulTime, int mulData) {
 
-        File loadFile = new File(Main.class.getResource(s).getPath());
-
         JsonOptiqueParser parser = new JsonOptiqueParser(mulTime, mulData);
         DAG graph = null;
         try {
@@ -195,7 +193,7 @@ public class Main {
 
     static void runMontage(int mulTime, int mulData) {
 
-        PegasusDaxParser parser = new PegasusDaxParser();
+        PegasusDaxParser parser = new PegasusDaxParser( mulTime,  mulData);
         DAG graph = null;
         try {
 
@@ -237,7 +235,7 @@ public class Main {
 
     static void runCyberShake(int mulTime, int mulData) {
 
-        PegasusDaxParser parser = new PegasusDaxParser();
+        PegasusDaxParser parser = new PegasusDaxParser(mulTime,mulData);
         DAG graph = null;
         try {
             graph = parser.parseDax(Main.class.getResource("CyberShake.n.100.0.dax").getFile());

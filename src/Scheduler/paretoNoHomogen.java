@@ -381,7 +381,7 @@ public class paretoNoHomogen implements Scheduler {
 
 
             SolutionSpace modifiedPlans=new SolutionSpace();
-         //   SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
+            SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
             for(Plan pToChange: skylinePlansNew)//skylineToModify) //
                 modifiedPlans = migrateCriticalOpsToConts(pToChange);
             if(modifiedPlans!=null)
@@ -743,9 +743,13 @@ public class paretoNoHomogen implements Scheduler {
         final TopologicalSorting topOrder = new TopologicalSorting(graph);
 
         HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
+        HashMap<Integer,ArrayList<Long>> opLevelList = new HashMap<>();
 
 
         int numLevels=0;
+        for(int i=0;i<20;++i){
+            opLevelList.put(i,new ArrayList<Long>());
+        }
 
         for (Long opId : topOrder.iterator()) {
             int level=0;
@@ -761,10 +765,27 @@ public class paretoNoHomogen implements Scheduler {
             else
                 opLevelperLevel.put(level, 1);
 
-//             System.out.println("op "+ opId + " level " +level);
+            opLevelList.get(level).add(opId);
+
+             System.out.println("op "+ opId + " level " +level);
 
         }
 
+        for(Integer opop:opLevelList.keySet()){
+            System.out.print(opop+ ": ");
+            for(Long opopop:opLevelList.get(opop)){
+                System.out.print(opopop+", ");
+            }
+            System.out.println("");
+        }
+
+        for(Long opop:graph.operators.keySet()){
+            System.out.print(opop+ ": ");
+            for(Edge e:graph.getParents(opop)){
+                System.out.print(e.from+", ");
+            }
+            System.out.println("");
+        }
 
         Double crPathLength=0.0;
         for (Long opId : topOrder.iteratorReverse()) {
@@ -940,6 +961,7 @@ public class paretoNoHomogen implements Scheduler {
             long succStart = Long.MAX_VALUE;
             Long succId = null;
             Long contId = plan.assignments.get(opId);
+            plan.printInfo();
             for(Long nextOpId: plan.contAssignments.get(contId)) {
                 if(plan.opIdtoStartEndProcessing_MS.get(nextOpId).a<succStart && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
                     succStart = plan.opIdtoStartEndProcessing_MS.get(nextOpId).a;
@@ -1324,6 +1346,8 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
                         HashMap<Long, Long> opSlack = new HashMap<>();
                         ArrayList<Long> opSortedBySlack = new ArrayList<>();
 
+                        plan.printInfo();
+                        plan.printAssignments();
                         computeSlackOps(plan, opSlack, opSortedBySlack);
 
 
@@ -1332,7 +1356,7 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 //                        if(p.cluster.containers.size()<=1)//TODO: as long as we do not consider using a new container
 //                            return null;
 
-                    if (plan.opsMigrated.size()> 0.10*opSortedBySlack.size() && opSlack.get(opId) > 0) {
+                    if ( opSlack.get(opId) > 0) {//plan.opsMigrated.size()> 0.10*opSortedBySlack.size() &&
                         continue;
                     }
 
@@ -1426,7 +1450,7 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
                 }
                     if(newPlans.size()>0)
                     results.addAll(newPlans);
-                    plans.clear();
+//                    plans.clear();
                     plans.addAll(newPlans);
                     newPlans.clear();
                 }
@@ -1657,8 +1681,15 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 //            newPlan.assignments.put(i,plan.assignments.get(i));
 //        }
         tPlan.assignments.put(opId,contId);
+        tPlan.contAssignments.get(plan.assignments.get(opId)).remove(opId);
+        tPlan.contAssignments.get(contId).add(opId);
+
+        if(newSlot.start_MS == 1644){
+            System.out.println("aa");
+        }
         tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
-        Slot torm =null;
+
+        Slot torm = null;
         for(Slot s:tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule)
         {
             if(s.opId == opId){
@@ -1666,6 +1697,7 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
             }
         }
         tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
+        tPlan.cluster.getContainer(plan.assignments.get(opId)).freeSlots.add(new Slot(torm.start_MS,torm.end_MS));
 
 //        Container cont = newPlan.cluster.containers.get(k);
 //
@@ -1693,26 +1725,43 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 
         findNextReadyOps(readyOps,readyOpsInner,opsAssignedSet, tPlan );
 
+        System.out.println("migrate opID "+opId +".............");
+
+        HashSet<Long> checking = new HashSet<>();
+
         while(readyOps.size()>0) {
 
             for (Long nextOpID : readyOps) {//iterate on the ready to schedule ops
+                if(checking.contains(nextOpID)){
+                    System.out.println("aaaaaaa");
+                }
+                checking.add(nextOpID);
 
+
+                    System.out.println(nextOpID+" ");
+                if(nextOpID == 6){
+                    System.out.println("EUREKA");
+                }
                 opsAssigned++;
 //            long nextOpID = nextOperator(readyOps);
                 Operator nextOp = graph.getOperator(nextOpID);
 //                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
 
-                if (nextOpID == opId){
-                    newPlan.assignOperator(nextOpID, contId, backfillingUpgrade);
-                }else {
-                    newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID), backfillingUpgrade);
-                }
+//                if (nextOpID == opId){
+//                    newPlan.assignOperator(nextOpID, contId, backfillingUpgrade);
+//                }else {
+                    newPlan.assignOperator(nextOpID, tPlan.assignments.get(nextOpID), backfillingUpgrade);
+//                }
 
             }
 
             findNextReadyOps(readyOps, readyOpsInner, opsAssignedSet, tPlan);
         }
 
+        System.out.println("EINAIISA?? "+opsAssigned+" "+graph.operators.size());
+        if(opsAssigned != graph.operators.size()){
+            System.out.println("NATO");
+        }
 
         System.out.println("/////////migrateOperator()");
         plan.printAssignments();
