@@ -1,10 +1,10 @@
 package utils;
 
+import javax.imageio.*;
+
 import Scheduler.Plan;
 
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 import org.jfree.chart.plot.PlotOrientation;
@@ -18,6 +18,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,29 +29,22 @@ public class Plot extends ApplicationFrame {
     /**
      * A demonstration application showing an XY series containing a null value.
      *
-     * @param title  the frame title.
+     * @param title the frame title.
      */
 
 
-    public Plot(final String title, ArrayList<Pair<Long,Double>> mydata) {
+    public Plot(final String title, ArrayList<Pair<Long, Double>> mydata) {
 
         super(title);
         final XYSeries series = new XYSeries("Random Data");
-        for(Pair p: mydata ){
-            series.add((Number)p.a,(Number)p.b);
+        for (Pair p : mydata) {
+            series.add((Number) p.a, (Number) p.b);
         }
 
         final XYSeriesCollection data = new XYSeriesCollection(series);
-        final JFreeChart chart = ChartFactory.createScatterPlot(
-            "Time/Money",
-            "Time",
-            "Money",
-            data,
-            PlotOrientation.VERTICAL,
-            true,
-            true,
-            false
-        );
+        final JFreeChart chart = ChartFactory
+            .createScatterPlot("Time/Money", "Time", "Money", data, PlotOrientation.VERTICAL, true,
+                true, false);
 
         final ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
@@ -57,29 +52,33 @@ public class Plot extends ApplicationFrame {
 
     }
 
-    public Plot(MultiplePlotInfo info, String name) {
+    public Plot(MultiplePlotInfo info, String name, String path, Boolean save) {
 
         super(name);
 
         final XYSeriesCollection data = new XYSeriesCollection();
-        for(XYSeries s: info.series){
+        for (XYSeries s : info.series) {
             data.addSeries(s);
         }
-        final JFreeChart chart = ChartFactory.createScatterPlot(
-            "Time/Money",
-            "Time",
-            "Money",
-            data,
-            PlotOrientation.VERTICAL,
-            true,
-            true,
-            false
-        );
+        final JFreeChart chart = ChartFactory
+            .createScatterPlot("Time/Money", "Time (Minutes)", "Money", data,
+                PlotOrientation.VERTICAL, true, true, false);
 
-        final ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
-        setContentPane(chartPanel);
 
+
+            ChartPanel chartPanel;
+            chartPanel = new ChartPanel(chart);
+            chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+            setContentPane(chartPanel);
+
+        if (save) {
+            File f = new File(path + name + ".png");
+            try {
+                ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

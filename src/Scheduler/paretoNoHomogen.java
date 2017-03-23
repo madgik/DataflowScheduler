@@ -60,21 +60,43 @@ public class paretoNoHomogen implements Scheduler {
             } else {
 
                 if (cType.equals(containerType.getLargest())) {
-                    skylinePlans_DEC.addAll(this.createAssignments("decreasing", cType));
+                    ArrayList<containerType> cTypes = new ArrayList<>();
+                    cTypes.add(cType);
+
+                    skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
 //                    plotPlans("dec",skylinePlans);
 //                    System.out.println("s1 "+skylinePlans.size());
 
                 } else if (cType.equals(containerType.getSmallest())) {
-                    skylinePlans_INC.addAll(this.createAssignments("increasing", cType));
+                    ArrayList<containerType> cTypes = new ArrayList<>();
+                    cTypes.add(cType);
+
+                    skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
 //                    plotPlans("inc",skylinePlans);
 //                    System.out.println("s2 "+skylinePlans.size());
                 } else{
-                    skylinePlans_INCDEC.addAll(this.createAssignments("increasing/decreasing", cType));
+                    ArrayList<containerType> cTypes = new ArrayList<>();
+                    cTypes.add(cType);
+
+                    skylinePlans_INCDEC.addAll(this.createAssignments("increasing/decreasing", cTypes));
 //                    plotPlans("inc,dec",skylinePlans);
 //                    System.out.println("s3 "+skylinePlans.size());
                 }
             }
         }
+
+//        ArrayList<containerType> cTypes = new ArrayList<>();
+//        cTypes.add(containerType.C);
+//        cTypes.add(containerType.G);
+//        skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
+//
+//        cTypes.clear();
+//        cTypes.add(containerType.G);
+//        cTypes.add(containerType.E);
+//        skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
+
+
+
 
 //        System.out.println("//////////DEC///////");
 //        skylinePlans_DEC.print();
@@ -103,7 +125,13 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.addAll(computeSkyline(skylinePlans));
 
+        for(Plan p:paretoPlans){
+            HashSet<containerType> temp = new HashSet<>();
+            if(p.cluster.countTypes.size()>1){
+                    System.out.println("found a good one");
+            }
 
+        }
 
 //        System.out.println("//////////PARETO///////");
 //        paretoPlans.print();
@@ -376,30 +404,47 @@ public class paretoNoHomogen implements Scheduler {
 
             }
 
+            //////
+
+//            plansInner.clear();
+//            plansInner.addAll(result.results);
+//
+//
+//            SolutionSpace modifiedPlans=new SolutionSpace();
+//            SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
+//            for(Plan pToChange: skylinePlansNew)//skylineToModify) //
+//                modifiedPlans = migrateCriticalOpsToConts(pToChange);
+//            if(modifiedPlans!=null)
+//            skylinePlansNew.addAll(modifiedPlans);
+//
+//            result.addAll(computeNewSkyline(plansInner.results, skylinePlansNew.results));
+//
+//
+//
+//
+//            plansInner.clear();
+//
+//            plansInner.addAll(skylinePlansNew.results);
+//
+//
+//
+//
+//            skylinePlansNew.clear();
+
+
+            //////
             plansInner.clear();
             plansInner.addAll(result.results);
-
-
-            SolutionSpace modifiedPlans=new SolutionSpace();
-            SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
-            for(Plan pToChange: skylinePlansNew)//skylineToModify) //
-                modifiedPlans = migrateCriticalOpsToConts(pToChange);
-            if(modifiedPlans!=null)
-            skylinePlansNew.addAll(modifiedPlans);
-
             result.addAll(computeNewSkyline(plansInner.results, skylinePlansNew.results));
-
-
-
 
             plansInner.clear();
 
             plansInner.addAll(skylinePlansNew.results);
 
 
-
-
             skylinePlansNew.clear();
+
+            ////
         }
 
 
@@ -511,7 +556,7 @@ public class paretoNoHomogen implements Scheduler {
 
     }
 
-    private SolutionSpace createAssignments(String vmUpgrading, containerType cType) {
+    private SolutionSpace createAssignments(String vmUpgrading, ArrayList<containerType> cTypes) {
 
 
         Plan firstPlan = new Plan(graph, cluster);
@@ -548,7 +593,8 @@ public class paretoNoHomogen implements Scheduler {
                 }
 
 //                System.out.println("\nnewly created plans");
-                scheduleToCandidateContainers(nextOpID, plan, cType,allCandidates);//allCanditates is an out param
+                scheduleToCandidateContainers(nextOpID, plan, cTypes,allCandidates);//allCanditates is an out param
+
             }
             plans.clear();
 
@@ -575,7 +621,7 @@ public class paretoNoHomogen implements Scheduler {
         return plans;
     }
 
-    private void scheduleToCandidateContainers(Long opId , Plan plan,  containerType contType,SolutionSpace planEstimations){
+    private void scheduleToCandidateContainers(Long opId , Plan plan,  ArrayList<containerType> contTypes,SolutionSpace planEstimations){
         //assume that not empty containers exist
 
         for(Long contId: plan.cluster.containers.keySet()){ //add to every existing container
@@ -586,14 +632,14 @@ public class paretoNoHomogen implements Scheduler {
 //            newPlan.printAssignments();
         }
         if(plan.cluster.contUsed.size()<maxContainers){  //add a nwe container of contType and assign the op to that
-//            for(containerType ctype: contType) {//uncomment to add every ctype
+            for(containerType contType: contTypes) {//uncomment to add every ctype
                 Plan newPlan = new Plan(plan);
                 Long newContId = newPlan.cluster.addContainer(contType);
                 newPlan.assignOperator(opId, newContId, backfilling);
                 planEstimations.add(newPlan);
 
 //                newPlan.printAssignments();
-//            }
+            }
         }
 
 
