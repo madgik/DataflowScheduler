@@ -8,8 +8,6 @@ import utils.Pair;
 
 import java.util.*;
 
-import static Scheduler.containerType.isSmaller;
-
 /**
  * Created by johnchronis on 2/19/17.
  */
@@ -951,7 +949,7 @@ public class paretoNoHomogen implements Scheduler {
 //        for(Long opId: opsSortedReversed())
 //        System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
 
-        System.out.println("lst");
+//        System.out.println("lst");
         plan.printAssignments();
         for(Long opId: opsSortedReversed()) {
             Long lst = Long.MAX_VALUE;
@@ -961,7 +959,7 @@ public class paretoNoHomogen implements Scheduler {
             long succStart = Long.MAX_VALUE;
             Long succId = null;
             Long contId = plan.assignments.get(opId);
-            plan.printInfo();
+//            plan.printInfo();
             for(Long nextOpId: plan.contAssignments.get(contId)) {
                 if(plan.opIdtoStartEndProcessing_MS.get(nextOpId).a<succStart && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
                     succStart = plan.opIdtoStartEndProcessing_MS.get(nextOpId).a;
@@ -1346,8 +1344,8 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
                         HashMap<Long, Long> opSlack = new HashMap<>();
                         ArrayList<Long> opSortedBySlack = new ArrayList<>();
 
-                        plan.printInfo();
-                        plan.printAssignments();
+//                        plan.printInfo();
+//                        plan.printAssignments();
                         computeSlackOps(plan, opSlack, opSortedBySlack);
 
 
@@ -1392,12 +1390,12 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
                         tPlan.assignments.put(opId, contId);
 //                       tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
                         Slot torm = null;
-                        for (Slot s : tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule) {
+                        for (Slot s : tPlan.cluster.getContainer(tPlan.assignments.get(opId)).opsschedule) {
                             if (s.opId == opId) {
                                 torm = s;
                             }
                         }
-                        tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
+                        tPlan.cluster.getContainer(tPlan.assignments.get(opId)).opsschedule.remove(torm);
 
                         opEST = computeEST(tPlan, opId);//if plan is updated, it needs to be computed every time a new op is migrated
                         opLST = computeLST(tPlan, opId);
@@ -1438,7 +1436,7 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
                                 p.printAssignments();
                                 System.out.println("migrated op " + opId);
                                 System.out.println("new plan " + newPlan.stats.money + " " + newPlan.stats.runtime_MS);
-//                                newPlan.printInfo();
+                                newPlan.printInfo();
                                 newPlan.printAssignments();
                                 //
                             }
@@ -1680,8 +1678,12 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 //        for(Long i:plan.assignments.keySet()){
 //            newPlan.assignments.put(i,plan.assignments.get(i));
 //        }
+
+
+        tPlan.contAssignments.get(tPlan.assignments.get(opId)).remove(opId);
+
         tPlan.assignments.put(opId,contId);
-        tPlan.contAssignments.get(plan.assignments.get(opId)).remove(opId);
+        //tPlan.contAssignments.get(plan.assignments.get(opId)).remove(opId);
         tPlan.contAssignments.get(contId).add(opId);
 
         if(newSlot.start_MS == 1644){
@@ -1690,14 +1692,14 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
         tPlan.cluster.getContainer(contId).opsschedule.add(new Slot(opId,newSlot.start_MS,newSlot.end_MS));
 
         Slot torm = null;
-        for(Slot s:tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule)
+        for(Slot s:tPlan.cluster.getContainer(tPlan.assignments.get(opId)).opsschedule)
         {
             if(s.opId == opId){
                 torm = s;
             }
         }
-        tPlan.cluster.getContainer(plan.assignments.get(opId)).opsschedule.remove(torm);
-        tPlan.cluster.getContainer(plan.assignments.get(opId)).freeSlots.add(new Slot(torm.start_MS,torm.end_MS));
+        tPlan.cluster.getContainer(tPlan.assignments.get(opId)).opsschedule.remove(torm);
+        tPlan.cluster.getContainer(tPlan.assignments.get(opId)).freeSlots.add(new Slot(torm.start_MS,torm.end_MS));
 
 //        Container cont = newPlan.cluster.containers.get(k);
 //
@@ -1725,7 +1727,7 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
 
         findNextReadyOps(readyOps,readyOpsInner,opsAssignedSet, tPlan );
 
-        System.out.println("migrate opID "+opId +".............");
+        System.out.println("migrate opID "+opId +"............." + tPlan.assignments.get(opId));
 
         HashSet<Long> checking = new HashSet<>();
 
