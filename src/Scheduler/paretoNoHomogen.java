@@ -26,6 +26,7 @@ public class paretoNoHomogen implements Scheduler {
 
     public boolean backfilling = false;
     public boolean backfillingUpgrade = false;
+    public boolean HEFT = true;
 
     private HashMap<Long, Integer> opLevel;
 
@@ -59,30 +60,107 @@ public class paretoNoHomogen implements Scheduler {
             if (maxContainers == 1) {
                 skylinePlans.add(onlyOneContainer());
             } else {
+                if(HEFT){
+                    int maxHEFTContainers = 70;
+                    ///////HEFT////////////////
+                    if (cType.equals(containerType.getLargest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
 
-                if (cType.equals(containerType.getLargest())) {
-                    ArrayList<containerType> cTypes = new ArrayList<>();
-                    cTypes.add(cType);
 
-                    skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
-//                    plotPlans("dec",skylinePlans);
-//                    System.out.println("s1 "+skylinePlans.size());
+                        Cluster cluster;
+                        Scheduler sched;
+                        SolutionSpace solutions = new SolutionSpace();
+                        for(int i=1;i<maxHEFTContainers;++i){
+                            cluster = new Cluster();
+                            sched = new HEFT(graph, cluster,i,cType);
+                            solutions.addAll(sched.schedule());
 
-                } else if (cType.equals(containerType.getSmallest())) {
-                    ArrayList<containerType> cTypes = new ArrayList<>();
-                    cTypes.add(cType);
+                        }
+                        for(Plan p : solutions){
+                            p.vmUpgrading = "decreasing";
+                        }
 
-                    skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
-//                    plotPlans("inc",skylinePlans);
-//                    System.out.println("s2 "+skylinePlans.size());
-                } else{
-                    ArrayList<containerType> cTypes = new ArrayList<>();
-                    cTypes.add(cType);
 
-                    skylinePlans_INCDEC.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//                    plotPlans("inc,dec",skylinePlans);
-//                    System.out.println("s3 "+skylinePlans.size());
+                        skylinePlans_DEC.addAll(solutions);
+                        //                    plotPlans("dec",skylinePlans);
+                        //                    System.out.println("s1 "+skylinePlans.size());
+
+                    } else if (cType.equals(containerType.getSmallest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+
+                        Cluster cluster;
+                        Scheduler sched;
+                        SolutionSpace solutions = new SolutionSpace();
+                        for(int i=1;i<maxHEFTContainers;++i){
+                            cluster = new Cluster();
+                            sched = new HEFT(graph, cluster,i,cType);
+                            solutions.addAll(sched.schedule());
+
+                        }
+                        for(Plan p : solutions){
+                            p.vmUpgrading = "increasing";
+                        }
+
+                        skylinePlans_INC.addAll(solutions);
+                        //                    plotPlans("inc",skylinePlans);
+                        //                    System.out.println("s2 "+skylinePlans.size());
+                    } else{
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+
+                        Cluster cluster;
+                        Scheduler sched;
+                        SolutionSpace solutions = new SolutionSpace();
+                        for(int i=1;i<maxHEFTContainers;++i){
+                            cluster = new Cluster();
+                            sched = new HEFT(graph, cluster,i,cType);
+                            solutions.addAll(sched.schedule());
+
+                        }
+                        for(Plan p : solutions){
+                            p.vmUpgrading = "increasing/decreasing";
+                        }
+
+                        skylinePlans_INCDEC.addAll(solutions);
+                        //                    plotPlans("inc,dec",skylinePlans);
+                        //                    System.out.println("s3 "+skylinePlans.size());
+                    }
+
+                }else {
+                    ////INC DEC/////
+                    if (cType.equals(containerType.getLargest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
+                        //                    plotPlans("dec",skylinePlans);
+                        //                    System.out.println("s1 "+skylinePlans.size());
+
+                    } else if (cType.equals(containerType.getSmallest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+                        //                    plotPlans("inc",skylinePlans);
+                        //                    System.out.println("s2 "+skylinePlans.size());
+                    } else {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+                        skylinePlans_INCDEC
+                            .addAll(this.createAssignments("increasing/decreasing", cTypes));
+                        //                    plotPlans("inc,dec",skylinePlans);
+                        //                    System.out.println("s3 "+skylinePlans.size());
+                    }
                 }
+                ////////////////////
+
+
+                /////////////////////////
             }
         }
 
@@ -131,13 +209,6 @@ public class paretoNoHomogen implements Scheduler {
 //        int size = computeSkyline(skylinePlans).size();
 //        int size2 = ComputeOnePerNumberofVmsSkyline(skylinePlans).size();
 
-        for(Plan p:paretoPlans){
-            HashSet<containerType> temp = new HashSet<>();
-            if(p.cluster.countTypes.size()>1){
-                    System.out.println("found a good one");
-            }
-
-        }
 
 //        System.out.println("//////////PARETO///////");
 //        paretoPlans.print();
