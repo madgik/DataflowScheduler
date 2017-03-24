@@ -25,9 +25,9 @@ public class Main {
 
 //
         runDax("LIGO.n.100.0.dax",100,10);
-//        runDax("SIPHT.n.100.0.dax",100,1);
-//        runDax("CyberShake.n.100.0.dax",500,10);
-//        runDax("MONTAGE.n.100.0.dax",100,1);
+        runDax("SIPHT.n.100.0.dax",100,100);
+        runDax("CyberShake.n.100.0.dax",500,10);
+        runDax("MONTAGE.n.100.0.dax",100,1);
 //
 //        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 

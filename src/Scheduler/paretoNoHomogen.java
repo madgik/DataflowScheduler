@@ -26,7 +26,7 @@ public class paretoNoHomogen implements Scheduler {
 
     public boolean backfilling = false;
     public boolean backfillingUpgrade = false;
-    public boolean HEFT = true;
+    public boolean HEFT = false;
 
     private HashMap<Long, Integer> opLevel;
 
