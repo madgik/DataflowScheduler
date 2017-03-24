@@ -27,13 +27,14 @@ public class paretoNoHomogen implements Scheduler {
     public boolean backfilling = false;
     public boolean backfillingUpgrade = false;
 
-    private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
+    private HashMap<Long, Integer> opLevel;
 
     public paretoNoHomogen(DAG graph,Cluster cl){
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
         this.opsSorted = new LinkedList<>();
+        opLevel = new HashMap<>();
     }
 
     @Override
@@ -123,7 +124,12 @@ public class paretoNoHomogen implements Scheduler {
 //        skylinePlans.sort();
 //        skylinePlans.print();
 
-        paretoPlans.addAll(computeSkyline(skylinePlans));
+//        paretoPlans.addAll(computeSkyline(skylinePlans));
+
+//        paretoPlans.addAll(ComputeOnePerNumberofVmsSkyline(skylinePlans));
+
+//        int size = computeSkyline(skylinePlans).size();
+//        int size2 = ComputeOnePerNumberofVmsSkyline(skylinePlans).size();
 
         for(Plan p:paretoPlans){
             HashSet<containerType> temp = new HashSet<>();
@@ -165,7 +171,7 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.addAll(skylinePlans);
 
-        space.addAll(computeSkyline(paretoPlans));
+        space.addAll((paretoPlans));
 
 //        SolutionSpace beforeMigrate = new SolutionSpace();
 //        beforeMigrate.addAll(computeSkyline(paretoPlans));
@@ -636,6 +642,8 @@ public class paretoNoHomogen implements Scheduler {
         plan.cluster.addContainer(contType.getSmallest());
         plan.vmUpgrading = "increasing";
 
+        cluster.addContainer(contType);
+
         for (Operator op : graph.getOperators()) {
             plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id,backfilling);
         }
@@ -656,6 +664,49 @@ public class paretoNoHomogen implements Scheduler {
         }
 
         return minRankOpID;
+    }
+
+    public SolutionSpace ComputeOnePerNumberofVmsSkyline(SolutionSpace plans){
+        SolutionSpace skyline = new SolutionSpace();
+
+        HashMap<Integer,Plan> vmCountToFastestPlan = new HashMap<>();
+
+        for(Plan p:plans){
+            int numberofConts = p.cluster.contUsed.size();
+            Plan tplan = p;
+            if(vmCountToFastestPlan.containsKey(numberofConts)){
+                tplan = getFastest(tplan,vmCountToFastestPlan.get(numberofConts));
+            }
+            vmCountToFastestPlan.put(numberofConts,tplan);
+
+        }
+
+        skyline.addAll(vmCountToFastestPlan.values());
+        return skyline;
+
+    }
+
+
+    public Plan getFastest(Plan p1, Plan p2){
+        if(p1.stats.runtime_MS == p2.stats.runtime_MS){
+            if(p1.stats.money == p2.stats.money){
+                if(p1.cluster.contUsed.size() < p1.cluster.contUsed.size()){
+                    return p1;
+                }else{
+                    return p2;
+                }
+            }else if(p1.stats.money < p2.stats.money){
+                return p1;
+            }else{
+                return p2;
+            }
+        }else{
+            if(p1.stats.runtime_MS < p2.stats.runtime_MS){
+                return p1;
+            }else{
+                return p2;
+            }
+        }
     }
 
     public SolutionSpace computeSkyline(SolutionSpace plans){
@@ -1995,5 +2046,9 @@ p.opsMigrated.clear();//        System.out.println("MIGRATE///////////////////")
             }
         };
     }
+
+
+
+
 
 }

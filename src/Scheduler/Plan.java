@@ -36,7 +36,7 @@ public class Plan implements Comparable<Plan> {
     public HashMap<Long,Stack<Long>> contIdToSortedOps = null;
 
 
-
+    //copies the cluster
     public Plan(DAG graph, Cluster cluster) {
         this.graph = graph;
         beforeStats = null;

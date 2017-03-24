@@ -12,7 +12,7 @@ import java.io.File;
 
 public class Main {
 
-    static Boolean save = true;
+    static Boolean save = false;
     static String path;
 
     public static void main(String[] args) {
@@ -22,17 +22,18 @@ public class Main {
         new File(path).mkdir();
         path+="/";
 
-//        runCyberShake(500, 10);
-//        runSIPHT(100,  1);
-//        runMontage(100, 1);
-//        runLIGO(100, 10);
 
+//
         runDax("LIGO.n.100.0.dax",100,10);
-        runDax("SIPHT.n.100.0.dax",100,1);
-        runDax("CyberShake.n.100.0.dax",500,10);
-        runDax("MONTAGE.n.100.0.dax",100,1);
+//        runDax("SIPHT.n.100.0.dax",100,1);
+//        runDax("CyberShake.n.100.0.dax",500,10);
+//        runDax("MONTAGE.n.100.0.dax",100,1);
+//
+//        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 
-        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
+
+//        runHEFT("LIGO.n.100.0.dax",100,10);
+
 
 //         runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 //         runJson("2_Q2_6_2dat.cleanplan", 1300, 10);
@@ -48,6 +49,44 @@ public class Main {
 
 
         //TODO: Run the simulation to validate the results for the space of solutions
+    }
+
+    private static void runHEFT(String filename, int mulTime, int mulData) {
+        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
+
+        DAG graph = null;
+        try {
+            graph = parser.parseDax(Main.class.getResource(filename).getFile());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+
+        Cluster cluster;
+        Scheduler sched;
+        SolutionSpace solutions = new SolutionSpace();
+        for(int i=1;i<10;++i){
+            cluster = new Cluster();
+            sched = new HEFT(graph, cluster,i,containerType.A);
+            solutions.addAll(sched.schedule());
+
+        }
+
+
+        mpinfo.add("HEFT "+(solutions.optimizationTime_MS), solutions.results);
+
+
+
+        plotUtility plot = new plotUtility();
+
+        plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
+            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
+
+        System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
+        System.out.println("mulTime "+mulTime + " mulData " + mulData + "  sumData GB " + (graph.sumdata_B / 1073741824));
+        System.out.println("HEFT Example time -> " + solutions.optimizationTime_MS);
     }
 
     private static void runDax(String filename, int mulTime, int mulData) {
