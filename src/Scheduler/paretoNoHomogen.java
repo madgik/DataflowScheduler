@@ -124,7 +124,7 @@ public class paretoNoHomogen implements Scheduler {
 //        skylinePlans.sort();
 //        skylinePlans.print();
 
-//        paretoPlans.addAll(computeSkyline(skylinePlans));
+        paretoPlans.addAll(computeSkyline(skylinePlans));
 
 //        paretoPlans.addAll(ComputeOnePerNumberofVmsSkyline(skylinePlans));
 
