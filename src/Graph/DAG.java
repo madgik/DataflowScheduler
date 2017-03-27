@@ -75,7 +75,8 @@ public class DAG {
         return edges.get(node);
     }
 
-    public Edge getEdge(Long from, Long to){ return edgesMap.get(from).get(to);}
+    public Edge getEdge(Long from, Long to){
+        return edgesMap.get(from).get(to);}
 
     public ArrayList<Edge> getParents(Long node){
         return reverseEdges.get(node);

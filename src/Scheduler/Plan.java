@@ -432,6 +432,12 @@ public class Plan implements Comparable<Plan> {
 
     public Long calculateDelayDistributedStorage(Long parentId, Long childId, Long childContId){
 
+        if(!graph.edgesMap.containsKey(parentId))
+            return 0L;
+        if( !graph.edgesMap.get(parentId).containsKey(childId))
+            return 0L;
+
+
         if(assignments.get(parentId) == childContId){ //remove to transfer always to distributed storage
             return 0L;
         }
@@ -447,6 +453,14 @@ public class Plan implements Comparable<Plan> {
     }
 
     public Long calculateDelayDistributedStorage(Long parentId, Long childId){//TODO: if not parent-child set?
+
+
+        if(!graph.edgesMap.containsKey(parentId))
+            return 0L;
+        if( !graph.edgesMap.get(parentId).containsKey(childId))
+            return 0L;
+//        if(graph.getEdge(parentId,childId)==null)
+//            return 0L;
 
         if(assignments.get(parentId) == assignments.get(childId) ){ //remove to transfer always to distributed storage
             return 0L;
