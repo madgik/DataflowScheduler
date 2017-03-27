@@ -485,12 +485,12 @@ public class paretoNoHomogen implements Scheduler {
             plansInner.addAll(result.results);
 
 
-            SolutionSpace modifiedPlans=new SolutionSpace();
-            SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
-            for(Plan pToChange: skylineToModify) //
-                modifiedPlans = migrateCriticalOpsToConts(pToChange);
-            if(modifiedPlans!=null)
-            skylinePlansNew.addAll(modifiedPlans);
+//            SolutionSpace modifiedPlans=new SolutionSpace();
+//            SolutionSpace skylineToModify = computeSkyline(skylinePlansNew);
+//            for(Plan pToChange: skylineToModify) //
+//                modifiedPlans = migrateCriticalOpsToConts(pToChange);
+//            if(modifiedPlans!=null)
+//            skylinePlansNew.addAll(modifiedPlans);
 
             result.addAll(computeNewSkyline(plansInner.results, skylinePlansNew.results));
 

@@ -1,0 +1,197 @@
+package Lattice;
+
+import Graph.*;
+import Scheduler.RuntimeConstants;
+import utils.RandomParameters;
+
+import java.security.Timestamp;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Random;
+
+/**
+ * Created by johnchronis on 3/24/17.
+ */
+public class LatticeGenerator {
+
+
+    public static void main(String[] args) {
+
+        int depth = 5 ;
+        int breadth =2 ;
+        long seed = 0;
+
+        double z = 1.0;
+        double randType = 0.0;
+        double[] runTime = {1.0};
+        double[] cpuUtil = {1.0};
+        double[] memory = {0.3};
+        double[] dataout = {1.0};
+
+        RandomParameters
+            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+        DAG graph =  createLatticeGraph(depth, breadth, params, seed);
+
+        graph.printEdges();
+    }
+
+
+
+
+    public static DAG createLatticeGraph(int depth, int breadth, RandomParameters params, long seed) {
+
+       HashMap<Long,Long> opIdToOutDataSize = new HashMap<Long,Long>();
+
+        DAG graph = new DAG();
+
+        Random rand = new Random(seed);
+
+        LinkedList<LinkedList<Long>> operatorsLevelsUp =
+            new LinkedList<LinkedList<Long>>();
+
+        LinkedList<LinkedList<Long>> operatorsLevelsDown =
+            new LinkedList<LinkedList<Long>>();
+
+        LinkedList<Long> middleOperators =
+            new LinkedList<Long>();
+
+        int N = 0;
+        for (int i = 0; i < depth / 2; i++) {
+            N += 2 * Math.pow(breadth, i);
+        }
+        N += Math.pow(breadth, (depth / 2));
+
+        int opNum = 0;
+        for (int i = 0; i < depth / 2; i++) {
+            LinkedList<Long> upOperators = new LinkedList<Long>();
+            LinkedList<Long> downOperators = new LinkedList<Long>();
+
+            // up
+            for (int j = 0; j < Math.pow(breadth, i); j++) {
+                opNum++;
+                Operator op = createADDOperator("op" + opNum, 1, params, rand,opIdToOutDataSize,graph);
+                upOperators.add(op.getId());
+            }
+
+            // down
+            for (int j = 0; j < Math.pow(breadth, i); j++) {
+                opNum++;
+                Operator op = createADDOperator("op" + opNum, breadth, params, rand,opIdToOutDataSize,graph);
+                downOperators.add(op.getId());
+            }
+
+            operatorsLevelsUp.addLast(upOperators);
+            operatorsLevelsDown.addFirst(downOperators);
+        }
+
+        for (int j = 0; j < Math.pow(breadth, (depth / 2)); j++) {
+            opNum++;
+            Operator op = createADDOperator("op" + opNum, 1, params, rand,opIdToOutDataSize,graph);
+            middleOperators.add(op.getId());
+        }
+
+        // create links
+        for (int i = operatorsLevelsUp.size() - 1; i > 0; i--) {
+            LinkedList<Long> opList = operatorsLevelsUp.get(i);
+            LinkedList<Long> opListParent = operatorsLevelsUp.get(i - 1);
+
+            for (int j = 0; j < opList.size(); j++) {
+                Long from = opList.get(j);
+                Long to = opListParent.get((j / breadth));
+
+                Long dataOutSize = opIdToOutDataSize.get(from);
+                Data df = new Data("noname",dataOutSize);
+                Edge edge = new Edge(from, to, df);
+
+                graph.addEdge(edge);
+
+                //      log.debug(from.opID + "(" + 0 + ")" + " -> " + to.opID);
+            }
+        }
+
+        for (int j = 0; j < middleOperators.size(); j++) {
+            Long from = middleOperators.get(j);
+            Long to = operatorsLevelsUp.get(operatorsLevelsUp.size() - 1).get((j / breadth));
+
+            Long dataSizeOut = opIdToOutDataSize.get(from);
+            Data df = new Data("noname",dataSizeOut);
+            Edge edge = new Edge(from, to, df);
+
+
+            graph.addEdge(edge);
+
+            //    log.debug(from.opID + "(" + 0 + ")" + " -> " + to.opID);
+        }
+
+        for (int j = 0; j < middleOperators.size(); j++) {
+            Long to = middleOperators.get(j);
+            Long from = operatorsLevelsDown.get(0).get((j / breadth));
+
+            Long tempIndex = (long)(j%breadth);
+            Long dataSizeOut = opIdToOutDataSize.get(tempIndex);
+            Data df = new Data("noname",dataSizeOut);
+            Edge edge = new Edge(from, to, df);
+
+
+            graph.addEdge(edge);
+
+            //   log.debug(from.opID + "(" + j%breadth + ")" + " -> " + to.opID);
+        }
+
+        for (int i = 1; i < operatorsLevelsDown.size(); i++) {
+            LinkedList<Long> opList = operatorsLevelsDown.get(i);
+            LinkedList<Long> opListParent = operatorsLevelsDown.get(i - 1);
+
+            for (int j = 0; j < opListParent.size(); j++) {
+                Long to = opListParent.get(j);
+                Long from = opList.get((j / breadth));
+
+                long tempIndex = j% breadth;
+                Long dataSizeOut = opIdToOutDataSize.get(tempIndex);
+                Data df = new Data("noname",dataSizeOut);
+                Edge edge = new Edge(from, to, df);
+
+                graph.addEdge(edge);
+
+                //       log.debug(from.opID + "(" + j%breadth + ")" + " -> " + to.opID);
+            }
+        }
+        return graph;
+    }
+
+
+    public static Operator createADDOperator(
+        String id,
+        int fanOut,
+        RandomParameters params,
+        Random rand,HashMap<Long,Long> opIdToOutDataSize,DAG graph) {
+
+        double runTimeValue = params.runTime[params.runTimeDist.next()];
+        double cpuUtilizationValue = params.cpuUtil[params.cpuUtilDist.next()];
+        double memoryValue = params.memory[params.memoryDist.next()];
+
+        ResourcesRequirements  rr = new ResourcesRequirements( (long) runTimeValue * RuntimeConstants.quantum_MS,
+            100 );
+
+        Operator op = new Operator(
+            id,
+            rr);
+
+        double quantums = params.dataout[params.dataoutDist.next()];
+        double bytesPerQuantum =
+            RuntimeConstants.distributed_storage_speed_B_MS
+                * RuntimeConstants.quantum_MS;
+
+
+        graph.addOperator(op);
+
+        long dataCount=0;
+        for (int i = 0; i < fanOut; i++) {
+            dataCount+=quantums * bytesPerQuantum;
+        }
+        opIdToOutDataSize.put(op.getId(),dataCount);
+        return op;
+    }
+
+}

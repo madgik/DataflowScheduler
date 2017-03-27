@@ -1,12 +1,17 @@
 import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
 import JsonOptiqueParse.JsonOptiqueParser;
+import Lattice.LatticeGenerator;
 import Scheduler.Cluster;
 import Scheduler.Scheduler;
 import Scheduler.*;
 import utils.MultiplePlotInfo;
+import utils.OptimizationResultVisualizer;
+import utils.RandomParameters;
 import utils.plotUtility;
 import java.io.File;
+
+import static utils.OptimizationResultVisualizer.showOptimizationResult;
 
 
 
@@ -25,9 +30,11 @@ public class Main {
 
 //
         runDax("LIGO.n.100.0.dax",100,10);
-        runDax("SIPHT.n.100.0.dax",100,100);
-        runDax("CyberShake.n.100.0.dax",500,10);
-        runDax("MONTAGE.n.100.0.dax",100,1);
+//        runDax("SIPHT.n.100.0.dax",100,100);
+//        runDax("CyberShake.n.100.0.dax",500,10);
+//        runDax("MONTAGE.n.100.0.dax",100,1);
+
+//        runLattice(9,3);
 //
 //        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 
@@ -49,6 +56,53 @@ public class Main {
 
 
         //TODO: Run the simulation to validate the results for the space of solutions
+    }
+
+    private static void runLattice(int d, int b) {
+
+        double z = 1.0;
+        double randType = 0.0;
+        double[] runTime = {1.0};
+        double[] cpuUtil = {1.0};
+        double[] memory = {0.3};
+        double[] dataout = {1.0};
+
+        RandomParameters
+            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+        DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0);
+
+
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph, cluster);
+
+        SolutionSpace solutions = sched.schedule();
+
+        mpinfo.add("pareto "+(solutions.optimizationTime_MS), solutions.results);
+
+
+        Cluster clusterM = new Cluster();
+
+        Scheduler schedM = new Moheft(graph, clusterM);
+
+        SolutionSpace solutionsM = schedM.schedule();
+
+
+
+        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS), solutionsM.results);
+
+        plotUtility plot = new plotUtility();
+
+        plot.plotMultiple(mpinfo, "Lattice" +" --- d: "+d+" b: "+b
+            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
+
+        System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
+        System.out.println("d "+d + " b " + b + "  sumData GB " + (graph.sumdata_B / 1073741824));
+        System.out.println("pareto Example time -> " + solutions.optimizationTime_MS);
+        System.out.println("moheft Example time -> " + solutionsM.optimizationTime_MS);
     }
 
     private static void runHEFT(String filename, int mulTime, int mulData) {
