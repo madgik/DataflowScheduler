@@ -321,7 +321,8 @@ public class PegasusDaxParser {
                 long csize = 0;
 
                 for(String StmpflOUT: opout.get(fs).keySet()){
-                    if(opin.get(ts).containsKey(StmpflOUT)){
+
+                    if(opin.containsKey(ts) && opin.get(ts).containsKey(StmpflOUT)){
                         names.add(StmpflOUT);
                         csize+=opout.get(fs).get(StmpflOUT).file_B;
                     }
