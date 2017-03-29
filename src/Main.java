@@ -6,6 +6,7 @@ import Scheduler.Cluster;
 import Scheduler.Scheduler;
 import Scheduler.*;
 import Tree.TreeGraphGenerator;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import utils.MultiplePlotInfo;
 import utils.RandomParameters;
 import utils.plotUtility;
@@ -25,41 +26,57 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println(System.getProperty("user.dir"));
-        path = System.getProperty("user.dir")+"/plots/"+(new java.util.Date());
+        path = System.getProperty("user.dir ")+"/plots/"+(new java.util.Date());
         new File(path).mkdir();
         path+="/";
 
-
-//        runJson("TPCH_9_0_4.json",1,100);
-
-//        runMultipleFlows(50,1000);
-
-        runDax("LIGO.n.500.0.dax",50,1000);
-        runDax("SIPHT.n.100.0.dax",50,1000);
-        runDax("CYBERSHAKE.n.500.0.dax",50,1000);
-        runDax("MONTAGE.n.500.0.dax",50,1000);
-//        //H conf...
+        String flow = System.getProperty("flow");
+        if( flow != null){
+            if(flow.equals("lattice")){
+                String d = System.getProperty("d");
+                String b = System.getProperty("b");
+                System.out.println("Running Lattice d "+d+" b: "+b );
+                runLattice(Integer.parseInt(d),Integer.parseInt(b));
+            }else{
+                String mt = System.getProperty("mt");
+                String md = System.getProperty("md");
+                String size = System.getProperty("size");
+                System.out.println("Running "+flow+" mt "+mt+" md: "+md+ " size "+size );
+                runDax(flow+".n."+size+".0.dax",Integer.parseInt(mt),Integer.parseInt(md));
+            }
+        }else{
+            runDax("LIGO.n.50.0.dax",5,1);
+//            runJson("TPCH_9_0_4.json",1,100);
 //
-//        runDax("LIGO.n.100.0.dax",100,10);
-//        runDax("SIPHT.n.100.0.dax",100,100);
-//        runDax("CyberShake.n.100.0.dax",500,10);
-//        runDax("MONTAGE.n.100.0.dax",100,1);
+//            //        runMultipleFlows(50,1000);
 //
-////        runLattice(5,2);
-////        runLattice(500,1);//skaei
-//        runLattice(11,3); //6 vs 32 solutions alla kaliteres
-//        runLattice(9,4); // poli kaliteroi + grigoroi
-//        runLattice(7,7); //better
-//        runLattice(5,21); // kalitero emeis
-//        runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
+//            runDax("LIGO.n.500.0.dax",50,1000);
+//            runDax("SIPHT.n.100.0.dax",50,1000);
+//            runDax("CYBERSHAKE.n.500.0.dax",50,1000);
+//            runDax("MONTAGE.n.500.0.dax",50,1000);
+            //        //H conf...
+            //
+            //        runDax("LIGO.n.100.0.dax",100,10);
+            //        runDax("SIPHT.n.100.0.dax",100,100);
+            //        runDax("CyberShake.n.100.0.dax",500,10);
+            //        runDax("MONTAGE.n.100.0.dax",100,1);
+            //
+            ////        runLattice(5,2);
+            ////        runLattice(500,1);//skaei
+            //        runLattice(11,3); //6 vs 32 solutions alla kaliteres
+            //        runLattice(9,4); // poli kaliteroi + grigoroi
+            //        runLattice(7,7); //better
+            //        runLattice(5,21); // kalitero emeis
+            //        runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
 
 
-        //
-//        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
+            //
+            //        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 
-//        runDax("Example.dax",1000,1);
+            //        runDax("Example.dax",1000,1);
 
 
+        }
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
