@@ -23,10 +23,10 @@ public class LatticeGenerator {
 
         double z = 1.0;
         double randType = 0.0;
-        double[] runTime = {1.0};
+        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
         double[] cpuUtil = {1.0};
         double[] memory = {0.3};
-        double[] dataout = {1.0};
+        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
 
         RandomParameters
             params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
@@ -171,7 +171,7 @@ public class LatticeGenerator {
         double cpuUtilizationValue = params.cpuUtil[params.cpuUtilDist.next()];
         double memoryValue = params.memory[params.memoryDist.next()];
 
-        ResourcesRequirements  rr = new ResourcesRequirements( (long) runTimeValue * RuntimeConstants.quantum_MS,
+        ResourcesRequirements  rr = new ResourcesRequirements( (long) (runTimeValue * RuntimeConstants.quantum_MS),
             100 );
 
         Operator op = new Operator(

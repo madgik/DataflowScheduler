@@ -38,6 +38,28 @@ public class DAG {
 //        filenameToFromOpId = new HashMap<>();
     }
 
+    public DAG add(DAG g){
+        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+
+        Long oldid,newid;
+        for(Operator op:g.getOperators()){
+            oldid = op.getId();
+            newid = this.addOperator(op);
+            OldIdToNewId.put(oldid,newid);
+        }
+
+        for(ArrayList<Edge> ae: g.edges.values()){
+            for(Edge e:ae){
+
+                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
+            }
+        }
+
+        return this;
+    }
+
+
+
     public Long addOperator(Operator op){
 //        System.out.println("opccreated "+nextId+" "+op.resourcesRequirements.runtime_MS);
 

@@ -65,7 +65,7 @@ public class JsonOptiqueParser {
 
             opnametoId.put(opjp.getOperatorName(),op.getId());
 
-            opIdtoDisk.put(op.getId(),Double.valueOf(opjp.getResources().getDiskMB()*1000).longValue());
+            opIdtoDisk.put(op.getId(),Double.valueOf(opjp.getResources().getDiskMB()*1000*1000).longValue());
 
 
         }

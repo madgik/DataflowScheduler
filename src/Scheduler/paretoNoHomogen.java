@@ -67,7 +67,7 @@ public class paretoNoHomogen implements Scheduler {
             cTypes.add(containerType.A);
             skylinePlans.addAll(this.createAssignments("increasing",cTypes));
             cTypes.clear();
-            cTypes.add(containerType.G);
+            cTypes.add(containerType.H);
             skylinePlans.addAll(this.createAssignments("decreasing",cTypes));
 
             cTypes.clear();

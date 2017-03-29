@@ -73,6 +73,23 @@ public class SolutionSpace implements Iterable<Plan> {
     @Override public Iterator<Plan> iterator() {
         return results.iterator();
     }
+
+    public double getScoreElastic(){
+        double maxTime=0,minTime= Double.MAX_VALUE;
+        double maxMoney=0,minMoney= Double.MAX_VALUE;
+
+        for(Plan p: results){
+            maxMoney = (long) Math.max(maxMoney,p.stats.money);
+            minMoney = (long) Math.min(minMoney,p.stats.money);
+            maxTime =  Math.max(maxTime,p.stats.runtime_MS);
+            minTime =  Math.min(minTime,p.stats.runtime_MS);
+        }
+
+        double score = ((maxTime - minTime)/maxTime) / ((maxMoney-minMoney)/maxMoney);
+
+        return score;
+    }
+
 }
 
 

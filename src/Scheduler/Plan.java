@@ -22,6 +22,8 @@ public class Plan implements Comparable<Plan> {
     String vmUpgrading;
     public ArrayList<Long> opsMigrated = null;
 
+
+
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEndProcessing_MS;
 
     public HashMap<Long, Long> opIdToContainerRuntime_MS; //runtime for the assigned container;
@@ -640,4 +642,6 @@ public class Plan implements Comparable<Plan> {
 
         }
     }
+
+
 }
