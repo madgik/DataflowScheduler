@@ -6,7 +6,6 @@ import Scheduler.Cluster;
 import Scheduler.Scheduler;
 import Scheduler.*;
 import Tree.TreeGraphGenerator;
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import utils.MultiplePlotInfo;
 import utils.RandomParameters;
 import utils.plotUtility;
@@ -25,8 +24,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println(System.getProperty("user.dir"));
-        path = System.getProperty("user.dir ")+"/plots/"+(new java.util.Date());
+//        System.out.println(System.getProperty("user.dir"));
+        path = System.getProperty("user.dir")+"/plots/"+(new java.util.Date());
         new File(path).mkdir();
         path+="/";
 
@@ -45,15 +44,17 @@ public class Main {
                 runDax(flow+".n."+size+".0.dax",Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
-            runDax("LIGO.n.50.0.dax",5,1);
+
+//            runDax("LIGO.n.50.0.dax",5,1);
 //            runJson("TPCH_9_0_4.json",1,100);
 //
 //            //        runMultipleFlows(50,1000);
 //
 //            runDax("LIGO.n.500.0.dax",50,1000);
-//            runDax("SIPHT.n.100.0.dax",50,1000);
-//            runDax("CYBERSHAKE.n.500.0.dax",50,1000);
+            System.out.println(Main.class.getResource("CYBERSHAKE.n.500.0.dax").getPath());
+            runDax("CYBERSHAKE.n.1000.0.dax",50,1000);
 //            runDax("MONTAGE.n.500.0.dax",50,1000);
+//            runDax("SIPHT.n.1000.0.dax",50,1000);
             //        //H conf...
             //
             //        runDax("LIGO.n.100.0.dax",100,10);
@@ -68,6 +69,29 @@ public class Main {
             //        runLattice(7,7); //better
             //        runLattice(5,21); // kalitero emeis
             //        runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
+
+//        runJson("TPCH_9_0_4.json",1,100);
+
+//        runMultipleFlows(50,1000);
+
+////        runDax("LIGO.n.500.0.dax",50,1000);
+////        runDax("SIPHT.n.100.0.dax",50,1000);
+//        runDax("MONTAGE.n.500.0.dax",50,1000);
+//        runDax("CYBERSHAKE.n.500.0.dax",50,1000);
+////        //H conf...
+////
+//        runDax("LIGO.n.100.0.dax",100,10);
+//        runDax("SIPHT.n.100.0.dax",100,100);
+//        runDax("CyberShake.n.100.0.dax",500,10);
+//        runDax("MONTAGE.n.100.0.dax",100,1);
+//
+////        runLattice(5,2);
+////        runLattice(500,1);//skaei
+//        runLattice(11,3); //6 vs 32 solutions alla kaliteres
+//        runLattice(9,4); // poli kaliteroi + grigoroi
+//        runLattice(7,7); //better
+//        runLattice(5,21); // kalitero emeis
+//        runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
 
 
             //
@@ -248,6 +272,7 @@ public class Main {
 
         DAG graph = null;
         try {
+            System.out.println(Main.class.getResource(filename).getFile());
             graph = parser.parseDax(Main.class.getResource(filename).getFile());
         } catch (Exception e) {
             e.printStackTrace();
