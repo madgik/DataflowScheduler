@@ -208,7 +208,7 @@ public class HEFT implements Scheduler {
     public Plan keepFastest(SolutionSpace plans) {
        Plan p ;
 
-       plans.sort(); // Sort by time breaking equality by sorting by money
+       plans.sort(false); // Sort by time breaking equality by sorting by money
 
        return plans.results.get(0);
     }

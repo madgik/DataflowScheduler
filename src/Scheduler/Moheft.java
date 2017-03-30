@@ -195,10 +195,10 @@ public class Moheft implements Scheduler {
 
     }
 
-    private ArrayList<Plan> createAssignments() {
+    private SolutionSpace createAssignments() {
         Plan firstPlan = new Plan(graph, cluster);
 
-        ArrayList<Plan> skylinePlans = new ArrayList<>();
+        SolutionSpace skylinePlans = new SolutionSpace();
         skylinePlans.add(firstPlan);
 
         int operAssigned = 0;
@@ -206,7 +206,7 @@ public class Moheft implements Scheduler {
         for (Long opId : opsSorted) {
             operAssigned++;
 
-            ArrayList<Plan> allCandidates = new ArrayList<>();
+            SolutionSpace allCandidates = new SolutionSpace();
 
             for (Plan plan : skylinePlans) {
                 if (plan == null) {
@@ -231,40 +231,40 @@ public class Moheft implements Scheduler {
 
                 final HashMap<Plan, Double> planDistance = new HashMap<>();
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(o1.stats.quanta, o2.stats.quanta);
                     }
                 });
                 for (int p = 0; p < skylinePlans.size(); ++p) {
                     if (p == 0 || p == skylinePlans.size() - 1) {
-                        planDistance.put(skylinePlans.get(p), Double.MAX_VALUE);
+                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
                         // System.out.printf("p %d makespan %f\n", p, skylinePlans.get(p).stats.quanta);
                     } else {
-                        int makespan_prev = skylinePlans.get(p - 1).stats.quanta;
-                        int makespan_next = skylinePlans.get(p + 1).stats.quanta;
-                        planDistance.put(skylinePlans.get(p), alpha * (makespan_next - makespan_prev));
+                        int makespan_prev = skylinePlans.results.get(p - 1).stats.quanta;
+                        int makespan_next = skylinePlans.results.get(p + 1).stats.quanta;
+                        planDistance.put(skylinePlans.results.get(p), alpha * (makespan_next - makespan_prev));
                     }
                 }
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(o1.stats.money, o2.stats.money);
                     }
                 });
                 for (int p = 0; p < skylinePlans.size(); ++p) {
                     if (p == 0 || p == skylinePlans.size() - 1) {
-                        planDistance.put(skylinePlans.get(p), Double.MAX_VALUE);
+                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
                     } else {
-                        Double money_prev = skylinePlans.get(p - 1).stats.money;
-                        Double money_next = skylinePlans.get(p + 1).stats.money;
-                        planDistance.put(skylinePlans.get(p),
-                            planDistance.get(skylinePlans.get(p)) + (1 - alpha) * (double) (
+                        Double money_prev = skylinePlans.results.get(p - 1).stats.money;
+                        Double money_next = skylinePlans.results.get(p + 1).stats.money;
+                        planDistance.put(skylinePlans.results.get(p),
+                            planDistance.get(skylinePlans.results.get(p)) + (1 - alpha) * (double) (
                                 money_next - money_prev));
                     }
                 }
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(planDistance.get(o2), planDistance.get(o1));
                     }
@@ -274,7 +274,7 @@ public class Moheft implements Scheduler {
                     if (p < skylinePlansToKeep) {
                         ++schedulesKept;
                     } else
-                        skylinePlans.set(p, null);
+                        skylinePlans.results.set(p, null);
                 }
 
                 Check.True(schedulesKept <= skylinePlansToKeep + 1,
@@ -287,40 +287,40 @@ public class Moheft implements Scheduler {
                 int schedulesKept = 0;
                 final HashMap<Plan, Double> planDistance = new HashMap<>();
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(o1.stats.quanta, o2.stats.quanta);
                     }
                 });
                 for (int p = 0; p < skylinePlans.size(); ++p) {
                     if (p == 0 || p == skylinePlans.size() - 1) {
-                        planDistance.put(skylinePlans.get(p), 0.0);
+                        planDistance.put(skylinePlans.results.get(p), 0.0);
                     } else {
-                        int makespan_prev = skylinePlans.get(0).stats.quanta;
-                        int makespan_next = skylinePlans.get(p).stats.quanta;
-                        planDistance.put(skylinePlans.get(p),
+                        int makespan_prev = skylinePlans.results.get(0).stats.quanta;
+                        int makespan_next = skylinePlans.results.get(p).stats.quanta;
+                        planDistance.put(skylinePlans.results.get(p),
                             Math.pow((makespan_next - makespan_prev) / makespan_prev, 2));
                     }
                 }
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(o1.stats.money, o2.stats.money);
                     }
                 });
                 for (int p = 0; p < skylinePlans.size(); ++p) {
                     if (p == 0 || p == skylinePlans.size() - 1) {
-                        planDistance.put(skylinePlans.get(p), 0.0);
+                        planDistance.put(skylinePlans.results.get(p), 0.0);
                     } else {
-                        Double money_prev = skylinePlans.get(0).stats.money;
-                        Double money_next = skylinePlans.get(p).stats.money;
-                        planDistance.put(skylinePlans.get(p),
-                            planDistance.get(skylinePlans.get(p)) + Math
+                        Double money_prev = skylinePlans.results.get(0).stats.money;
+                        Double money_next = skylinePlans.results.get(p).stats.money;
+                        planDistance.put(skylinePlans.results.get(p),
+                            planDistance.get(skylinePlans.results.get(p)) + Math
                                 .pow((double) ((money_next - money_prev) / money_prev), 2));
                     }
                 }
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(Math.sqrt(planDistance.get(o1)),
                             Math.sqrt(planDistance.get(o2)));
@@ -331,7 +331,7 @@ public class Moheft implements Scheduler {
                     if (p < skylinePlansToKeep) {
                         ++schedulesKept;
                     } else
-                        skylinePlans.set(p, null);
+                        skylinePlans.results.set(p, null);
                 }
 
                 Check.True(schedulesKept <= skylinePlansToKeep + 1,
@@ -340,7 +340,7 @@ public class Moheft implements Scheduler {
 
             if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 3) {
                 // Keep only some schedules in the skyline
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(o1.stats.quanta, o2.stats.quanta);
                     }
@@ -350,7 +350,7 @@ public class Moheft implements Scheduler {
                     (int) Math.ceil((skylinePlans.size() - 2.0) / (skylinePlansToKeep - 2.0));
                 for (int p = 1; p < skylinePlans.size() - 1; ++p) {
                     if (p % windowSize != 0) {
-                        skylinePlans.set(p, null);
+                        skylinePlans.results.set(p, null);
                     } else {
                         ++schedulesKept;
                     }
@@ -366,13 +366,13 @@ public class Moheft implements Scheduler {
 
                 int schedulesKept = 0;
 
-                sortPlansByDer(skylinePlans);
+                sortPlansByDer(skylinePlans.results);
 
                 for (int p = 0; p < skylinePlans.size(); ++p) {
                     if (p < skylinePlansToKeep) {
                         ++schedulesKept;
                     } else {
-                        skylinePlans.set(p, null);
+                        skylinePlans.results.set(p, null);
                         //    skylinePlans.remove(p);
                     }
 
@@ -380,7 +380,7 @@ public class Moheft implements Scheduler {
 
 
 
-                Collections.sort(skylinePlans, new Comparator<Plan>() {
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
                         double a = Double.MAX_VALUE;
                         double b = Double.MAX_VALUE;
@@ -407,7 +407,7 @@ public class Moheft implements Scheduler {
 
     //output planEstimations
         //assume that not empty containers exist
-    private void getCandidateContainers(Long opId, Plan plan, ArrayList<Plan> planEstimations)
+    private void getCandidateContainers(Long opId, Plan plan, SolutionSpace planEstimations)
      {
 
         for(Long contId: plan.cluster.containers.keySet()){
@@ -439,11 +439,11 @@ public class Moheft implements Scheduler {
         return plan;
     }
 
-    public ArrayList<Plan> computeSkyline(ArrayList<Plan> plans){
-        ArrayList<Plan> skyline = new ArrayList<>();
+    public SolutionSpace computeSkyline(SolutionSpace plans){
+        SolutionSpace skyline = new SolutionSpace();
 
 
-        Collections.sort(plans); // Sort by time breaking equality by sorting by money
+        plans.sort(false); // Sort by time breaking equality by sorting by money
 
         Plan previous = null;
         for (Plan est : plans) {

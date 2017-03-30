@@ -229,7 +229,7 @@ public class paretoNoHomogen implements Scheduler {
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
 //        System.out.println("//////////ALL///////");
-//        skylinePlans.sort();
+//        skylinePlans.sort(true);
 //        skylinePlans.print();
 
         paretoPlans.addAll(computeSkyline(skylinePlans));
@@ -572,7 +572,7 @@ public class paretoNoHomogen implements Scheduler {
 
             }
 
-            result.addAll(computeNewSkyline(plansInner.results, skylinePlansNew.results));
+            result.addAll(computeNewSkyline(plansInner, skylinePlansNew));
 
 
 
@@ -689,7 +689,6 @@ public class paretoNoHomogen implements Scheduler {
                 readyOps.add(opId);
             }
         }
-
 
     }
 
@@ -857,11 +856,11 @@ public class paretoNoHomogen implements Scheduler {
         }
     }
 
-    public SolutionSpace computeSkyline(SolutionSpace plans){
+    public  SolutionSpace computeSkyline(SolutionSpace plans){
         SolutionSpace skyline = new SolutionSpace();
 
 
-        plans.sort(); // Sort by time breaking equality by sorting by money
+        plans.sort(true); // Sort by time breaking equality by sorting by money
 
         Plan previous = null;
         for (Plan est : plans) {
@@ -886,17 +885,17 @@ public class paretoNoHomogen implements Scheduler {
         return skyline;
     }
 
-    private ArrayList<Plan> computeHomoSkyline(ArrayList<Plan> skylinePlans) {
+    private SolutionSpace computeHomoSkyline(SolutionSpace skylinePlans) {
 
-        ArrayList<Plan> candidates = new ArrayList<>();
+        SolutionSpace candidates = new SolutionSpace();
 
-        candidates.addAll(skylinePlans);
+        skylinePlans.sort(true);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        Collections.sort(candidates);
+        candidates.sort(true);
 
         // Keep only the skyline
-        ArrayList<Plan> skyline = new ArrayList<>();
+        SolutionSpace skyline = new SolutionSpace();
         Plan previous = null;
 
 
@@ -921,18 +920,18 @@ public class paretoNoHomogen implements Scheduler {
         return skyline;
     }
 
-    private ArrayList<Plan> computeNewSkyline(ArrayList<Plan> skylinePlans, ArrayList<Plan> skylinePlansNew) {
+    private SolutionSpace computeNewSkyline(SolutionSpace skylinePlans, SolutionSpace skylinePlansNew) {
 
-        ArrayList<Plan> candidates = new ArrayList<>();
+        SolutionSpace candidates = new SolutionSpace();
 
         candidates.addAll(skylinePlans);
         candidates.addAll(skylinePlansNew);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        Collections.sort(candidates);
+        candidates.sort(true);
 
         // Keep only the skyline
-        ArrayList<Plan> skyline = new ArrayList<>();
+        SolutionSpace skyline = new SolutionSpace();
         Plan previous = null;
 
 
@@ -945,7 +944,7 @@ public class paretoNoHomogen implements Scheduler {
                 continue;
             }
             if (previous.stats.runtime_MS == est.stats.runtime_MS){
-                skylinePlansNew.remove(est);
+                skylinePlansNew.results.remove(est);
                 // Already sorted by money
                 continue;
             }
@@ -954,7 +953,7 @@ public class paretoNoHomogen implements Scheduler {
                 previous = est;
             }
             else
-                skylinePlansNew.remove(est);
+                skylinePlansNew.results.remove(est);
         }
         return skyline;
     }
@@ -1488,7 +1487,7 @@ public class paretoNoHomogen implements Scheduler {
                         continue;
                     Container newCont = plan.cluster.getContainer(contId);
 
-                    if (!containerType.isLarger(oldContType, newCont.contType)) {
+                    if (containerType.isSmaller(oldContType, newCont.contType)) {
                         continue;
                     }
                     Collections.sort(newCont.freeSlots);

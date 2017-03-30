@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by johnchronis on 2/18/17.
  */
-public class Plan implements Comparable<Plan> {
+public class Plan  {
     public DAG graph;
     public HashMap<Long, Long> assignments;//opIdToContId;
     public HashMap<Long, ArrayList<Long>> contAssignments; //contId->list<opId>
@@ -21,8 +21,6 @@ public class Plan implements Comparable<Plan> {
     Statistics beforeStats;
     String vmUpgrading;
     public ArrayList<Long> opsMigrated = null;
-
-
 
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEndProcessing_MS;
 
@@ -36,7 +34,6 @@ public class Plan implements Comparable<Plan> {
     public HashMap<Long,Long> opIdToAfterDTDuration_MS;
 
     public HashMap<Long,Stack<Long>> contIdToSortedOps = null;
-
 
     //copies the cluster
     public Plan(DAG graph, Cluster cluster) {
@@ -120,8 +117,6 @@ public class Plan implements Comparable<Plan> {
         for(Long opId: p.opsMigrated){
             opsMigrated.add(opId);
         }
-
-
 
     }
 
@@ -470,22 +465,29 @@ public class Plan implements Comparable<Plan> {
         return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
     }
 
-    @Override public int compareTo(Plan other) {  //TODO ji is this right?
-        if (stats.runtime_MS == other.stats.runtime_MS) {
-            if (Math.abs(stats.money - other.stats.money) < RuntimeConstants.precisionError) {
-//            //    if(stats.containersUsed == other.stats.containersUsed)
-//                 //   System.out.println("equal");
-//              //      return Double.compare(stats.quanta, other.stats.quanta);
-//              //  else
-//                return
-                return Double.compare(stats.contUtilization, other.stats.contUtilization);//return Long.compare(stats.quanta, other.stats.quanta);
-//return Long.compare(stats.containersUsed, other.stats.containersUsed);//TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
-            }
-            return Double.compare(stats.money, other.stats.money);
-        } else {
-            return Long.compare(stats.runtime_MS, other.stats.runtime_MS);
-        }
-    }
+
+//    @Override public int compareTo(Plan other) {  //TODO ji is this right?
+//
+////
+////        if(isMoheft){
+////            if (stats.runtime_MS == other.stats.runtime_MS) {
+////                return Double.compare(stats.money, other.stats.money);
+////            }else{
+////                return Long.compare(stats.runtime_MS, other.stats.runtime_MS);
+////            }
+////        }else{
+//            if (stats.runtime_MS == other.stats.runtime_MS) {
+//                if (Math.abs(stats.money - other.stats.money) < RuntimeConstants.precisionError) {
+//                    return Double.compare(stats.contUtilization, other.stats.contUtilization);//return Long.compare(stats.quanta, other.stats.quanta);
+//                    //return Long.compare(stats.containersUsed, other.stats.containersUsed);//TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
+//                }
+//                return Double.compare(stats.money, other.stats.money);
+//            } else {
+//                return Long.compare(stats.runtime_MS, other.stats.runtime_MS);
+//            }
+////        }
+//
+//    }
 
     public void printInfo() {
         //        System.out.println("------Plan Info----");

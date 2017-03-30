@@ -11,10 +11,12 @@ import utils.MultiplePlotInfo;
 import utils.RandomParameters;
 import utils.plotUtility;
 import java.io.File;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
 import static utils.OptimizationResultVisualizer.showOptimizationResult;
+import static utils.SolutionSpaceUtils.computeDistance;
 
 
 
@@ -26,7 +28,7 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println(System.getProperty("user.dir"));
-        path = "./plots/"+"lattice_/10data_*100time_"+(new java.util.Date());
+        path = "./plots/"+""+(new java.util.Date());
         new File(path).mkdir();
         path+="/";
         System.out.println("specify -Dflow d,b,mt,md,size");
@@ -63,7 +65,7 @@ public class Main {
 ////
 //            for(int t:times){
 //                for(int d:datas){
-//                    runDax(false,"LIGO.n.100.0.dax",t,d);
+                    runDax(false,"LIGO.n.100.0.dax",50,100000);
 //                }
 //            }
 //            for(int t:times){
@@ -103,11 +105,11 @@ public class Main {
             //
             ////        runLattice(5,2);
             ////        runLattice(500,1);//skaei
-                    runLattice(11,3); //6 vs 32 solutions alla kaliteres
-                    runLattice(9,4); // poli kaliteroi + grigoroi
-                    runLattice(7,7); //better
-                    runLattice(5,21); // kalitero emeis
-                    runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
+//                    runLattice(11,3); //6 vs 32 solutions alla kaliteres
+//                    runLattice(9,4); // poli kaliteroi + grigoroi
+//                    runLattice(7,7); //better
+//                    runLattice(5,21); // kalitero emeis
+//                    runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
 
 
             //
@@ -186,7 +188,8 @@ public class Main {
 
 
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type){
+    public static void runDAG(DAG graph, String paremetersToPrint, String type)
+         {
 
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
@@ -211,15 +214,29 @@ public class Main {
 
         plotUtility plot = new plotUtility();
 
-        plot.plotMultiple(mpinfo, type +" ---"+paremetersToPrint
-            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
 
         System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
         System.out.println(paremetersToPrint + "  sumData GB " + (graph.sumdata_B / 1073741824));
         System.out.println("pareto "+type+" time -> " + solutions.optimizationTime_MS);
         System.out.println("moheft "+type+" time -> " + solutionsM.optimizationTime_MS);
+             try {
 
-        plot.plotMultiple(mpinfo, type +" ---"+paremetersToPrint
+                 SolutionSpace combined = new SolutionSpace();
+                 combined.addAll(solutions);
+                 combined.addAll(solutionsM);
+
+                 combined.computeSkyline(false);
+
+
+                 System.out.println("distance from M to C "+computeDistance(solutionsM,combined));
+                 System.out.println("distance from P to C "+computeDistance(solutions,combined));
+                 System.out.println("distance from C to M "+computeDistance(combined,solutionsM));
+                 System.out.println("distance from C to P "+computeDistance(combined,solutions));
+             } catch (RemoteException e) {
+                 e.printStackTrace();
+             }
+
+             plot.plotMultiple(mpinfo, type +" ---"+paremetersToPrint
             +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
     }
 
