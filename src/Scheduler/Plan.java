@@ -473,10 +473,13 @@ public class Plan implements Comparable<Plan> {
     @Override public int compareTo(Plan other) {  //TODO ji is this right?
         if (stats.runtime_MS == other.stats.runtime_MS) {
             if (Math.abs(stats.money - other.stats.money) < RuntimeConstants.precisionError) {
-              //  if(stats.containersUsed == other.stats.containersUsed)
-              //      return Double.compare(stats.quanta, other.stats.quanta);
-              //  else
-                return Long.compare(stats.containersUsed, other.stats.containersUsed);//TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
+//            //    if(stats.containersUsed == other.stats.containersUsed)
+//                 //   System.out.println("equal");
+//              //      return Double.compare(stats.quanta, other.stats.quanta);
+//              //  else
+//                return
+                return Double.compare(stats.contUtilization, other.stats.contUtilization);//return Long.compare(stats.quanta, other.stats.quanta);
+//return Long.compare(stats.containersUsed, other.stats.containersUsed);//TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
             }
             return Double.compare(stats.money, other.stats.money);
         } else {
@@ -628,7 +631,7 @@ public class Plan implements Comparable<Plan> {
     }
 
     public double getScore(Double alphaPar, Double mCost, Double mTime, Double k) {
-        return (1.0 - alphaPar) * stats.quanta + alphaPar * (stats.runtime_MS);
+        return (1.0 - alphaPar) * stats.money + alphaPar * (stats.runtime_MS);
     }
 
     public void calculateOrderingofOperatorsInContainers() {
