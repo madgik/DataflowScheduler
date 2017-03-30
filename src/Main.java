@@ -6,6 +6,7 @@ import Scheduler.Cluster;
 import Scheduler.Scheduler;
 import Scheduler.*;
 import Tree.TreeGraphGenerator;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import utils.MultiplePlotInfo;
 import utils.RandomParameters;
 import utils.plotUtility;
@@ -19,15 +20,16 @@ import static utils.OptimizationResultVisualizer.showOptimizationResult;
 
 public class Main {
 
-    static Boolean save = false;
+    static Boolean save = true;
     static String path;
 
     public static void main(String[] args) {
 
-//        System.out.println(System.getProperty("user.dir"));
-        path = System.getProperty("user.dir")+"/plots/"+(new java.util.Date());
+        System.out.println(System.getProperty("user.dir"));
+        path = "./plots/"+"lattice_/10data_*100time_"+(new java.util.Date());
         new File(path).mkdir();
         path+="/";
+        System.out.println("specify -Dflow d,b,mt,md,size");
 
         String flow = System.getProperty("flow");
         if( flow != null){
@@ -41,20 +43,57 @@ public class Main {
                 String md = System.getProperty("md");
                 String size = System.getProperty("size");
                 System.out.println("Running "+flow+" mt "+mt+" md: "+md+ " size "+size );
-                runDax(flow+".n."+size+".0.dax",Integer.parseInt(mt),Integer.parseInt(md));
+                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
 
-//            runDax("LIGO.n.50.0.dax",5,1);
+//            System.out.println("noflow was specified");
+//            System.out.println("specify -Dflow d,b,mt,md,size");
+//            ArrayList<Integer> times = new ArrayList<>();
+//            ArrayList<Integer> datas = new ArrayList<>();
+//
+//            times.add(1);times.add(10);times.add(30);
+//            times.add(50);times.add(100);times.add(500);
+//            times.add(1000);times.add(5000);times.add(10000);
+//
+//           datas.add(1);datas.add(100);datas.add(500);
+//           datas.add(1000);datas.add(5000);datas.add(10000);
+//           datas.add(200000);
+
+////
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"LIGO.n.100.0.dax",t,d);
+//                }
+//            }
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"CYBERSHAKE.n.100.0.dax",t,d);
+//                }
+//            }
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"SIPHT.n.100.0.dax",t,d);
+//                }
+////            }
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"GENOME.n.100.0.dax",t,d);
+//                }
+//            }
+
+
+
+//            runDax(false,"LIGO.n.500.0.dax",5,1);
 //            runJson("TPCH_9_0_4.json",1,100);
 //
 //            //        runMultipleFlows(50,1000);
 //
-//            runDax("LIGO.n.500.0.dax",50,1000);
-            System.out.println(Main.class.getResource("CYBERSHAKE.n.500.0.dax").getPath());
-            runDax("CYBERSHAKE.n.1000.0.dax",50,1000);
-//            runDax("MONTAGE.n.500.0.dax",50,1000);
-//            runDax("SIPHT.n.1000.0.dax",50,1000);
+////            runDax(false,"LIGO.n.500.0.dax",50,1000);
+//            System.out.println(Main.class.getResource("CYBERSHAKE.n.500.0.dax").getPath());
+//            runDax(false,"CYBERSHAKE.n.1000.0.dax",50,1000);
+//            runDax(false,"MONTAGE.n.500.0.dax",50,1000);
+//            runDax(false,"SIPHT.n.1000.0.dax",50,1000);
             //        //H conf...
             //
             //        runDax("LIGO.n.100.0.dax",100,10);
@@ -64,34 +103,11 @@ public class Main {
             //
             ////        runLattice(5,2);
             ////        runLattice(500,1);//skaei
-            //        runLattice(11,3); //6 vs 32 solutions alla kaliteres
-            //        runLattice(9,4); // poli kaliteroi + grigoroi
-            //        runLattice(7,7); //better
-            //        runLattice(5,21); // kalitero emeis
-            //        runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
-
-//        runJson("TPCH_9_0_4.json",1,100);
-
-//        runMultipleFlows(50,1000);
-
-////        runDax("LIGO.n.500.0.dax",50,1000);
-////        runDax("SIPHT.n.100.0.dax",50,1000);
-//        runDax("MONTAGE.n.500.0.dax",50,1000);
-//        runDax("CYBERSHAKE.n.500.0.dax",50,1000);
-////        //H conf...
-////
-//        runDax("LIGO.n.100.0.dax",100,10);
-//        runDax("SIPHT.n.100.0.dax",100,100);
-//        runDax("CyberShake.n.100.0.dax",500,10);
-//        runDax("MONTAGE.n.100.0.dax",100,1);
-//
-////        runLattice(5,2);
-////        runLattice(500,1);//skaei
-//        runLattice(11,3); //6 vs 32 solutions alla kaliteres
-//        runLattice(9,4); // poli kaliteroi + grigoroi
-//        runLattice(7,7); //better
-//        runLattice(5,21); // kalitero emeis
-//        runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
+                    runLattice(11,3); //6 vs 32 solutions alla kaliteres
+                    runLattice(9,4); // poli kaliteroi + grigoroi
+                    runLattice(7,7); //better
+                    runLattice(5,21); // kalitero emeis
+                    runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
 
 
             //
@@ -202,6 +218,9 @@ public class Main {
         System.out.println(paremetersToPrint + "  sumData GB " + (graph.sumdata_B / 1073741824));
         System.out.println("pareto "+type+" time -> " + solutions.optimizationTime_MS);
         System.out.println("moheft "+type+" time -> " + solutionsM.optimizationTime_MS);
+
+        plot.plotMultiple(mpinfo, type +" ---"+paremetersToPrint
+            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
     }
 
 
@@ -266,12 +285,17 @@ public class Main {
         System.out.println("HEFT Example time -> " + solutions.optimizationTime_MS);
     }
 
-    private static void runDax(String filename, int mulTime, int mulData) {
+    private static void runDax(boolean jar,String filename, int mulTime, int mulData) {
 
         PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
 
         DAG graph = null;
         try {
+            if(jar){
+                graph = parser.parseDax(filename);
+            }else {
+                graph = parser.parseDax(Main.class.getResource(filename).getFile());
+            }
             System.out.println(Main.class.getResource(filename).getFile());
             graph = parser.parseDax(Main.class.getResource(filename).getFile());
         } catch (Exception e) {
@@ -282,13 +306,17 @@ public class Main {
         runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,filename);
    }
 
-    private static void runJson(String filename, int mulTime, int mulData) {
+    private static void runJson(boolean jar,String filename, int mulTime, int mulData) {
 
         JsonOptiqueParser parser = new JsonOptiqueParser(mulTime, mulData);
 
         DAG graph = null;
         try {
-            graph = parser.parse(Main.class.getResource(filename).getFile());
+            if(jar){
+                graph = parser.parse(filename);
+            }else {
+                graph = parser.parse(Main.class.getResource(filename).getFile());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
