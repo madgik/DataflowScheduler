@@ -5,6 +5,7 @@ import Scheduler.RuntimeConstants;
 import utils.RandomParameters;
 
 import java.security.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -13,6 +14,7 @@ import java.util.Random;
  * Created by johnchronis on 3/24/17.
  */
 public class LatticeGenerator {
+
 
 
     public static void main(String[] args) {
@@ -31,9 +33,10 @@ public class LatticeGenerator {
         RandomParameters
             params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
-        DAG graph =  createLatticeGraph(depth, breadth, params, seed);
+        DAG graph =  createLatticeGraph(3,498, params, seed);
 
         graph.printEdges();
+        System.out.println(graph.sumdata_B/1073741824);
     }
 
 
@@ -157,6 +160,14 @@ public class LatticeGenerator {
                 //       log.debug(from.opID + "(" + j%breadth + ")" + " -> " + to.opID);
             }
         }
+
+
+        graph.sumdata_B = 0;
+        for(ArrayList<Edge> ae: graph.edges.values()){
+            for(Edge e :ae){
+                graph.sumdata_B+=e.data.size_B;
+            }
+        }
         return graph;
     }
 
@@ -171,7 +182,11 @@ public class LatticeGenerator {
         double cpuUtilizationValue = params.cpuUtil[params.cpuUtilDist.next()];
         double memoryValue = params.memory[params.memoryDist.next()];
 
-        ResourcesRequirements  rr = new ResourcesRequirements( (long) (runTimeValue * RuntimeConstants.quantum_MS),
+        long runtime_MS = (long) (runTimeValue * RuntimeConstants.quantum_MS);
+
+        runtime_MS*=100;
+
+        ResourcesRequirements rr = new ResourcesRequirements( runtime_MS  ,
             100 );
 
         Operator op = new Operator(
@@ -190,6 +205,7 @@ public class LatticeGenerator {
         for (int i = 0; i < fanOut; i++) {
             dataCount+=quantums * bytesPerQuantum;
         }
+        dataCount/=10;
         opIdToOutDataSize.put(op.getId(),dataCount);
         return op;
     }
