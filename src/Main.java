@@ -89,16 +89,17 @@ public class Main {
 //
 //            //        runMultipleFlows(50,1000);
 //
-//            runDax(false,"LIGO.n.500.0.dax",50,1000);
-//            runDax(false,"SIPHT.n.100.0.dax",50,1000);
-//            runDax(false,"CYBERSHAKE.n.500.0.dax",50,1000);
+////            runDax(false,"LIGO.n.500.0.dax",50,1000);
+//            System.out.println(Main.class.getResource("CYBERSHAKE.n.500.0.dax").getPath());
+//            runDax(false,"CYBERSHAKE.n.1000.0.dax",50,1000);
 //            runDax(false,"MONTAGE.n.500.0.dax",50,1000);
+//            runDax(false,"SIPHT.n.1000.0.dax",50,1000);
             //        //H conf...
             //
-            //        runDax(false,"LIGO.n.100.0.dax",100,10);
-            //        runDax(false,"SIPHT.n.100.0.dax",100,100);
-            //        runDax(false,"CyberShake.n.100.0.dax",500,10);
-            //        runDax(false,"MONTAGE.n.100.0.dax",100,1);
+            //        runDax("LIGO.n.100.0.dax",100,10);
+            //        runDax("SIPHT.n.100.0.dax",100,100);
+            //        runDax("CyberShake.n.100.0.dax",500,10);
+            //        runDax("MONTAGE.n.100.0.dax",100,1);
             //
             ////        runLattice(5,2);
             ////        runLattice(500,1);//skaei
@@ -112,7 +113,7 @@ public class Main {
             //
             //        runJson("2_Q1_6_10.1dat.cleanplan", 1300, 10);
 
-            //        runDax(false,"Example.dax",1000,1);
+            //        runDax("Example.dax",1000,1);
 
 
         }
@@ -210,6 +211,8 @@ public class Main {
 
         plotUtility plot = new plotUtility();
 
+        plot.plotMultiple(mpinfo, type +" ---"+paremetersToPrint
+            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
 
         System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
         System.out.println(paremetersToPrint + "  sumData GB " + (graph.sumdata_B / 1073741824));
@@ -293,6 +296,8 @@ public class Main {
             }else {
                 graph = parser.parseDax(Main.class.getResource(filename).getFile());
             }
+            System.out.println(Main.class.getResource(filename).getFile());
+            graph = parser.parseDax(Main.class.getResource(filename).getFile());
         } catch (Exception e) {
             e.printStackTrace();
         }
