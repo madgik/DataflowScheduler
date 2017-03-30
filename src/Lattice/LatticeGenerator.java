@@ -184,7 +184,7 @@ public class LatticeGenerator {
 
         long runtime_MS = (long) (runTimeValue * RuntimeConstants.quantum_MS);
 
-        runtime_MS*=100;
+        runtime_MS*=25;
 
         ResourcesRequirements rr = new ResourcesRequirements( runtime_MS  ,
             100 );
@@ -205,7 +205,7 @@ public class LatticeGenerator {
         for (int i = 0; i < fanOut; i++) {
             dataCount+=quantums * bytesPerQuantum;
         }
-        dataCount/=10;
+        dataCount/=20;
         opIdToOutDataSize.put(op.getId(),dataCount);
         return op;
     }

@@ -58,28 +58,18 @@ public class paretoNoHomogen implements Scheduler {
         skylinePlans.clear();
 
         if(heteroStartEnabled) {
-//            ArrayList<containerType> cTypes = new ArrayList<>();
-//            cTypes.add(containerType.A);
-//            cTypes.add(containerType.G);
-//            skylinePlans_INCDEC.addAll(this.createAssignments("increasing/decreasing",cTypes));
-//
-            ArrayList<containerType> cTypes = new ArrayList<>();
-            cTypes.add(containerType.A);
-            skylinePlans.addAll(this.createAssignments("increasing",cTypes));
+
+            ArrayList<containerType> cTypes  =new ArrayList<>();
             cTypes.clear();
+            cTypes.add(containerType.A);
             cTypes.add(containerType.H);
-            skylinePlans.addAll(this.createAssignments("decreasing",cTypes));
+            skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
+            skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
 
             cTypes.clear();
             cTypes.add(containerType.C);
             cTypes.add(containerType.G);
             skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-
-//            cTypes.clear();
-//            cTypes.add(containerType.G);
-//            cTypes.add(containerType.E);
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-
 
         }
 
