@@ -26,11 +26,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        path = "./plots/"+"25_100_expl_and_lattice_tepi25_ddia20_"+(new java.util.Date());
-        new File(path).mkdir();
-        path+="/";
-        System.out.println("specify -Dflow d,b,mt,md,size");
-
+        path = "./plots/";
+        System.out.print("specify -Dflow d,b,mt,md");
+        System.out.println(" -- saving plots to "+ path);
 
 
         String flow = System.getProperty("flow");
@@ -38,59 +36,56 @@ public class Main {
             if(flow.equals("lattice")){
                 String d = System.getProperty("d");
                 String b = System.getProperty("b");
-                System.out.println("Running Lattice d "+d+" b: "+b );
                 runLattice(Integer.parseInt(d),Integer.parseInt(b));
             }else{
                 String mt = System.getProperty("mt");
                 String md = System.getProperty("md");
-                String size = System.getProperty("size");
-                System.out.println("Running "+flow+" mt "+mt+" md: "+md+ " size "+size );
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
 
-//            System.out.println("noflow was specified");
-//            System.out.println("specify -Dflow d,b,mt,md,size");
-            ArrayList<Integer> times = new ArrayList<>();
-            ArrayList<Integer> datas = new ArrayList<>();
-
-            times.add(1);times.add(10);times.add(30);
-            times.add(50);times.add(100);times.add(500);
-            times.add(1000);times.add(5000);times.add(10000);
-
-           datas.add(1);datas.add(100);datas.add(500);
-           datas.add(1000);datas.add(5000);datas.add(10000);
-           datas.add(200000);
-
-////
-            for(int t:times){
-                for(int d:datas){
-                    runDax(false,"LIGO.n.50.0.dax",t,d);
-                    runDax(false,"LIGO.n.100.0.dax",t,d);
-                    runDax(false,"LIGO.n.500.0.dax",t,d);
-                }
-            }
-            for(int t:times){
-                for(int d:datas){
-                    runDax(false,"CYBERSHAKE.n.50.0.dax",t,d);
-                    runDax(false,"CYBERSHAKE.n.100.0.dax",t,d);
-                    runDax(false,"CYBERSHAKE.n.500.0.dax",t,d);
-                }
-            }
-            for(int t:times){
-                for(int d:datas){
-                    runDax(false,"SIPHT.n.50.0.dax",t,d);
-                    runDax(false,"SIPHT.n.100.0.dax",t,d);
-                    runDax(false,"SIPHT.n.500.0.dax",t,d);
-                }
-            }
-            for(int t:times){
-                for(int d:datas){
-                    runDax(false,"MONTAGE.n.50.0.dax",t,d);
-                    runDax(false,"MONTAGE.n.100.0.dax",t,d);
-                    runDax(false,"MONTAGE.n.500.0.dax",t,d);
-                }
-            }
+            runDax(false,"LIGO.n.50.0.dax",1,1);
+//
+//            ArrayList<Integer> times = new ArrayList<>();
+//            ArrayList<Integer> datas = new ArrayList<>();
+//
+//            times.add(1);times.add(10);times.add(30);
+//            times.add(50);times.add(100);times.add(500);
+//            times.add(1000);times.add(5000);times.add(10000);
+//
+//           datas.add(1);datas.add(100);datas.add(500);
+//           datas.add(1000);datas.add(5000);datas.add(10000);
+//           datas.add(200000);
+//
+//
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"LIGO.n.50.0.dax",t,d);
+//                    runDax(false,"LIGO.n.100.0.dax",t,d);
+//                    runDax(false,"LIGO.n.500.0.dax",t,d);
+//                }
+//            }
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"CYBERSHAKE.n.50.0.dax",t,d);
+//                    runDax(false,"CYBERSHAKE.n.100.0.dax",t,d);
+//                    runDax(false,"CYBERSHAKE.n.500.0.dax",t,d);
+//                }
+//            }
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"SIPHT.n.50.0.dax",t,d);
+//                    runDax(false,"SIPHT.n.100.0.dax",t,d);
+//                    runDax(false,"SIPHT.n.500.0.dax",t,d);
+//                }
+//            }
+//            for(int t:times){
+//                for(int d:datas){
+//                    runDax(false,"MONTAGE.n.50.0.dax",t,d);
+//                    runDax(false,"MONTAGE.n.100.0.dax",t,d);
+//                    runDax(false,"MONTAGE.n.500.0.dax",t,d);
+//                }
+//            }
 
 
 //            runJson("TPCH_9_0_4.json",1,100);
@@ -98,11 +93,11 @@ public class Main {
 //            runMultipleFlows(50,1000);
 
 
-            runLattice(11,3); //6 vs 32 solutions alla kaliteres
-            runLattice(9,4); // poli kaliteroi + grigoroi
-            runLattice(7,7); //better
-            runLattice(5,21); // kalitero emeis
-            runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
+//            runLattice(11,3); //6 vs 32 solutions alla kaliteres
+//            runLattice(9,4); // poli kaliteroi + grigoroi
+//            runLattice(7,7); //better
+//            runLattice(5,21); // kalitero emeis
+//            runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
 
 
         }
@@ -171,7 +166,7 @@ public class Main {
     }
 
     public static void runDAG(DAG graph, String paremetersToPrint, String type)
-         {
+    {
 
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
@@ -250,6 +245,8 @@ public class Main {
 
     private static void runLattice(int d, int b) {
 
+        System.out.println("Running Lattice d "+d+" b: "+b );
+
         double z = 1.0;
         double randType = 0.0;
         double[] runTime = {0.2,0.4,0.6,0.8,1.0};
@@ -264,7 +261,6 @@ public class Main {
 
 
         runDAG(graph," d: "+d+" b: "+b,"Lattice");
-
 
     }
 
@@ -309,6 +305,8 @@ public class Main {
     }
 
     private static void runDax(boolean jar, String file, int mulTime, int mulData) {
+
+        System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData );
 
         PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
 
