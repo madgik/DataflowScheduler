@@ -1,0 +1,30 @@
+specify -Dflow d,b,mt,md,size
+Running /home/vaggelis/jc/MONTAGE.n.100.0.dax mt 10 md: 5000 size null
+    366530 031.53 || noQ Q (Avg,Max,Min) (61.78, 61.78, 10.00) (6.29, 6.29, 6.29) #fs:   0  -- #Conts: 1 H(1) 
+    628129 015.76 || noQ Q (Avg,Max,Min) (36.47, 36.47, 10.00) (6.36, 6.36, 6.36) #fs:   0  -- #Conts: 1 G(1) 
+   1373294 013.41 || noQ Q (Avg,Max,Min) (15.57, 17.15, 10.00) (3.57, 0.60, 6.54) #fs:   1  -- #Conts: 2 E(2) 
+   1395799 010.71 || noQ Q (Avg,Max,Min) (14.68, 16.88, 10.00) (3.58, 0.61, 6.54) #fs:   1  -- #Conts: 2 E(1)  C(1) 
+   1416590 006.71 || noQ Q (Avg,Max,Min) (16.73, 16.73, 10.00) (6.58, 6.58, 6.58) #fs:   0  -- #Conts: 1 E(1) 
+   2447742 004.00 || noQ Q (Avg,Max,Min) (10.10, 10.10, 10.00) (6.87, 6.87, 6.87) #fs:   0  -- #Conts: 1 C(1) 
+/////////////////size: 6
+    622754 047.29 || noQ Q (Avg,Max,Min) (50.01, 77.05, 10.00) (3.18, 2.43, 3.93) #fs:   2  -- #Conts: 2 H(1)  G(1) 
+    628129 015.76 || noQ Q (Avg,Max,Min) (36.47, 36.47, 10.00) (6.36, 6.36, 6.36) #fs:   0  -- #Conts: 1 G(1) 
+   1343825 014.71 || noQ Q (Avg,Max,Min) (16.59, 18.17, 10.00) (2.42, 0.24, 6.55) #fs:   0  -- #Conts: 3 E(1)  C(2) 
+   1348501 011.71 || noQ Q (Avg,Max,Min) (11.64, 17.48, 4.82) (2.43, 0.14, 6.55) #fs:   1  -- #Conts: 3 A(1)  E(1)  C(1) 
+   1357840 010.71 || noQ Q (Avg,Max,Min) (14.98, 17.37, 10.00) (3.58, 0.60, 6.55) #fs:   0  -- #Conts: 2 E(1)  C(1) 
+   1397385 008.71 || noQ Q (Avg,Max,Min) (8.84, 16.93, 4.78) (2.29, 0.14, 6.57) #fs:   0  -- #Conts: 3 A(2)  E(1) 
+   1411257 007.71 || noQ Q (Avg,Max,Min) (10.78, 16.78, 4.78) (3.36, 0.14, 6.58) #fs:   0  -- #Conts: 2 A(1)  E(1) 
+   1416590 006.71 || noQ Q (Avg,Max,Min) (16.73, 16.73, 10.00) (6.58, 6.58, 6.58) #fs:   0  -- #Conts: 1 E(1) 
+   2198695 006.00 || noQ Q (Avg,Max,Min) (6.69, 11.08, 4.47) (2.78, 0.71, 6.77) #fs:   0  -- #Conts: 3 A(2)  C(1) 
+   2293925 005.00 || noQ Q (Avg,Max,Min) (7.59, 10.68, 4.49) (3.90, 1.00, 6.80) #fs:   0  -- #Conts: 2 A(1)  C(1) 
+   2447742 004.00 || noQ Q (Avg,Max,Min) (10.10, 10.10, 10.00) (6.87, 6.87, 6.87) #fs:   0  -- #Conts: 1 C(1) 
+/////////////////size: 11
+nodes 100 edges 234
+ mulT: 10 mulD: 5000  sumData GB 9242
+pareto /MONTAGE.n.100.0.dax time -> 1572.0
+moheft /MONTAGE.n.100.0.dax time -> 327.0
+distance from M to C 0.0901960674226565
+distance from P to C 0.16666666666666666
+distance from C to M 0.0
+distance from C to P 0.5326819764470615
+toCompare: /MONTAGE.n.100.0.dax sumDataGB: 9242 mulT: 10 mulD: 5000 paretoOptTime_MS: 1572.0 MoheftOptimizationTime_MS: 327.0 MtoC 0.0901960674226565 PtoC 0.16666666666666666 CtoM 0.0 CtoP 0.5326819764470615

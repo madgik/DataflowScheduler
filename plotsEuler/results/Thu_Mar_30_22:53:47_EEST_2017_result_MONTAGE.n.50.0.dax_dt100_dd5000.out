@@ -1,0 +1,34 @@
+specify -Dflow d,b,mt,md,size
+Running /home/vaggelis/jc/MONTAGE.n.50.0.dax mt 100 md: 5000 size null
+   1568567 078.82 || noQ Q (Avg,Max,Min) (9.11, 10.38, 7.68) (1.56, 0.25, 4.04) #fs:   0  -- #Conts: 3 H(2)  G(1) 
+   1584503 063.06 || noQ Q (Avg,Max,Min) (8.21, 9.17, 7.68) (1.57, 0.26, 4.04) #fs:   1  -- #Conts: 3 H(1)  G(2) 
+   1710747 047.29 || noQ Q (Avg,Max,Min) (8.11, 8.53, 7.70) (2.29, 0.53, 4.05) #fs:   1  -- #Conts: 2 H(1)  G(1) 
+   1728677 031.53 || noQ Q (Avg,Max,Min) (8.55, 8.55, 8.55) (4.11, 4.11, 4.11) #fs:   0  -- #Conts: 1 H(1) 
+   2962657 015.76 || noQ Q (Avg,Max,Min) (5.41, 5.41, 5.41) (4.45, 4.45, 4.45) #fs:   0  -- #Conts: 1 G(1) 
+   6681708 013.41 || noQ Q (Avg,Max,Min) (2.95, 2.95, 2.95) (2.74, 2.74, 2.74) #fs:   0  -- #Conts: 1 E(1) 
+/////////////////size: 6
+   2204327 090.00 || noQ Q (Avg,Max,Min) (18.11, 184.96, 2.67) (0.54, 0.15, 2.42) #fs:   1  -- #Conts: 12 H(1)  G(1)  E(1)  C(9) 
+   2228672 058.47 || noQ Q (Avg,Max,Min) (3.19, 6.78, 2.67) (0.59, 0.15, 4.20) #fs:   1  -- #Conts: 11 G(1)  E(1)  C(9) 
+   2243601 054.47 || noQ Q (Avg,Max,Min) (3.24, 6.76, 2.67) (0.63, 0.15, 4.21) #fs:   0  -- #Conts: 10 G(1)  E(1)  C(8) 
+   2243659 051.76 || noQ Q (Avg,Max,Min) (3.11, 6.76, 2.67) (0.64, 0.18, 4.21) #fs:   0  -- #Conts: 10 G(1)  C(9) 
+   2297654 047.76 || noQ Q (Avg,Max,Min) (3.14, 6.60, 2.67) (0.71, 0.18, 4.21) #fs:   1  -- #Conts: 9 G(1)  C(8) 
+   2302175 043.76 || noQ Q (Avg,Max,Min) (3.20, 6.59, 2.69) (0.80, 0.18, 4.21) #fs:   1  -- #Conts: 8 G(1)  C(7) 
+   2380218 039.76 || noQ Q (Avg,Max,Min) (3.24, 6.44, 2.67) (0.86, 0.18, 4.25) #fs:   1  -- #Conts: 7 G(1)  C(6) 
+   2423250 035.76 || noQ Q (Avg,Max,Min) (3.31, 6.35, 2.67) (0.98, 0.18, 4.28) #fs:   0  -- #Conts: 6 G(1)  C(5) 
+   2458973 031.76 || noQ Q (Avg,Max,Min) (3.41, 6.26, 2.67) (1.18, 0.18, 4.28) #fs:   1  -- #Conts: 5 G(1)  C(4) 
+   2484815 027.76 || noQ Q (Avg,Max,Min) (3.58, 6.22, 2.69) (1.43, 0.36, 4.29) #fs:   0  -- #Conts: 4 G(1)  C(3) 
+   2667543 023.76 || noQ Q (Avg,Max,Min) (3.76, 5.87, 2.69) (1.75, 0.36, 4.35) #fs:   0  -- #Conts: 3 G(1)  C(2) 
+   2730786 019.76 || noQ Q (Avg,Max,Min) (4.24, 5.76, 2.72) (2.54, 0.72, 4.37) #fs:   0  -- #Conts: 2 G(1)  C(1) 
+   2853853 017.76 || noQ Q (Avg,Max,Min) (2.78, 5.57, 1.39) (1.74, 0.40, 4.41) #fs:   0  -- #Conts: 3 G(1)  A(2) 
+   2910510 016.76 || noQ Q (Avg,Max,Min) (3.43, 5.48, 1.39) (2.42, 0.40, 4.43) #fs:   0  -- #Conts: 2 G(1)  A(1) 
+   2962657 015.76 || noQ Q (Avg,Max,Min) (5.41, 5.41, 5.41) (4.45, 4.45, 4.45) #fs:   0  -- #Conts: 1 G(1) 
+/////////////////size: 15
+nodes 50 edges 108
+ mulT: 100 mulD: 5000  sumData GB 4689
+pareto /MONTAGE.n.50.0.dax time -> 1154.0
+moheft /MONTAGE.n.50.0.dax time -> 361.0
+distance from M to C 3.733072831828091
+distance from P to C 0.0
+distance from C to M 0.6688012111674383
+distance from C to P 0.385650612877202
+toCompare: /MONTAGE.n.50.0.dax sumDataGB: 4689 mulT: 100 mulD: 5000 paretoOptTime_MS: 1154.0 MoheftOptimizationTime_MS: 361.0 MtoC 3.733072831828091 PtoC 0.0 CtoM 0.6688012111674383 CtoP 0.385650612877202

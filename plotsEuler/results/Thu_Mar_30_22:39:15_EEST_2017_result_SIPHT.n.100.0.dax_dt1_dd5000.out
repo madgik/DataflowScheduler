@@ -1,0 +1,33 @@
+specify -Dflow d,b,mt,md,size
+Running /home/vaggelis/jc/SIPHT.n.100.0.dax mt 1 md: 5000 size null
+    533183 094.59 || noQ Q (Avg,Max,Min) (5.67, 14.47, 1.26) (0.73, 0.02, 2.14) #fs:   0  -- #Conts: 3 H(3) 
+    549800 078.82 || noQ Q (Avg,Max,Min) (5.49, 14.03, 1.15) (0.73, 0.02, 2.14) #fs:   1  -- #Conts: 3 H(2)  G(1) 
+    559193 063.06 || noQ Q (Avg,Max,Min) (7.54, 13.81, 1.27) (1.09, 0.03, 2.14) #fs:   1  -- #Conts: 2 H(2) 
+    618889 031.53 || noQ Q (Avg,Max,Min) (12.62, 12.62, 10.00) (2.17, 2.17, 2.17) #fs:   0  -- #Conts: 1 H(1) 
+   1060632 015.76 || noQ Q (Avg,Max,Min) (7.78, 7.78, 7.78) (2.29, 2.29, 2.29) #fs:   0  -- #Conts: 1 G(1) 
+   1384110 013.41 || noQ Q (Avg,Max,Min) (3.65, 4.09, 3.21) (1.39, 1.21, 1.57) #fs:   1  -- #Conts: 2 E(2) 
+   1972406 010.71 || noQ Q (Avg,Max,Min) (2.91, 3.25, 2.56) (1.49, 1.21, 1.78) #fs:   1  -- #Conts: 2 E(1)  C(1) 
+   2290276 008.00 || noQ Q (Avg,Max,Min) (2.68, 2.80, 2.56) (1.66, 1.53, 1.78) #fs:   0  -- #Conts: 2 C(2) 
+   2392015 006.71 || noQ Q (Avg,Max,Min) (4.01, 4.01, 4.01) (2.66, 2.66, 2.66) #fs:   0  -- #Conts: 1 E(1) 
+/////////////////size: 9
+    885441 079.82 || noQ Q (Avg,Max,Min) (2.83, 9.02, 1.16) (0.47, 0.02, 2.22) #fs:   2  -- #Conts: 5 H(1)  G(3)  A(1) 
+    921352 047.29 || noQ Q (Avg,Max,Min) (5.55, 7.98, 1.16) (0.78, 0.02, 1.98) #fs:   1  -- #Conts: 3 G(3) 
+    938535 031.53 || noQ Q (Avg,Max,Min) (4.90, 8.63, 1.16) (1.15, 0.05, 2.25) #fs:   1  -- #Conts: 2 G(2) 
+   1033717 024.47 || noQ Q (Avg,Max,Min) (3.39, 7.46, 1.16) (0.62, 0.03, 2.00) #fs:   2  -- #Conts: 4 G(1)  A(2)  E(1) 
+   1060632 015.76 || noQ Q (Avg,Max,Min) (7.78, 7.78, 7.78) (2.29, 2.29, 2.29) #fs:   0  -- #Conts: 1 G(1) 
+   1670345 013.41 || noQ Q (Avg,Max,Min) (3.17, 4.50, 1.83) (1.45, 0.85, 2.05) #fs:   3  -- #Conts: 2 E(2) 
+   2205990 011.71 || noQ Q (Avg,Max,Min) (1.86, 3.86, 0.68) (0.95, 0.08, 2.33) #fs:   4  -- #Conts: 3 A(1)  E(1)  C(1) 
+   2212338 010.71 || noQ Q (Avg,Max,Min) (3.38, 3.86, 2.89) (1.37, 0.39, 2.34) #fs:   1  -- #Conts: 2 E(1)  C(1) 
+   2374484 007.71 || noQ Q (Avg,Max,Min) (2.16, 3.70, 0.62) (1.41, 0.41, 2.41) #fs:   3  -- #Conts: 2 A(1)  E(1) 
+   2392015 006.71 || noQ Q (Avg,Max,Min) (4.01, 4.01, 4.01) (2.66, 2.66, 2.66) #fs:   0  -- #Conts: 1 E(1) 
+   4252995 006.00 || noQ Q (Avg,Max,Min) (1.86, 2.53, 1.19) (1.61, 0.70, 2.51) #fs:   2  -- #Conts: 2 A(1)  C(1) 
+/////////////////size: 11
+nodes 97 edges 109
+ mulT: 1 mulD: 5000  sumData GB 11037
+pareto /SIPHT.n.100.0.dax time -> 9477.0
+moheft /SIPHT.n.100.0.dax time -> 354.0
+distance from M to C 0.19318181818181882
+distance from P to C 0.0
+distance from C to M 0.17708333333333334
+distance from C to P 0.35200319630727844
+toCompare: /SIPHT.n.100.0.dax sumDataGB: 11037 mulT: 1 mulD: 5000 paretoOptTime_MS: 9477.0 MoheftOptimizationTime_MS: 354.0 MtoC 0.19318181818181882 PtoC 0.0 CtoM 0.17708333333333334 CtoP 0.35200319630727844

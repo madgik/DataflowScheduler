@@ -1,0 +1,22 @@
+specify -Dflow d,b,mt,md,size
+Running /home/vaggelis/jc/MONTAGE.n.50.0.dax mt 1 md: 10000 size null
+     17309 031.53 || noQ Q (Avg,Max,Min) (1509.02, 1509.02, 10.00) (7.26, 7.26, 7.26) #fs:   0  -- #Conts: 1 H(1) 
+     29653 015.76 || noQ Q (Avg,Max,Min) (881.26, 881.26, 10.00) (7.26, 7.26, 7.26) #fs:   0  -- #Conts: 1 G(1) 
+     66838 006.71 || noQ Q (Avg,Max,Min) (391.53, 391.53, 10.00) (7.27, 7.27, 7.27) #fs:   0  -- #Conts: 1 E(1) 
+    115480 004.00 || noQ Q (Avg,Max,Min) (227.03, 227.03, 10.00) (7.28, 7.28, 7.28) #fs:   0  -- #Conts: 1 C(1) 
+    512020 001.00 || noQ Q (Avg,Max,Min) (51.98, 51.98, 10.00) (7.39, 7.39, 7.39) #fs:   0  -- #Conts: 1 A(1) 
+/////////////////size: 5
+     29653 015.76 || noQ Q (Avg,Max,Min) (881.26, 881.26, 10.00) (7.26, 7.26, 7.26) #fs:   0  -- #Conts: 1 G(1) 
+     66838 006.71 || noQ Q (Avg,Max,Min) (391.53, 391.53, 10.00) (7.27, 7.27, 7.27) #fs:   0  -- #Conts: 1 E(1) 
+    115480 004.00 || noQ Q (Avg,Max,Min) (227.03, 227.03, 10.00) (7.28, 7.28, 7.28) #fs:   0  -- #Conts: 1 C(1) 
+    512020 001.00 || noQ Q (Avg,Max,Min) (51.98, 51.98, 10.00) (7.39, 7.39, 7.39) #fs:   0  -- #Conts: 1 A(1) 
+/////////////////size: 4
+nodes 50 edges 108
+ mulT: 1 mulD: 10000  sumData GB 9378
+pareto /MONTAGE.n.50.0.dax time -> 173.0
+moheft /MONTAGE.n.50.0.dax time -> 165.0
+distance from M to C 0.0
+distance from P to C 0.0
+distance from C to M 0.025
+distance from C to P 0.0
+toCompare: /MONTAGE.n.50.0.dax sumDataGB: 9378 mulT: 1 mulD: 10000 paretoOptTime_MS: 173.0 MoheftOptimizationTime_MS: 165.0 MtoC 0.0 PtoC 0.0 CtoM 0.025 CtoP 0.0
