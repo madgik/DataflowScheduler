@@ -34,6 +34,22 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 //    Z	(	39.13043478	,	42.03921569	,	"	Z	"	)	;
 
 
+    A	(	1.00	,	0.1	,	"	A	"	)	,
+    B	(	1.50	,	0.2	,	"	B	"	)	,
+    C	(	2.00	,	0.32	,	"	C	"	)	,
+    D	(	2.5	,	0.46	,	"	D	"	)	,
+    E	(	3.0	,	0.58	,	"	E	"	)	,
+    F	(	3.5	,	0.73	,	"	F	"	)	,
+    G	(	4.0	,	0.9	,	"	G	"	)	,
+    H	(	4.5	,	1.05	,	"	H	"	)	,
+    I	(	5.0	,	1.21	,	"	I	"	)	,
+    J	(	5.5	,	1.4	,	"	J	"	)	;
+
+//    Cost
+//            ($/h) 0.10
+//            0.20 0.32 0.46 0.58 0.73 0.90 1.05 1.21 1.40
+//    TABLE 3 VM INSTANCE PARAMETERS
+//    Computing Capacity (MIPS) 1000 1500 2000 2500 3000 3500 4000 4500 5000 5500
 
     //////////
 
@@ -60,16 +76,25 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 //    H( 27.25,   2.68,   "H");//m2.xlarge    //2.6
 
 
-    A( 0.92/0.92,    0.085/0.085,  "A"),//m1.small     //2.8
-//    B( 3.43,    0.17,   "B"),//c1.medium    //0.34
-    C( 4.08/0.92,    0.34/0.085,   "C"),//m1.large     //1.8
-//    D( 5.15,    0.57,    "D"),//c1.medium    //1.8
-    E( 7.05/0.92,    0.57/0.085,      "E"),//m2.xlarge    //2.6
-//    F( 8.78,    0.68,   "F"),//c1.xlarge  //0.35
-    G( 15.9/0.92,   1.34/0.085,   "G"),//m2.2xlarge   //2.6
-    H( 27.25/0.92,   2.68/0.085,   "H");//m2.xlarge    //2.6
+//    A( 0.92/0.92,    0.085/0.085,  "A"),//m1.small     //2.8
+////    B( 3.43,    0.17,   "B"),//c1.medium    //0.34
+//    C( 4.08/0.92,    0.34/0.085,   "C"),//m1.large     //1.8
+////    D( 5.15,    0.57,    "D"),//c1.medium    //1.8
+//    E( 7.05/0.92,    0.57/0.085,      "E"),//m2.xlarge    //2.6
+////    F( 8.78,    0.68,   "F"),//c1.xlarge  //0.35
+//    G( 15.9/0.92,   1.34/0.085,   "G"),//m2.2xlarge   //2.6
+//    H( 27.25/0.92,   2.68/0.085,   "H");//m2.xlarge    //2.6
+////
 
 
+//    A( 0.92/0.92,    0.085/0.085,  "A"),//m1.small     //2.8
+//        B( 2*0.92/0.92,    2*0.085/0.085,   "B"),//c1.medium    //0.34
+//    C( 3*0.92/0.92,    3*0.085/0.085,   "C"),//m1.large     //1.8
+//        D( 4*0.92/0.92,    4*0.085/0.085,    "D"),//c1.medium    //1.8
+//    E( 5*0.92/0.92,    5*0.085/0.085,      "E"),//m2.xlarge    //2.6
+//        F( 6*0.92/0.92,    6*0.085/0.085,   "F"),//c1.xlarge  //0.35
+//    G( 7*0.92/0.92,   7*0.085/0.085,   "G"),//m2.2xlarge   //2.6
+//    H( 8*0.92/0.92,   8*0.085/0.085,   "H");//m2.xlarge    //2.6
 
 
 
@@ -120,12 +145,11 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 
 
     public static containerType getSmallest(){
-
-        return A;
+        return containerType.values()[0];
     }
 
     public static containerType getLargest(){
-        return H;
+        return containerType.values()[containerType.values().length-1];
     }
 
 
@@ -191,28 +215,34 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 
     //is ct1 smaller than ct2
     public static boolean isSmaller(containerType ct1, containerType ct2){
-
-        boolean seenct1 = false;
-        boolean seenct2 = false;
-
-        containerType nextCType=containerType.getLargest();
         for (containerType nextCT:containerType.values())
         {
             //TODO: i think we just need to add this and we do not need seenct1/2.
-            if(nextCT==ct2 ){;//;&& nextCT!=ct1){//if we meet ct2 but not ct1, ct1 is not smaller
+            if(nextCT==ct2 ){
                 return false;
             }
 
             if(nextCT==ct1)
                 return true;
+        }
 
-            /*
-            if(nextCT==ct1 && seenct2){
+        return false;
+    }
+
+    //is ct1 larger than ct2
+    public static boolean isLarger(containerType ct1, containerType ct2){
+
+
+
+        for (containerType nextCT:containerType.values())
+        {
+            //TODO: i think we just need to add this and we do not need seenct1/2.
+            if(nextCT==ct1 ){
                 return false;
             }
-            if(nextCT==ct1 && !seenct2){
+            if(nextCT==ct2)
                 return true;
-            }*/
+
 
         }
 
