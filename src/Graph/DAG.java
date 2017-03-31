@@ -1,5 +1,7 @@
 package Graph;
 
+import Scheduler.RuntimeConstants;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -124,6 +126,26 @@ public class DAG {
             sum+=a.size();
         }
         return sum;
+    }
+
+    public double computeCCR() {
+        Long dataSum_B = 0L;
+        for(ArrayList<Edge> ed: edges.values()) {
+            for (Edge edge :ed) {
+                dataSum_B += edge.data.size_B;
+            }
+        }
+        Double com = (2*dataSum_B) / RuntimeConstants.distributed_storage_speed_B_MS;
+
+        long comp=0;
+
+        for(Operator op:operatorsList){
+            comp+=op.getRunTime_MS();
+        }
+
+
+        Double ccr = com/comp;
+        return ccr;
     }
 
     //    public void addFile(Data data){

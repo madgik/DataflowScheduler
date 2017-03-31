@@ -43,23 +43,12 @@ public class SolutionSpace implements Iterable<Plan> {
         return results.size();
     }
 
+
+
     public void print() {
-//        System.out.println("////////////////Solutio");
-        for(Plan p:results){
-            p.printInfo();
-        }
-        System.out.println("/////////////////size: "+results.size());
+        System.out.println(this.toString());
     }
 
-    public void plot(String n){
-        ArrayList<Pair<Long,Double>> a = new ArrayList<>();
-        for(Plan p: results){
-            a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
-        }
-        plotUtility plot = new plotUtility();
-
-        plot.plotPoints(n,a);
-    }
 
     public void clear(){
         results.clear();
@@ -168,6 +157,17 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
+    @Override public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Plan p : results) {
+            sb.append(p.toString());
+        }
+
+       sb.append("/////////////////size: " + results.size()).append("\n");
+
+        return sb.toString();
+    }
 }
 
 

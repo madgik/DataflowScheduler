@@ -294,15 +294,10 @@ public class paretoNoHomogen implements Scheduler {
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
-//        System.out.println("//////////RESULT///////");
 
-        space.print();
-//        space.plot("space");
         mpinfo.add("final space",space.results);
 
 
-
-//        plotMultiple(mpinfo);
         return space;
 
     }

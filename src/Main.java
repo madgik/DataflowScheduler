@@ -10,25 +10,33 @@ import utils.MultiplePlotInfo;
 import utils.Pair;
 import utils.RandomParameters;
 import utils.plotUtility;
-import java.io.File;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import static utils.OptimizationResultVisualizer.showOptimizationResult;
 import static utils.SolutionSpaceUtils.computeDistance;
 
 
 
 public class Main {
 
-    static Boolean save = true;
-    static Boolean show = false;
-    static String path;
+    static Boolean savePlot = true;
+    static Boolean showPlot = true;
+    static String pathPlot;
+    static String pathOut;
+    static Boolean showOutput = true;
+    static Boolean saveOutput = true;
 
     public static void main(String[] args) {
 
-        path = "./plots/";
-        System.out.print("specify -Dflow d,b,mt,md");
-        System.out.println(" -- saving plots to "+ path);
+        pathPlot = "./plots/";
+        pathOut = "./results/";
+
+        //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
+
+        if(savePlot){System.out.println("saving plots to "+ pathPlot);}
+        if(saveOutput){System.out.println("saving output to "+ pathOut);}
 
 
         String flow = System.getProperty("flow");
@@ -44,7 +52,7 @@ public class Main {
             }
         }else{
 
-            runDax(false,"LIGO.n.50.0.dax",1,1);
+            runDax(false,"LIGO.n.50.0.dax",100,1000000000);
 //
 //            ArrayList<Integer> times = new ArrayList<>();
 //            ArrayList<Integer> datas = new ArrayList<>();
@@ -104,19 +112,173 @@ public class Main {
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
-    private static void runTree(int leafs,int height) {
+    public static void runDAG(DAG graph, String paremetersToPrint, String type)
+    {
 
-        double[] avgTimePerLevel = new double[] {0.2, 0.2, 0.2, 0.2, 0.3};
-        double initialDataSize = 1000;
-        double[] dataReductionPerLevel = new double[] {0.3, 0.3, 0.3, 0.3, 0.3};
-        double randomness = 0.0;
-        long seed = 0L;
+        StringBuilder sbOut = new StringBuilder();
 
-        DAG graph  = TreeGraphGenerator.createTreeGraph(
-            leafs, height, 1.0, 1.0,
-            avgTimePerLevel, initialDataSize, dataReductionPerLevel, randomness, seed);
+        sbOut.append("Running "+type+" "+paremetersToPrint+ " Pareto, Moheft").append("\n");
 
-        runDAG(graph," leafs: "+leafs+" height: "+height,"tree");
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph, cluster);
+
+        SolutionSpace solutions = sched.schedule();
+
+        sbOut.append(solutions.toString());
+
+        mpinfo.add("pareto "+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
+
+
+        Cluster clusterM = new Cluster();
+
+        Scheduler schedM = new Moheft(graph, clusterM);
+
+        SolutionSpace solutionsM = schedM.schedule();
+
+        sbOut.append(solutionsM.toString());
+
+        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
+
+        plotUtility plot = new plotUtility();
+
+        //        showOptimizationResult("aaaa",solutions.results.get(solutions.size()-1));
+
+
+        sbOut.append("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges()).append("\n");
+        sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
+        sbOut.append("pareto "+type+" time -> " + solutions.optimizationTime_MS).append("\n");
+        sbOut.append("moheft "+type+" time -> " + solutionsM.optimizationTime_MS).append("\n");
+
+
+        SolutionSpace combined = new SolutionSpace();
+        combined.addAll(solutions);
+        combined.addAll(solutionsM);
+
+        combined.computeSkyline(false);
+
+        double distMtoC=0.0,distPtoC=0.0,distCtoM=0.0,distCtoP=0.0;
+
+        ArrayList<Pair<String,Double>> legendInfo = new ArrayList<>();
+
+
+        try {
+            distMtoC = computeDistance(solutionsM,combined).P2Sky;
+            legendInfo.add(new Pair<>("distMtoC",distMtoC));
+
+            distPtoC = computeDistance(solutions,combined).P2Sky;
+            legendInfo.add(new Pair<>("distPtoC",distPtoC));
+
+            distCtoM = computeDistance(combined,solutionsM).P2Sky;
+            legendInfo.add(new Pair<>("distCtoM",distCtoM));
+
+            distCtoP = computeDistance(combined,solutions).P2Sky;
+            legendInfo.add(new Pair<>("distCtoP",distCtoP));
+
+
+
+            sbOut.append("distance from M to C "+distMtoC).append("\n");
+            sbOut.append("distance from P to C "+distPtoC).append("\n");
+            sbOut.append("distance from C to M "+distCtoM).append("\n");
+            sbOut.append("distance from C to P "+distCtoP).append("\n");
+
+
+            legendInfo.add(new Pair<String,Double>("nodes",(double)graph.getOperators().size()));
+            legendInfo.add(new Pair<String,Double>("edges",(double)graph.sumEdges()));
+
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        double ccr =  graph.computeCCR();
+
+        legendInfo.add(new Pair<String,Double>("ccr",ccr));
+
+
+        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +
+            paremetersToPrint               +
+            " paretoOptTime_MS: "+ solutions.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
+            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP).append(" ccr ").append(ccr).append("\n");
+
+
+        String filesname =
+                type +
+                "___"+paremetersToPrint.replace(" ","_")+
+                "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+"_ccr_"+ccr+"__"+
+                (new java.util.Date()).toString().replace(" ","_");
+
+
+
+        if(showOutput){
+            System.out.println(sbOut.toString());
+        }
+        if(saveOutput){
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(pathOut+filesname+".txt");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            out.println(sbOut.toString());
+            out.close();
+
+        }
+
+        plot.plotMultipleWithLine(combined, legendInfo ,mpinfo, filesname,
+            pathPlot,
+            savePlot,
+            showPlot);
+
+    }
+
+
+    private static void runDax(boolean jar, String file, int mulTime, int mulData) {
+
+        System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
+
+        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
+
+        DAG graph = null;
+        try {
+            if(jar){
+                graph = parser.parseDax(file);
+            }else {
+                graph = parser.parseDax(Main.class.getResource(file).getFile());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String flowname;
+        if(file.contains("/")) {
+            flowname = file.substring(file.lastIndexOf("/"), file.length());
+        }else{
+            flowname = file;
+        }
+        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname);
+    }
+
+    private static void runLattice(int d, int b) {
+
+        System.out.println("Running Lattice d "+d+" b: "+b + " Pareto, Moheft");
+
+        double z = 1.0;
+        double randType = 0.0;
+        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+        double[] cpuUtil = {1.0};
+        double[] memory = {0.3};
+        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+
+        RandomParameters
+            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+        DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0);
+
+
+        runDAG(graph,"d: "+d+" b: "+b,"Lattice");
 
     }
 
@@ -156,115 +318,30 @@ public class Main {
             params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
 
-//        graph.add( LatticeGenerator.createLatticeGraph(11,3,params,0) );
-//        graph.add( LatticeGenerator.createLatticeGraph(5,21,params,0) );
-//        graph.add( LatticeGenerator.createLatticeGraph(d,b,params,0) );
+        //        graph.add( LatticeGenerator.createLatticeGraph(11,3,params,0) );
+        //        graph.add( LatticeGenerator.createLatticeGraph(5,21,params,0) );
+        //        graph.add( LatticeGenerator.createLatticeGraph(d,b,params,0) );
 
 
         runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,"ola");
 
     }
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type)
-    {
+    private static void runTree(int leafs,int height) {
 
-        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+        double[] avgTimePerLevel = new double[] {0.2, 0.2, 0.2, 0.2, 0.3};
+        double initialDataSize = 1000;
+        double[] dataReductionPerLevel = new double[] {0.3, 0.3, 0.3, 0.3, 0.3};
+        double randomness = 0.0;
+        long seed = 0L;
 
-        Cluster cluster = new Cluster();
+        DAG graph  = TreeGraphGenerator.createTreeGraph(
+            leafs, height, 1.0, 1.0,
+            avgTimePerLevel, initialDataSize, dataReductionPerLevel, randomness, seed);
 
-        Scheduler sched = new paretoNoHomogen(graph, cluster);
-
-        SolutionSpace solutions = sched.schedule();
-
-        mpinfo.add("pareto "+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
-
-
-        Cluster clusterM = new Cluster();
-
-        Scheduler schedM = new Moheft(graph, clusterM);
-
-        SolutionSpace solutionsM = schedM.schedule();
-
-//        showOptimizationResult("aaaa",solutions.results.get(solutions.size()-1));
-
-        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
-
-        plotUtility plot = new plotUtility();
-
-
-        System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
-        System.out.println(paremetersToPrint + "  sumData GB " + (graph.sumdata_B / 1073741824));
-        System.out.println("pareto "+type+" time -> " + solutions.optimizationTime_MS);
-        System.out.println("moheft "+type+" time -> " + solutionsM.optimizationTime_MS);
-
-             SolutionSpace combined = new SolutionSpace();
-             combined.addAll(solutions);
-             combined.addAll(solutionsM);
-
-             combined.computeSkyline(false);
-
-             double distMtoC=0.0,distPtoC=0.0,distCtoM=0.0,distCtoP=0.0;
-
-             ArrayList<Pair<String,Double>> legendInfo = new ArrayList<>();
-
-             try {
-                 distMtoC = computeDistance(solutionsM,combined).P2Sky;
-                 legendInfo.add(new Pair<>("distMtoC",distMtoC));
-
-                 distPtoC = computeDistance(solutions,combined).P2Sky;
-                 legendInfo.add(new Pair<>("distPtoC",distPtoC));
-
-                 distCtoM = computeDistance(combined,solutionsM).P2Sky;
-                 legendInfo.add(new Pair<>("distCtoM",distCtoM));
-
-                 distCtoP = computeDistance(combined,solutions).P2Sky;
-                 legendInfo.add(new Pair<>("distCtoP",distCtoP));
-
-
-                 System.out.println("distance from M to C "+distMtoC);
-                 System.out.println("distance from P to C "+distPtoC);
-                 System.out.println("distance from C to M "+distCtoM);
-                 System.out.println("distance from C to P "+distCtoP);
-
-             } catch (RemoteException e) {
-                 e.printStackTrace();
-             }
-
-             System.out.println("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +
-                   paremetersToPrint               +
-                     " paretoOptTime_MS: "+ solutions.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
-                 " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP
-             );
-
-
-             plot.plotMultipleWithLine(combined, legendInfo ,mpinfo, type +" ---"+paremetersToPrint
-            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save,show);
-    }
-
-
-
-    private static void runLattice(int d, int b) {
-
-        System.out.println("Running Lattice d "+d+" b: "+b );
-
-        double z = 1.0;
-        double randType = 0.0;
-        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-        double[] cpuUtil = {1.0};
-        double[] memory = {0.3};
-        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
-
-        RandomParameters
-            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
-
-        DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0);
-
-
-        runDAG(graph," d: "+d+" b: "+b,"Lattice");
+        runDAG(graph," leafs: "+leafs+" height: "+height,"tree");
 
     }
-
-
 
     private static void runHEFT(String filename, int mulTime, int mulData) {
         PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
@@ -297,38 +374,14 @@ public class Main {
         plotUtility plot = new plotUtility();
 
         plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
-            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),path,save);
+            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),
+            pathPlot,
+            savePlot);
 
         System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
         System.out.println("mulTime "+mulTime + " mulData " + mulData + "  sumData GB " + (graph.sumdata_B / 1073741824));
         System.out.println("HEFT Example time -> " + solutions.optimizationTime_MS);
     }
-
-    private static void runDax(boolean jar, String file, int mulTime, int mulData) {
-
-        System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData );
-
-        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
-
-        DAG graph = null;
-        try {
-            if(jar){
-                graph = parser.parseDax(file);
-            }else {
-                graph = parser.parseDax(Main.class.getResource(file).getFile());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String flowname;
-        if(file.contains("/")) {
-            flowname = file.substring(file.lastIndexOf("/"), file.length());
-        }else{
-            flowname = file;
-        }
-        runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,flowname);
-   }
 
     private static void runJson(boolean jar,String filename, int mulTime, int mulData) {
 
@@ -348,8 +401,6 @@ public class Main {
         runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,filename);
 
     }
-
-
 
 
 }

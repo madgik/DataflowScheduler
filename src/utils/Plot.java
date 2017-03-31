@@ -84,7 +84,7 @@ public class Plot extends ApplicationFrame {
             setContentPane(chartPanel);
 
         if (save) {
-            File f = new File(path + name + ".png");
+            File f = new File(path + name+".png");
             try {
                 ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
             } catch (IOException e) {
@@ -144,7 +144,7 @@ public class Plot extends ApplicationFrame {
         }));
 
         if (save) {
-            File f = new File(path + name + ".png");
+            File f = new File(path + name+ ".png");
             try {
                 ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
             } catch (IOException e) {

@@ -489,18 +489,19 @@ public class Plan  {
 //
 //    }
 
-    public void printInfo() {
-        //        System.out.println("------Plan Info----");
+    @Override public String toString() {
+
         StringBuilder i = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(i, Locale.US);
 
-
+        String.format("%10d %06.2f", stats.runtime_MS, stats.money );
 
 
         i.append(stats.runtime_MS).append(" ").append(stats.money).append(" ").append("conts ")
             .append(cluster.containersList.size()).append("  ");
 
-        System.out.format("%10d %06.2f", stats.runtime_MS, stats.money);
+        sb.append(String.format("%10d %06.2f", stats.runtime_MS, stats.money));
 
 
         long usedTimeSum =0;
@@ -567,7 +568,7 @@ public class Plan  {
                 try {
                     throw new Exception("Problem!!!");
                 } catch (Exception e) {
-                   // e.printStackTrace();
+                    // e.printStackTrace();
                 }
             }
 
@@ -602,23 +603,29 @@ public class Plan  {
         i.append(" #fs: ").append(countfs);
 
 
-        System.out.format(" || noQ Q (Avg,Max,Min) (%3.2f, %3.2f, %3.2f) (%3.2f, %3.2f, %3.2f) #fs: %3d ",AvgUtil,maxUtil,minUtil,AvgQUtil,MinQUtil,MaxQUtil,countfs);
+        sb.append(String.format(" || noQ Q (Avg,Max,Min) (%3.2f, %3.2f, %3.2f) (%3.2f, %3.2f, %3.2f) #fs: %3d ",AvgUtil,maxUtil,minUtil,AvgQUtil,MinQUtil,MaxQUtil,countfs));
 
-        System.out.format(" -- #Conts: %d",cluster.containersList.size());
+        sb.append(String.format(" -- #Conts: %d",cluster.containersList.size()));
 
         for (containerType ct : cluster.countTypes.keySet()) {
             i.append(ct.name).append("(").append(cluster.countTypes.get(ct)).append(")")
                 .append(" ");
 
-            System.out.format(" %s(%d) ",ct.name,cluster.countTypes.get(ct));
+            sb.append(String.format(" %s(%d) ",ct.name,cluster.countTypes.get(ct)));
         }
 
-        System.out.format("%n");
+        sb.append(String.format("%n"));
 
-//        System.out.println(i.toString());
+        //        System.out.println(i.toString());
         //        System.out.println("------Plan Info END----");
 
+        return sb.toString();
     }
+
+    public void printInfo() {
+        System.out.println(this.toString());
+    }
+
 
     public void printAssignments() {
         for(Long contId: this.contAssignments.keySet()) {

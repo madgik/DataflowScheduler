@@ -42,12 +42,12 @@ public class PegasusDaxParser {
 
     long sumdata;
 
-    double multiply_by_time = 1000.0;
-    int multiply_by_data = 1;
+    double multiply_by_time ;
+    int multiply_by_data ;
 
     public PegasusDaxParser(double mulTIME,int mulDATA) {
-        multiply_by_data = mulDATA;
         multiply_by_time = mulTIME;
+        multiply_by_data = mulDATA;
         sumdata=0;
 
     }
