@@ -24,7 +24,7 @@ public class paretoNoHomogen implements Scheduler {
 
     public int maxContainers = 10000000;
 
-    public boolean backfilling = false;
+    public boolean backfilling = true;
     public boolean backfillingUpgrade = false;
     public boolean migrationEnabled=false;
 

@@ -22,10 +22,10 @@ import static utils.SolutionSpaceUtils.computeDistance;
 public class Main {
 
     static Boolean savePlot = true;
-    static Boolean showPlot = true;
+    static Boolean showPlot = false;
     static String pathPlot;
     static String pathOut;
-    static Boolean showOutput = true;
+    static Boolean showOutput = false;
     static Boolean saveOutput = true;
 
     public static void main(String[] args) {

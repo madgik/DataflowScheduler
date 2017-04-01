@@ -205,7 +205,7 @@ public class LatticeGenerator {
         for (int i = 0; i < fanOut; i++) {
             dataCount+=quantums * bytesPerQuantum;
         }
-        dataCount/=20;
+        dataCount/=200;
         opIdToOutDataSize.put(op.getId(),dataCount);
         return op;
     }

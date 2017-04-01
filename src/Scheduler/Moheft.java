@@ -27,7 +27,7 @@ public class Moheft implements Scheduler {
 
     public int maxContainers = 10000000;
 
-    public boolean backfilling = false;
+    public boolean backfilling = true;
 
     private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
 
