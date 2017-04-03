@@ -32,8 +32,8 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 //    Y	(	34.7826087	,	36.78431373	,	"	Y	"	)	,
 //    W	(	36.95652174	,	39.41176471	,	"	W	"	)	,
 //    Z	(	39.13043478	,	42.03921569	,	"	Z	"	)	;
-
-
+//
+//
 //    A	(	1.00	,	0.1	,	"	A	"	)	,
 //    B	(	1.50	,	0.2	,	"	B	"	)	,
 //    C	(	2.00	,	0.32	,	"	C	"	)	,
@@ -84,7 +84,7 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
 //    F( 8.78,    0.68,   "F"),//c1.xlarge  //0.35
     G( 15.9/0.92,   1.34/0.085,   "G"),//m2.2xlarge   //2.6
     H( 27.25/0.92,   2.68/0.085,   "H");//m2.xlarge    //2.6
-//
+////
 
 
 //    A( 0.92/0.92,    0.085/0.085,  "A"),//m1.small     //2.8

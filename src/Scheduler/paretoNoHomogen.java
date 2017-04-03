@@ -3,6 +3,7 @@
 import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
+import utils.Check;
 import utils.MultiplePlotInfo;
 import utils.Pair;
 
@@ -24,7 +25,7 @@ public class paretoNoHomogen implements Scheduler {
 
     public int maxContainers = 10000000;
 
-    public boolean backfilling = true;
+    public boolean backfilling = false;
     public boolean backfillingUpgrade = false;
     public boolean migrationEnabled=false;
 
@@ -841,11 +842,104 @@ public class paretoNoHomogen implements Scheduler {
         }
     }
 
+
+    public void findDominanceRelations(ArrayList<Plan> plans, HashMap<Plan, ArrayList <Plan>> dominatedSet, HashMap<Plan, ArrayList <Plan>> dominanceSet, ArrayList <Plan> skyline) {
+        //dominatedSet: set of plans dominated by the key plan
+//      //dominanceSet: set of skyline plans the key plan is dominated by
+        System.out.println("sorted plans");
+        for(int cur = 0; cur<plans.size(); cur++) {
+            Plan curPlan = plans.get(cur);
+
+            System.out.println(" " + curPlan.stats.runtime_MS + " " + curPlan.stats.money);
+
+            //finding dominatedSet
+            for(int next=cur+1;next<plans.size(); next++)
+            {
+                Plan nextPlan = plans.get(next);
+                if(nextPlan.stats.runtime_MS > curPlan.stats.runtime_MS && nextPlan.stats.money < curPlan.stats.money) {
+
+//                    ArrayList <Plan> dset=new ArrayList<>();
+//                    dset.add(nextPlan);
+
+
+                 //   if(dominatedSet.containsKey(curPlan))
+                        dominatedSet.get(curPlan).add(nextPlan);
+                  //  else
+                   //     dominatedSet.put(curPlan, dset);
+
+
+                }
+                else
+                    break;
+            }
+
+            //finding dominanceSet
+            for(int previous=cur-1;previous>=0; previous--)
+            {
+
+                Plan previousPlan = plans.get(previous);
+                if(previousPlan.stats.runtime_MS <= curPlan.stats.runtime_MS && previousPlan.stats.money <= curPlan.stats.money) {
+                  //  if(skyline.contains(previousPlan))
+                  //  dominanceSet.get(curPlan).add(previousPlan);
+
+                    //   if(dominanceSet.containsKey(curPlan))
+                    dominanceSet.get(curPlan).add(previousPlan);
+                    //  else
+                    //     dominanceSet.put(curPlan, dset);
+                }
+                else
+                    break;
+
+            }
+
+        }
+    }
+
+
+    public HashMap<Plan, Double> computeDominanceScore(ArrayList<Plan> plans, HashMap<Plan, ArrayList <Plan>> dominatedSet, HashMap<Plan, ArrayList <Plan>> dominanceSet, ArrayList <Plan> skyline) {
+        //dominatedSet: set of plans dominated by the key plan
+      //dominanceSet: set of skyline plans the key plan is dominated by
+
+        HashMap<Plan, Double> dominanceScore = new HashMap<>();
+
+        for(int curPlan = 0; curPlan<plans.size(); curPlan++) {
+            Double domScore = 0.0;
+            if (dominatedSet.containsKey(plans.get(curPlan))) {
+           //     System.out.println("not empty");
+                for (Plan p : dominatedSet.get(curPlan)) {
+
+                    Double dp_p_sp = 1.0 / dominatedSet.get(p).size();
+                    Double idp_p = Math.log((double) skyline.size() / (double) dominanceSet.get(p).size());
+                    domScore += (dp_p_sp + idp_p);
+
+                }
+
+                dominanceScore.put(plans.get(curPlan), domScore);
+
+                System.out.println("plan " + curPlan + "domscore " + domScore);
+            }
+        }
+
+
+
+        return dominanceScore;
+
+    }
+
     public  SolutionSpace computeSkyline(SolutionSpace plans){
         SolutionSpace skyline = new SolutionSpace();
 
 
+
         plans.sort(true); // Sort by time breaking equality by sorting by money
+
+        HashMap<Plan, ArrayList <Plan>> dominatedSet=new HashMap<>();
+        HashMap<Plan, ArrayList <Plan>> dominanceSet=new HashMap<>();
+        for(Plan p : plans){
+            dominanceSet.put(p,new ArrayList<>());
+            dominatedSet.put(p,new ArrayList<>());
+        }
+
 
         Plan previous = null;
         for (Plan est : plans) {
@@ -867,8 +961,94 @@ public class paretoNoHomogen implements Scheduler {
 
 
 
+     //   sortPlansByDerQuanta(skyline.results);
+
+//        SolutionSpace skylinePruned = new SolutionSpace();
+//        for(int i=0; i<Math.min(skyline.size(), 20);i++)
+//        {
+//            skylinePruned.add(skyline.results.get(i));
+//        }
+
+
+//        findDominanceRelations(plans.results, dominatedSet,  dominanceSet, skylinePruned.results);
+
+//        computeDominanceScore(plans.results, dominatedSet,  dominanceSet, skylinePruned.results);
+
+//        return pruneSkylineByCrowdDist(skyline);
         return skyline;
     }
+
+
+    private SolutionSpace pruneSkylineByCrowdDist(SolutionSpace skylinePlans) {
+
+        SolutionSpace skylineNew = new SolutionSpace();
+
+        int skylinePlansToKeep=20;
+
+        if (skylinePlans.size() > skylinePlansToKeep) {
+            // Keep only some schedules in the skyline according to their crowding distance
+
+            int schedulesKept = 0;
+            final HashMap<Plan, Double> planDistance = new HashMap<>();
+
+            Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                @Override public int compare(Plan o1, Plan o2) {
+                    return Double.compare(o1.stats.quanta, o2.stats.quanta);
+                }
+            });
+            for (int p = 0; p < skylinePlans.size(); ++p) {
+                if (p == 0 || p == skylinePlans.size() - 1) {
+                    planDistance.put(skylinePlans.results.get(p), 0.0);
+                } else {
+                    int makespan_prev = skylinePlans.results.get(0).stats.quanta;
+                    int makespan_next = skylinePlans.results.get(p).stats.quanta;
+                    planDistance.put(skylinePlans.results.get(p),
+                            Math.pow((makespan_next - makespan_prev) / makespan_prev, 2));
+                }
+            }
+
+            Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                @Override public int compare(Plan o1, Plan o2) {
+                    return Double.compare(o1.stats.money, o2.stats.money);
+                }
+            });
+            for (int p = 0; p < skylinePlans.size(); ++p) {
+                if (p == 0 || p == skylinePlans.size() - 1) {
+                    planDistance.put(skylinePlans.results.get(p), 0.0);
+                } else {
+                    Double money_prev = skylinePlans.results.get(0).stats.money;
+                    Double money_next = skylinePlans.results.get(p).stats.money;
+                    planDistance.put(skylinePlans.results.get(p),
+                            planDistance.get(skylinePlans.results.get(p)) + Math
+                                    .pow((double) ((money_next - money_prev) / money_prev), 2));
+                }
+            }
+
+            Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                @Override public int compare(Plan o1, Plan o2) {
+                    return Double.compare(Math.sqrt(planDistance.get(o1)),
+                            Math.sqrt(planDistance.get(o2)));
+                }
+            });
+
+            for (int p = 0; p < skylinePlans.size(); ++p) {
+                if (p < skylinePlansToKeep) {
+                    ++schedulesKept;
+                } else
+                    skylinePlans.results.set(p, null);
+            }
+
+            Check.True(schedulesKept <= skylinePlansToKeep + 1,
+                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
+        }
+        for(Plan p: skylinePlans) {
+            if (p != null)
+                skylineNew.add(p);
+        }
+
+        return skylineNew;
+    }
+
 
     private SolutionSpace computeHomoSkyline(SolutionSpace skylinePlans) {
 
@@ -1775,6 +1955,111 @@ p.opsMigrated.clear();
     }
 
 
+    public void sortPlansByDerQuanta(ArrayList<Plan> skylinePlans) {
+
+
+        final HashMap<Plan, Double> planDerivative = new HashMap<>();
+        //sorted skylineplans already
+        // Return the fastest for skylines with 2 or less points
+        if (skylinePlans.size() <= 2) {
+            return;
+        }
+        Plan p0 = skylinePlans.get(0);
+
+
+        //keep the plans with min cost/time
+        planDerivative.put(p0, Double.MAX_VALUE);
+        planDerivative.put(skylinePlans.get(skylinePlans.size()-1), Double.MAX_VALUE);
+
+        // System.out.println( " ");
+        for (int i = 1; i < skylinePlans.size()-1; ++i) {
+            Plan p1 = skylinePlans.get(i);
+
+            Plan p2 = skylinePlans.get(i+1);
+
+            Statistics p0Stats = p0.stats;
+            Statistics p1Stats = p1.stats;
+            Statistics p2Stats = p2.stats;
+            //System.out.println(p1Stats.quanta+ " "+p1Stats.money);
+            double aR = p0Stats.money - p1Stats.money;
+            double bR = p1Stats.runtime_MS - p0Stats.runtime_MS;
+            double aL = p2Stats.money - p1Stats.money;
+            double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
+
+            double aLR = (p2Stats.runtime_MS - p0Stats.runtime_MS)/2.0;
+            // double aLR=1.0;
+            double thetaL = bR/aR;
+            double thetaR = bL/aL;
+            double theta2P1 = Math.abs(thetaL - thetaR)/(Math.abs(aL-aR)/2);
+            planDerivative.put(p1, theta2P1/aLR);
+            p0 = p1;
+
+        }
+
+        // planDerivative.put(p1, Double.MAX_VALUE);
+
+        Collections.sort(skylinePlans, new Comparator<Plan>() {
+            @Override
+            public int compare(Plan o1, Plan o2) {
+                return Double.compare(planDerivative.get(o2),
+                        planDerivative.get(o1));
+            }
+        });
+
+    }
+
+    public void sortPlansByDerCost(ArrayList<Plan> skylinePlans) {
+
+
+        final HashMap<Plan, Double> planDerivative = new HashMap<>();
+        //sorted skylineplans already
+        // Return the fastest for skylines with 2 or less points
+        if (skylinePlans.size() <= 2) {
+            return;
+        }
+        Plan p0 = skylinePlans.get(0);
+
+
+        //keep the plans with min cost/time
+        planDerivative.put(p0, Double.MAX_VALUE);
+        planDerivative.put(skylinePlans.get(skylinePlans.size()-1), Double.MAX_VALUE);
+
+        // System.out.println( " ");
+        for (int i = 1; i < skylinePlans.size()-1; ++i) {
+            Plan p1 = skylinePlans.get(i);
+
+            Plan p2 = skylinePlans.get(i+1);
+
+            Statistics p0Stats = p0.stats;
+            Statistics p1Stats = p1.stats;
+            Statistics p2Stats = p2.stats;
+            //System.out.println(p1Stats.quanta+ " "+p1Stats.money);
+            double aR = p0Stats.money - p1Stats.money;
+            double bR = p1Stats.runtime_MS - p0Stats.runtime_MS;
+            double aL = p2Stats.money - p1Stats.money;
+            double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
+
+            double aLR = (p2Stats.runtime_MS - p0Stats.runtime_MS)/2.0;//double aLR = (p2Stats.money - p0Stats.money)/2.0;//
+           // double aLR=1.0;
+            double thetaL = bR/aR;
+            double thetaR = bL/aL;
+            double theta2P1 = Math.abs(thetaL - thetaR)/(Math.abs(aL-aR)/2);
+            planDerivative.put(p1, theta2P1/aLR);
+            p0 = p1;
+
+        }
+
+        // planDerivative.put(p1, Double.MAX_VALUE);
+
+        Collections.sort(skylinePlans, new Comparator<Plan>() {
+            @Override
+            public int compare(Plan o1, Plan o2) {
+                return Double.compare(planDerivative.get(o2),
+                        planDerivative.get(o1));
+            }
+        });
+
+    }
 
 
 

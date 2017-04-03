@@ -22,12 +22,12 @@ public class Moheft implements Scheduler {
 
 
 
-    protected int skylinePlansToKeep =1000000;//10//20
+    protected int skylinePlansToKeep =20;//10//20
     protected int skylinePruningOption = 2;
 
     public int maxContainers = 10000000;
 
-    public boolean backfilling = true;
+    public boolean backfilling = false;
 
     private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
 

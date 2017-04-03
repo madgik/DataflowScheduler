@@ -22,7 +22,7 @@ import static utils.SolutionSpaceUtils.computeDistance;
 public class Main {
 
     static Boolean savePlot = true;
-    static Boolean showPlot = false;
+    static Boolean showPlot = true;
     static String pathPlot;
     static String pathOut;
     static Boolean showOutput = false;
@@ -52,7 +52,7 @@ public class Main {
             }
         }else{
 
-            runDax(false,"LIGO.n.50.0.dax",100,1000000000);
+            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
 //
 //            ArrayList<Integer> times = new ArrayList<>();
 //            ArrayList<Integer> datas = new ArrayList<>();
