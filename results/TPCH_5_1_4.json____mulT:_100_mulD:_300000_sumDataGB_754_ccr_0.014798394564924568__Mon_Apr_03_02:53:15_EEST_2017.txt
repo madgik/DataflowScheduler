@@ -1,0 +1,25 @@
+Running TPCH_5_1_4.json  mulT: 100 mulD: 300000 Pareto, Moheft
+  19089501 409.88 || noQ Q (Avg,Max,Min) (1.16, 1.18, 1.13) (0.92, 0.88, 1.04) #fs:   1  -- #Conts: 4 H(4) 
+  19446607 378.35 || noQ Q (Avg,Max,Min) (1.23, 1.35, 1.16) (0.95, 0.88, 1.14) #fs:   0  -- #Conts: 4 H(4) 
+  29654168 315.29 || noQ Q (Avg,Max,Min) (1.10, 1.14, 1.05) (0.98, 0.95, 1.00) #fs:   1  -- #Conts: 5 G(5) 
+  63647265 268.24 || noQ Q (Avg,Max,Min) (1.04, 1.06, 0.98) (1.02, 0.93, 1.06) #fs:   1  -- #Conts: 6 E(6) 
+/////////////////size: 4
+  16301569 409.88 || noQ Q (Avg,Max,Min) (1.22, 1.26, 1.16) (0.88, 0.63, 1.17) #fs:   0  -- #Conts: 5 H(5) 
+  20119800 327.29 || noQ Q (Avg,Max,Min) (1.15, 1.35, 1.09) (0.98, 0.83, 1.14) #fs:   0  -- #Conts: 7 G(5)  C(1)  H(1) 
+  25740641 311.53 || noQ Q (Avg,Max,Min) (1.18, 1.64, 1.09) (1.02, 0.83, 1.52) #fs:   0  -- #Conts: 8 G(6)  C(1)  H(1) 
+  28961290 309.18 || noQ Q (Avg,Max,Min) (1.15, 1.37, 1.09) (0.95, 0.83, 1.06) #fs:   0  -- #Conts: 8 G(6)  E(1)  C(1) 
+  32434451 300.12 || noQ Q (Avg,Max,Min) (1.13, 1.25, 1.09) (0.99, 0.83, 1.19) #fs:   0  -- #Conts: 8 G(6)  E(1)  C(1) 
+  34452809 299.06 || noQ Q (Avg,Max,Min) (1.11, 1.37, 1.04) (0.99, 0.83, 1.09) #fs:   0  -- #Conts: 8 E(5)  G(1)  C(1)  H(1) 
+  36640422 267.53 || noQ Q (Avg,Max,Min) (1.08, 1.21, 1.04) (1.02, 0.83, 1.16) #fs:   0  -- #Conts: 7 E(5)  G(1)  C(1) 
+  61072344 260.12 || noQ Q (Avg,Max,Min) (1.06, 1.11, 1.04) (1.00, 0.83, 1.07) #fs:   0  -- #Conts: 6 E(5)  C(1) 
+/////////////////size: 8
+nodes 10 edges 9
+ mulT: 100 mulD: 300000  sumDataGB 754
+pareto TPCH_5_1_4.json time -> 12.0
+moheft TPCH_5_1_4.json time -> 6.0
+distance from M to C 0.0
+distance from P to C 0.25000000000000355
+distance from C to M 0.11111111111109848
+distance from C to P 3.2024903612610576
+toCompare: TPCH_5_1_4.json sumDataGB: 754  mulT: 100 mulD: 300000 paretoOptTime_MS: 12.0 MoheftOptimizationTime_MS: 6.0 MtoC 0.0 PtoC 0.25000000000000355 CtoM 0.11111111111109848 CtoP 3.2024903612610576 ccr 0.014798394564924568
+

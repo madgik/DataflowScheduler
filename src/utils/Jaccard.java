@@ -13,13 +13,13 @@ public class Jaccard {
         double dist = 0.0;
         HashSet<Plan> inter = new HashSet<>();
         inter.addAll(combined.results);
-        inter.removeAll(solutions.results);
+        inter.retainAll(solutions.results);
 
         HashSet<Plan> union = new HashSet<>();
         union.addAll(solutions.results);
         union.addAll(combined.results);
 
-        dist = (double) inter.size()/ (double) union.size();
+        dist = 1 - ((double) inter.size()/ (double) union.size());
 
         return dist;
     }
