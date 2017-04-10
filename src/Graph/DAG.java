@@ -38,6 +38,7 @@ public class DAG {
         nextId = 0L;
         operatorsList = new ArrayList<>();
 //        filenameToFromOpId = new HashMap<>();
+        sumdata_B = 0;
     }
 
     public DAG add(DAG g){
@@ -57,6 +58,7 @@ public class DAG {
             }
         }
 
+        this.sumdata_B +=g.sumdata_B;
         return this;
     }
 

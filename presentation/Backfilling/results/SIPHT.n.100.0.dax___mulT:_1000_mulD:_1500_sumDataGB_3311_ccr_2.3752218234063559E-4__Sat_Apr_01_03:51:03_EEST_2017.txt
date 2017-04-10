@@ -1,4 +1,4 @@
-Running /SIPHT.n.100.0.dax mulT: 1000 mulD: 1500 Pareto, Moheft
+Running /SIPHT.n.100.0.dax  mulT: 1000 mulD: 1500 Pareto, Moheft
  153875868 5517.65 || noQ Q (Avg,Max,Min) (1.00, 1.01, 0.99) (0.93, 0.73, 1.01) #fs:   3  -- #Conts: 9 H(9) 
  240338353 4855.53 || noQ Q (Avg,Max,Min) (1.00, 1.01, 1.00) (0.95, 0.64, 1.00) #fs:   0  -- #Conts: 11 H(2)  G(9) 
  263389251 4776.71 || noQ Q (Avg,Max,Min) (1.00, 1.01, 1.00) (0.95, 0.64, 1.00) #fs:   0  -- #Conts: 11 H(1)  G(10) 
@@ -186,12 +186,12 @@ Running /SIPHT.n.100.0.dax mulT: 1000 mulD: 1500 Pareto, Moheft
 2457353111 4329.00 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:   0  -- #Conts: 9 E(4)  A(4)  C(1) 
 /////////////////size: 177
 nodes 97 edges 109
-mulT: 1000 mulD: 1500  sumDataGB 3311
+ mulT: 1000 mulD: 1500  sumDataGB 3311
 pareto /SIPHT.n.100.0.dax time -> 8427.0
 moheft /SIPHT.n.100.0.dax time -> 4407.0
 distance from M to C 2.0418051879968075
 distance from P to C 25.886122824036494
 distance from C to M 0.4421966126056195
 distance from C to P 255.1621555352633
-toCompare: /SIPHT.n.100.0.dax sumDataGB: 3311mulT: 1000 mulD: 1500 paretoOptTime_MS: 8427.0 MoheftOptimizationTime_MS: 4407.0 MtoC 2.0418051879968075 PtoC 25.886122824036494 CtoM 0.4421966126056195 CtoP 255.1621555352633 ccr 2.3752218234063559E-4
+toCompare: /SIPHT.n.100.0.dax sumDataGB: 3311 mulT: 1000 mulD: 1500 paretoOptTime_MS: 8427.0 MoheftOptimizationTime_MS: 4407.0 MtoC 2.0418051879968075 PtoC 25.886122824036494 CtoM 0.4421966126056195 CtoP 255.1621555352633 ccr 2.3752218234063559E-4
 
