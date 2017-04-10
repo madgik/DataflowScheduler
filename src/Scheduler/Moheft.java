@@ -222,63 +222,63 @@ public class Moheft implements Scheduler {
 
 
             // Prune the skyline ...
-            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 1) {
-                // Keep only some schedules in the skyline according to their crowding distance
-
-                int schedulesKept = 0;
-                double alpha = 0.50;//not used, it might not make sense
-
-                final HashMap<Plan, Double> planDistance = new HashMap<>();
-
-                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                    @Override public int compare(Plan o1, Plan o2) {
-                        return Double.compare(o1.stats.quanta, o2.stats.quanta);
-                    }
-                });
-                for (int p = 0; p < skylinePlans.size(); ++p) {
-                    if (p == 0 || p == skylinePlans.size() - 1) {
-                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
-                        // System.out.printf("p %d makespan %f\n", p, skylinePlans.get(p).stats.quanta);
-                    } else {
-                        int makespan_prev = skylinePlans.results.get(p - 1).stats.quanta;
-                        int makespan_next = skylinePlans.results.get(p + 1).stats.quanta;
-                        planDistance.put(skylinePlans.results.get(p), alpha * (makespan_next - makespan_prev));
-                    }
-                }
-
-                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                    @Override public int compare(Plan o1, Plan o2) {
-                        return Double.compare(o1.stats.money, o2.stats.money);
-                    }
-                });
-                for (int p = 0; p < skylinePlans.size(); ++p) {
-                    if (p == 0 || p == skylinePlans.size() - 1) {
-                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
-                    } else {
-                        Double money_prev = skylinePlans.results.get(p - 1).stats.money;
-                        Double money_next = skylinePlans.results.get(p + 1).stats.money;
-                        planDistance.put(skylinePlans.results.get(p),
-                            planDistance.get(skylinePlans.results.get(p)) + (1 - alpha) * (double) (
-                                money_next - money_prev));
-                    }
-                }
-
-                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                    @Override public int compare(Plan o1, Plan o2) {
-                        return Double.compare(planDistance.get(o2), planDistance.get(o1));
-                    }
-                });
-
-                for (int p = 0; p < skylinePlans.size(); ++p) {
-                    if (p < skylinePlansToKeep) {
-                        ++schedulesKept;
-                    } else
-                        skylinePlans.results.set(p, null);
-                }
-
-                Check.True(schedulesKept <= skylinePlansToKeep + 1,
-                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
-            }
+//            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 1) {
+//                // Keep only some schedules in the skyline according to their crowding distance
+//
+//                int schedulesKept = 0;
+//                double alpha = 0.50;//not used, it might not make sense
+//
+//                final HashMap<Plan, Double> planDistance = new HashMap<>();
+//
+//                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+//                    @Override public int compare(Plan o1, Plan o2) {
+//                        return Double.compare(o1.stats.quanta, o2.stats.quanta);
+//                    }
+//                });
+//                for (int p = 0; p < skylinePlans.size(); ++p) {
+//                    if (p == 0 || p == skylinePlans.size() - 1) {
+//                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
+//                        // System.out.printf("p %d makespan %f\n", p, skylinePlans.get(p).stats.quanta);
+//                    } else {
+//                        int makespan_prev = skylinePlans.results.get(p - 1).stats.quanta;
+//                        int makespan_next = skylinePlans.results.get(p + 1).stats.quanta;
+//                        planDistance.put(skylinePlans.results.get(p), alpha * (makespan_next - makespan_prev));
+//                    }
+//                }
+//
+//                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+//                    @Override public int compare(Plan o1, Plan o2) {
+//                        return Double.compare(o1.stats.money, o2.stats.money);
+//                    }
+//                });
+//                for (int p = 0; p < skylinePlans.size(); ++p) {
+//                    if (p == 0 || p == skylinePlans.size() - 1) {
+//                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
+//                    } else {
+//                        Double money_prev = skylinePlans.results.get(p - 1).stats.money;
+//                        Double money_next = skylinePlans.results.get(p + 1).stats.money;
+//                        planDistance.put(skylinePlans.results.get(p),
+//                            planDistance.get(skylinePlans.results.get(p)) + (1 - alpha) * (double) (
+//                                money_next - money_prev));
+//                    }
+//                }
+//
+//                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+//                    @Override public int compare(Plan o1, Plan o2) {
+//                        return Double.compare(planDistance.get(o2), planDistance.get(o1));
+//                    }
+//                });
+//
+//                for (int p = 0; p < skylinePlans.size(); ++p) {
+//                    if (p < skylinePlansToKeep) {
+//                        ++schedulesKept;
+//                    } else
+//                        skylinePlans.results.set(p, null);
+//                }
+//
+//                Check.True(schedulesKept <= skylinePlansToKeep + 1,
+//                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
+//            }
 
             if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 2) {
                 // Keep only some schedules in the skyline according to their crowding distance
@@ -288,15 +288,15 @@ public class Moheft implements Scheduler {
 
                 Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                     @Override public int compare(Plan o1, Plan o2) {
-                        return Double.compare(o1.stats.quanta, o2.stats.quanta);
+                        return Double.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
                     }
                 });
                 for (int p = 0; p < skylinePlans.size(); ++p) {
                     if (p == 0 || p == skylinePlans.size() - 1) {
                         planDistance.put(skylinePlans.results.get(p), 0.0);
                     } else {
-                        int makespan_prev = skylinePlans.results.get(0).stats.quanta;
-                        int makespan_next = skylinePlans.results.get(p).stats.quanta;
+                        long makespan_prev = skylinePlans.results.get(0).stats.runtime_MS;
+                        long makespan_next = skylinePlans.results.get(p).stats.runtime_MS;
                         planDistance.put(skylinePlans.results.get(p),
                             Math.pow((makespan_next - makespan_prev) / makespan_prev, 2));
                     }
@@ -337,68 +337,68 @@ public class Moheft implements Scheduler {
                     "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
             }
 
-            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 3) {
-                // Keep only some schedules in the skyline
-                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                    @Override public int compare(Plan o1, Plan o2) {
-                        return Double.compare(o1.stats.quanta, o2.stats.quanta);
-                    }
-                });
-                int schedulesKept = 2;
-                int windowSize =
-                    (int) Math.ceil((skylinePlans.size() - 2.0) / (skylinePlansToKeep - 2.0));
-                for (int p = 1; p < skylinePlans.size() - 1; ++p) {
-                    if (p % windowSize != 0) {
-                        skylinePlans.results.set(p, null);
-                    } else {
-                        ++schedulesKept;
-                    }
-                }
-                Check.True(Math.abs(schedulesKept - skylinePlansToKeep) <= skylinePlansToKeep / 2,
-                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
-            }
+//            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 3) {
+//                // Keep only some schedules in the skyline
+//                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+//                    @Override public int compare(Plan o1, Plan o2) {
+//                        return Double.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+//                    }
+//                });
+//                int schedulesKept = 2;
+//                int windowSize =
+//                    (int) Math.ceil((skylinePlans.size() - 2.0) / (skylinePlansToKeep - 2.0));
+//                for (int p = 1; p < skylinePlans.size() - 1; ++p) {
+//                    if (p % windowSize != 0) {
+//                        skylinePlans.results.set(p, null);
+//                    } else {
+//                        ++schedulesKept;
+//                    }
+//                }
+//                Check.True(Math.abs(schedulesKept - skylinePlansToKeep) <= skylinePlansToKeep / 2,
+//                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
+//            }
 
 
 
-            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 4) {
-                // Keep only some schedules in the skyline according to their crowding distance
-
-                int schedulesKept = 0;
-
-                sortPlansByDer(skylinePlans.results);
-
-                for (int p = 0; p < skylinePlans.size(); ++p) {
-                    if (p < skylinePlansToKeep) {
-                        ++schedulesKept;
-                    } else {
-                        skylinePlans.results.set(p, null);
-                        //    skylinePlans.remove(p);
-                    }
-
-                }
-
-
-
-                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                    @Override public int compare(Plan o1, Plan o2) {
-                        double a = Double.MAX_VALUE;
-                        double b = Double.MAX_VALUE;
-                        if (o1 != null)
-                            a = o1.stats.quanta;
-
-                        if (o2 != null)
-                            b = o2.stats.quanta;
-
-                        return Double.compare(a, b);
-
-                    }
-                });
-
-
-                Check.True(schedulesKept <= skylinePlansToKeep + 1,
-                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
-
-            }
+//            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 4) {
+//                // Keep only some schedules in the skyline according to their crowding distance
+//
+//                int schedulesKept = 0;
+//
+//                sortPlansByDer(skylinePlans.results);
+//
+//                for (int p = 0; p < skylinePlans.size(); ++p) {
+//                    if (p < skylinePlansToKeep) {
+//                        ++schedulesKept;
+//                    } else {
+//                        skylinePlans.results.set(p, null);
+//                        //    skylinePlans.remove(p);
+//                    }
+//
+//                }
+//
+//
+//
+//                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+//                    @Override public int compare(Plan o1, Plan o2) {
+//                        double a = Double.MAX_VALUE;
+//                        double b = Double.MAX_VALUE;
+//                        if (o1 != null)
+//                            a = o1.stats.runtime_MS;
+//
+//                        if (o2 != null)
+//                            b = o2.stats.runtime_MS;
+//
+//                        return Double.compare(a, b);
+//
+//                    }
+//                });
+//
+//
+//                Check.True(schedulesKept <= skylinePlansToKeep + 1,
+//                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
+//
+//            }
 
         }
         return skylinePlans;

@@ -5,13 +5,10 @@ import Graph.Edge;
 import Graph.Operator;
 import utils.Check;
 import utils.MultiplePlotInfo;
-import utils.Pair;
 
 import java.util.*;
 
-import static Scheduler.containerType.isSmaller;
-
-/**
+ /**
  * Created by johnchronis on 2/19/17.
  */
 public class paretoNoHomogen implements Scheduler {
@@ -846,11 +843,11 @@ public class paretoNoHomogen implements Scheduler {
     public void findDominanceRelations(ArrayList<Plan> plans, HashMap<Plan, ArrayList <Plan>> dominatedSet, HashMap<Plan, ArrayList <Plan>> dominanceSet, ArrayList <Plan> skyline) {
         //dominatedSet: set of plans dominated by the key plan
 //      //dominanceSet: set of skyline plans the key plan is dominated by
-        System.out.println("sorted plans");
+//        System.out.println("sorted plans");
         for(int cur = 0; cur<plans.size(); cur++) {
             Plan curPlan = plans.get(cur);
 
-            System.out.println(" " + curPlan.stats.runtime_MS + " " + curPlan.stats.money);
+//            System.out.println(" " + curPlan.stats.runtime_MS + " " + curPlan.stats.money);
 
             //finding dominatedSet
             for(int next=cur+1;next<plans.size(); next++)
@@ -883,6 +880,7 @@ public class paretoNoHomogen implements Scheduler {
                   //  dominanceSet.get(curPlan).add(previousPlan);
 
                     //   if(dominanceSet.containsKey(curPlan))
+                    if(skyline.contains(previousPlan))
                     dominanceSet.get(curPlan).add(previousPlan);
                     //  else
                     //     dominanceSet.put(curPlan, dset);
@@ -902,26 +900,35 @@ public class paretoNoHomogen implements Scheduler {
 
         HashMap<Plan, Double> dominanceScore = new HashMap<>();
 
-        for(int curPlan = 0; curPlan<plans.size(); curPlan++) {
+        for(int curPlan = 0; curPlan<skyline.size(); curPlan++) {//for(int curPlan = 0; curPlan<plans.size(); curPlan++) {
             Double domScore = 0.0;
-            if (dominatedSet.containsKey(plans.get(curPlan))) {
-           //     System.out.println("not empty");
-                for (Plan p : dominatedSet.get(curPlan)) {
+            if (dominatedSet.containsKey(skyline.get(curPlan))) {//if (dominatedSet.containsKey(plans.get(curPlan))) {
+                 //     System.out.println("not empty");
+                for (Plan p : dominatedSet.get(plans.get(curPlan))) {
+               //     System.out.println(dominatedSet.get(p).size() + " " + dominanceSet.get(p).size());
 
-                    Double dp_p_sp = 1.0 / dominatedSet.get(p).size();
+                    Double dp_p_sp = 1.0 / dominatedSet.get(plans.get(curPlan)).size();//Double dp_p_sp = 1.0 / dominatedSet.get(p).size();
+                    if(dominatedSet.get(plans.get(curPlan)).size()==0)
+                        dp_p_sp = Double.MAX_VALUE;
                     Double idp_p = Math.log((double) skyline.size() / (double) dominanceSet.get(p).size());
-                    domScore += (dp_p_sp + idp_p);
+                    if(dominanceSet.get(p).size()==0)
+                        idp_p = Double.MAX_VALUE;
+                    domScore += (dp_p_sp * idp_p);
 
                 }
 
-                dominanceScore.put(plans.get(curPlan), domScore);
+//                dominanceScore.put(plans.get(curPlan), domScore);
 
-                System.out.println("plan " + curPlan + "domscore " + domScore);
+             //   System.out.println("plan " + curPlan + "domscore " + domScore );
             }
+            dominanceScore.put(skyline.get(curPlan), domScore);//  dominanceScore.put(plans.get(curPlan), domScore);
+
         }
 
+//        for(Plan sp: skyline)
+//            System.out.println(dominanceScore.get(sp));
 
-
+       // System.out.println(dominanceScore.values());
         return dominanceScore;
 
     }
@@ -963,20 +970,73 @@ public class paretoNoHomogen implements Scheduler {
 
      //   sortPlansByDerQuanta(skyline.results);
 
-//        SolutionSpace skylinePruned = new SolutionSpace();
+
+
+
+        findDominanceRelations(plans.results, dominatedSet,  dominanceSet, skyline.results);
+
+        HashMap<Plan, Double> domScore  = computeDominanceScore(plans.results, dominatedSet,  dominanceSet, skyline.results);
+
+        SolutionSpace skylinePruned = new SolutionSpace();
 //        for(int i=0; i<Math.min(skyline.size(), 20);i++)
 //        {
 //            skylinePruned.add(skyline.results.get(i));
 //        }
-
-
-//        findDominanceRelations(plans.results, dominatedSet,  dominanceSet, skylinePruned.results);
-
-//        computeDominanceScore(plans.results, dominatedSet,  dominanceSet, skylinePruned.results);
-
+//
+//        return pruneSkylineByDominanceScore(skyline, domScore);
 //        return pruneSkylineByCrowdDist(skyline);
         return skyline;
     }
+
+    private SolutionSpace pruneSkylineByDominanceScore(SolutionSpace skylinePlans, HashMap<Plan, Double> domScore) {
+
+        SolutionSpace skylineNew = new SolutionSpace();
+
+        int skylinePlansToKeep=20;
+
+        if (skylinePlans.size() > skylinePlansToKeep) {
+            // Keep only some schedules in the skyline according to their crowding distance
+
+            int schedulesKept = 0;
+            final HashMap<Plan, Double> planDistance = new HashMap<>();
+
+            Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                @Override public int compare(Plan o1, Plan o2) {
+                    return Double.compare(o1.stats.runtime_MS, o2.stats.quanta);
+                }
+            });
+
+            Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                @Override public int compare(Plan o1, Plan o2) {
+                    return Double.compare(o1.stats.money, o2.stats.money);
+                }
+            });
+
+            Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                @Override public int compare(Plan o1, Plan o2) {
+                    return Double.compare(domScore.get(o1),
+                    domScore.get(o2));
+                }
+            });
+
+            for (int p = 0; p < skylinePlans.size(); ++p) {
+                if (p < skylinePlansToKeep) {
+                    ++schedulesKept;
+                } else
+                    skylinePlans.results.set(p, null);
+            }
+
+            Check.True(schedulesKept <= skylinePlansToKeep + 1,
+                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
+        }
+        for(Plan p: skylinePlans) {
+            if (p != null)
+                skylineNew.add(p);
+        }
+
+        return skylineNew;
+    }
+
 
 
     private SolutionSpace pruneSkylineByCrowdDist(SolutionSpace skylinePlans) {
@@ -993,15 +1053,15 @@ public class paretoNoHomogen implements Scheduler {
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
                 @Override public int compare(Plan o1, Plan o2) {
-                    return Double.compare(o1.stats.quanta, o2.stats.quanta);
+                    return Double.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
                 }
             });
             for (int p = 0; p < skylinePlans.size(); ++p) {
                 if (p == 0 || p == skylinePlans.size() - 1) {
                     planDistance.put(skylinePlans.results.get(p), 0.0);
                 } else {
-                    int makespan_prev = skylinePlans.results.get(0).stats.quanta;
-                    int makespan_next = skylinePlans.results.get(p).stats.quanta;
+                    long makespan_prev = skylinePlans.results.get(0).stats.runtime_MS;
+                    long makespan_next = skylinePlans.results.get(p).stats.runtime_MS;
                     planDistance.put(skylinePlans.results.get(p),
                             Math.pow((makespan_next - makespan_prev) / makespan_prev, 2));
                 }

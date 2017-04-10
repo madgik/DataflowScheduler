@@ -52,7 +52,7 @@ public class Main {
             }
         }else{
 
-            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
+            runDax(false,"MONTAGE.n.100.0.dax",1,1);
 //
 //            ArrayList<Integer> times = new ArrayList<>();
 //            ArrayList<Integer> datas = new ArrayList<>();
