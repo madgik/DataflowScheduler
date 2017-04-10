@@ -1,4 +1,4 @@
-Running /CYBERSHAKE.n.100.0.dax mulT: 100 mulD: 500 Pareto, Moheft
+Running /CYBERSHAKE.n.100.0.dax  mulT: 100 mulD: 500 Pareto, Moheft
    3868778 126.12 || noQ Q (Avg,Max,Min) (1.22, 1.82, 0.20) (0.91, 0.02, 1.82) #fs:   3  -- #Conts: 3 H(3) 
    3952146 094.59 || noQ Q (Avg,Max,Min) (1.73, 1.82, 1.64) (1.36, 0.90, 1.82) #fs:   0  -- #Conts: 2 H(2) 
    6676493 078.82 || noQ Q (Avg,Max,Min) (2.06, 2.98, 1.43) (1.24, 0.89, 1.65) #fs:   3  -- #Conts: 3 G(3) 
@@ -53,12 +53,12 @@ Running /CYBERSHAKE.n.100.0.dax mulT: 100 mulD: 500 Pareto, Moheft
   10420252 059.18 || noQ Q (Avg,Max,Min) (3.01, 5.90, 1.71) (2.71, 1.31, 5.89) #fs:   2  -- #Conts: 18 E(2)  A(10)  G(1)  C(5) 
 /////////////////size: 47
 nodes 100 edges 192
-mulT: 100 mulD: 500  sumDataGB 48799
+ mulT: 100 mulD: 500  sumDataGB 48799
 pareto /CYBERSHAKE.n.100.0.dax time -> 3683.0
 moheft /CYBERSHAKE.n.100.0.dax time -> 1519.0
 distance from M to C 2.724599953754329
 distance from P to C 0.0
 distance from C to M 0.7822123456467188
 distance from C to P 6.139802671301652
-toCompare: /CYBERSHAKE.n.100.0.dax sumDataGB: 48799mulT: 100 mulD: 500 paretoOptTime_MS: 3683.0 MoheftOptimizationTime_MS: 1519.0 MtoC 2.724599953754329 PtoC 0.0 CtoM 0.7822123456467188 CtoP 6.139802671301652 ccr 1.1678941947953807
+toCompare: /CYBERSHAKE.n.100.0.dax sumDataGB: 48799 mulT: 100 mulD: 500 paretoOptTime_MS: 3683.0 MoheftOptimizationTime_MS: 1519.0 MtoC 2.724599953754329 PtoC 0.0 CtoM 0.7822123456467188 CtoP 6.139802671301652 ccr 1.1678941947953807
 

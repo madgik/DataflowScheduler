@@ -6,15 +6,16 @@ import Scheduler.Cluster;
 import Scheduler.Scheduler;
 import Scheduler.*;
 import Tree.TreeGraphGenerator;
-import utils.MultiplePlotInfo;
-import utils.Pair;
-import utils.RandomParameters;
-import utils.plotUtility;
+import utils.*;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
 
 
@@ -22,10 +23,10 @@ import static utils.SolutionSpaceUtils.computeDistance;
 public class Main {
 
     static Boolean savePlot = true;
-    static Boolean showPlot = false;
+    static Boolean showPlot = true;
     static String pathPlot;
     static String pathOut;
-    static Boolean showOutput = false;
+    static Boolean showOutput = true;
     static Boolean saveOutput = true;
 
     public static void main(String[] args) {
@@ -51,9 +52,42 @@ public class Main {
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
-
-            runDax(false,"LIGO.n.50.0.dax",100,1000000000);
+//            File folder = new File("/Users/johnchronis/Desktop/MyScheduler/resources");
 //
+//            for (final File fileEntry : folder.listFiles()) {
+//                if (fileEntry.isDirectory()) {
+//                } else {
+//                    if(fileEntry.getName().startsWith("TPCH")) {
+//                        runJson(false, fileEntry.getName(), 100, 300000);
+//                    }
+//                }}
+
+//            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
+//            runDax(false,"LIGO.n.100.0.dax",100,100);
+//
+//
+//            HashMap<String,Pair<Integer,Integer>> flowsandParasms = new HashMap<>();
+//            flowsandParasms.put("MONTAGE.n.100.0.dax",new Pair<>(2000,100));
+//            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
+//            runMultipleFlows(flowsandParasms);
+            //            flowsandParasms.put("LIGO.n.500.0.dax",new Pair<>(500,500));
+//            runDax(true,"MONTAGE.n.100.0.dax",2000,1000);
+
+                        runDax(false,"LIGO.n.100.0.dax",100,100);
+            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
+
+            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
+//            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
+//            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
+//
+//            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
+//
+////            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
+//            runMultipleFlows(true,flowsandParasms);
+//            //
+
+
+            //
 //            ArrayList<Integer> times = new ArrayList<>();
 //            ArrayList<Integer> datas = new ArrayList<>();
 //
@@ -160,6 +194,7 @@ public class Main {
         combined.computeSkyline(false);
 
         double distMtoC=0.0,distPtoC=0.0,distCtoM=0.0,distCtoP=0.0;
+        double JaccardMtoC=0.0,JaccardPtoC=0.0;
 
         ArrayList<Pair<String,Double>> legendInfo = new ArrayList<>();
 
@@ -177,6 +212,14 @@ public class Main {
             distCtoP = computeDistance(combined,solutions).P2Sky;
             legendInfo.add(new Pair<>("distCtoP",distCtoP));
 
+            JaccardMtoC = computeJaccard(solutionsM,combined);
+            legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
+
+            JaccardPtoC = computeJaccard(solutions,combined);
+            legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
+
+            sbOut.append("Jaccard from M to C "+JaccardMtoC).append("\n");
+            sbOut.append("Jaccard from P to C "+JaccardPtoC).append("\n");
 
 
             sbOut.append("distance from M to C "+distMtoC).append("\n");
@@ -198,10 +241,11 @@ public class Main {
         legendInfo.add(new Pair<String,Double>("ccr",ccr));
 
 
-        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +
+        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +" "+
             paremetersToPrint               +
             " paretoOptTime_MS: "+ solutions.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
-            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP).append(" ccr ").append(ccr).append("\n");
+            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP + " JMtoC "+ JaccardMtoC +" JPtoC "+ JaccardPtoC)
+            .append(" ccr ").append(ccr).append("\n");
 
 
         String filesname =
@@ -231,7 +275,6 @@ public class Main {
             pathPlot,
             savePlot,
             showPlot);
-
     }
 
 
@@ -282,10 +325,10 @@ public class Main {
 
     }
 
-    private static void runMultipleFlows(int mulTime,int mulData){
+    private static void runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms){
 
 
-        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
+
 
         ArrayList<String> filenames = new ArrayList<>();
 
@@ -300,30 +343,36 @@ public class Main {
         DAG graph = new DAG();
 
         try {
-            for(String filename: filenames) {
-                graph.add( parser.parseDax(Main.class.getResource(filename).getFile()) );
+            for(Triple<String,Integer,Integer> p: flowsandParasms) {
+                PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
+                if(jar){
+                    graph.add(parser.parseDax(p.a));
+
+                }else {
+                    graph.add(parser.parseDax(Main.class.getResource(p.a).getFile()));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        double z = 1.0;
-        double randType = 0.0;
-        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-        double[] cpuUtil = {1.0};
-        double[] memory = {0.3};
-        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+//        double z = 1.0;
+//        double randType = 0.0;
+//        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+//        double[] cpuUtil = {1.0};
+//        double[] memory = {0.3};
+//        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+//
+//        RandomParameters
+//            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+//
+//
+//        //        graph.add( LatticeGenerator.createLatticeGraph(11,3,params,0) );
+//        //        graph.add( LatticeGenerator.createLatticeGraph(5,21,params,0) );
+//        //        graph.add( LatticeGenerator.createLatticeGraph(d,b,params,0) );
 
-        RandomParameters
-            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
-
-        //        graph.add( LatticeGenerator.createLatticeGraph(11,3,params,0) );
-        //        graph.add( LatticeGenerator.createLatticeGraph(5,21,params,0) );
-        //        graph.add( LatticeGenerator.createLatticeGraph(d,b,params,0) );
-
-
-        runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,"ola");
+        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple");
 
     }
 

@@ -1,4 +1,4 @@
-Running /MONTAGE.n.100.0.dax mulT: 100 mulD: 1 Pareto, Moheft
+Running /MONTAGE.n.100.0.dax  mulT: 100 mulD: 1 Pareto, Moheft
     256703 1954.82 || noQ Q (Avg,Max,Min) (0.92, 1.00, 0.66) (0.02, 0.01, 0.06) #fs:  18  -- #Conts: 62 H(62) 
     280724 1939.06 || noQ Q (Avg,Max,Min) (0.89, 1.00, 0.58) (0.02, 0.01, 0.06) #fs:  19  -- #Conts: 62 H(61)  G(1) 
     280792 1923.29 || noQ Q (Avg,Max,Min) (0.89, 1.00, 0.58) (0.02, 0.01, 0.06) #fs:  19  -- #Conts: 62 H(60)  G(2) 
@@ -271,12 +271,12 @@ Running /MONTAGE.n.100.0.dax mulT: 100 mulD: 1 Pareto, Moheft
    4450794 030.76 || noQ Q (Avg,Max,Min) (0.92, 1.00, 0.69) (0.77, 0.42, 0.99) #fs:   6  -- #Conts: 6 A(2)  G(1)  C(3) 
 /////////////////size: 173
 nodes 100 edges 234
-mulT: 100 mulD: 1  sumDataGB 1
+ mulT: 100 mulD: 1  sumDataGB 1
 pareto /MONTAGE.n.100.0.dax time -> 255748.0
 moheft /MONTAGE.n.100.0.dax time -> 23241.0
 distance from M to C 5.756721455580239
 distance from P to C 0.2489569547141561
 distance from C to M 2.917893767409786
 distance from C to P 4.1374459240463395
-toCompare: /MONTAGE.n.100.0.dax sumDataGB: 1mulT: 100 mulD: 1 paretoOptTime_MS: 255748.0 MoheftOptimizationTime_MS: 23241.0 MtoC 5.756721455580239 PtoC 0.2489569547141561 CtoM 2.917893767409786 CtoP 4.1374459240463395 ccr 2.576496967682911E-4
+toCompare: /MONTAGE.n.100.0.dax sumDataGB: 1 mulT: 100 mulD: 1 paretoOptTime_MS: 255748.0 MoheftOptimizationTime_MS: 23241.0 MtoC 5.756721455580239 PtoC 0.2489569547141561 CtoM 2.917893767409786 CtoP 4.1374459240463395 ccr 2.576496967682911E-4
 

@@ -1,4 +1,4 @@
-Running /LIGO.n.100.0.dax mulT: 1000 mulD: 1 Pareto, Moheft
+Running /LIGO.n.100.0.dax  mulT: 1000 mulD: 1 Pareto, Moheft
   44356199 6778.82 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.89) (0.86, 0.17, 0.99) #fs:   8  -- #Conts: 45 H(38)  G(7) 
   45380074 6747.29 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.89) (0.86, 0.17, 0.99) #fs:   9  -- #Conts: 45 H(37)  G(8) 
   47250226 6621.18 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.89) (0.92, 0.82, 1.00) #fs:   9  -- #Conts: 38 H(31)  G(7) 
@@ -96,12 +96,12 @@ Running /LIGO.n.100.0.dax mulT: 1000 mulD: 1 Pareto, Moheft
  649707485 5082.65 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:   0  -- #Conts: 20 E(13)  A(3)  G(1)  C(3) 
 /////////////////size: 62
 nodes 100 edges 123
-mulT: 1000 mulD: 1  sumDataGB 2
+ mulT: 1000 mulD: 1  sumDataGB 2
 pareto /LIGO.n.100.0.dax time -> 6443.0
 moheft /LIGO.n.100.0.dax time -> 2676.0
 distance from M to C 39.56413911905818
 distance from P to C 0.0
 distance from C to M 166.55312261280127
 distance from C to P 17.874428465310764
-toCompare: /LIGO.n.100.0.dax sumDataGB: 2mulT: 1000 mulD: 1 paretoOptTime_MS: 6443.0 MoheftOptimizationTime_MS: 2676.0 MtoC 39.56413911905818 PtoC 0.0 CtoM 166.55312261280127 CtoP 17.874428465310764 ccr 3.5222457536925264E-8
+toCompare: /LIGO.n.100.0.dax sumDataGB: 2 mulT: 1000 mulD: 1 paretoOptTime_MS: 6443.0 MoheftOptimizationTime_MS: 2676.0 MtoC 39.56413911905818 PtoC 0.0 CtoM 166.55312261280127 CtoP 17.874428465310764 ccr 3.5222457536925264E-8
 
