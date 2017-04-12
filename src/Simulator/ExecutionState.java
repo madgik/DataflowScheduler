@@ -217,8 +217,9 @@ public class ExecutionState {
         ////////////////////////////////see if any ops has finished executing and free resources
         for(Long cid:workerAvailableAt.keySet()){
            if(workerAvailableAt.get(cid) <= clock){
-               if(activeAtWorker.containsKey(cid)) {
+               if(!isWorkerAvailable.get(cid)) {
                    long opid = activeAtWorker.get(cid);
+                   activeAtWorker.remove(cid);
                    runningOps.remove(opid);
                    doneButDTOps.add(opid);
                    terminationCondition.add(opid);

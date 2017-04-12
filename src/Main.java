@@ -7,27 +7,26 @@ import Scheduler.Scheduler;
 import Scheduler.*;
 import Simulator.SimEnginge;
 import Tree.TreeGraphGenerator;
-import utils.MultiplePlotInfo;
-import utils.Pair;
-import utils.RandomParameters;
-import utils.plotUtility;
+import utils.*;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
+import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
 
 
 
 public class Main {
 
-    static Boolean savePlot = true;
-    static Boolean showPlot = true;
+    static Boolean savePlot = false;
+    static Boolean showPlot = false;
     static String pathPlot;
     static String pathOut;
     static Boolean showOutput = true;
-    static Boolean saveOutput = true;
+    static Boolean saveOutput = false;
     static Boolean validate = true;
 
     public static void main(String[] args) {
@@ -54,8 +53,10 @@ public class Main {
             }
         }else{
 
-//            runDax(false,"Example.dax",1,1);
-//            File folder = new File("/Users/johnchronis/Desktop/MyScheduler/resources");
+//                                    runDax(false,"LIGO.n.50.0.dax",100,100);
+//                        runDax(false,"Example.dax",1,1);
+
+            //            File folder = new File("/Users/johnchronis/Desktop/MyScheduler/resources");
 //
 //            for (final File fileEntry : folder.listFiles()) {
 //                if (fileEntry.isDirectory()) {
@@ -75,7 +76,7 @@ public class Main {
             //            flowsandParasms.put("LIGO.n.500.0.dax",new Pair<>(500,500));
 //            runDax(true,"MONTAGE.n.100.0.dax",2000,1000);
 
-//                        runDax(false,"LIGO.n.100.0.dax",100,100);
+//                        runDax(false,"LIGO.n.50.0.dax",100,100);
 //            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
 
             ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
@@ -279,6 +280,7 @@ public class Main {
             showPlot);
 
         if(validate){
+            System.out.println("Running sims");
             SimEnginge simeng = new SimEnginge();
             for (Plan p:solutions){
                 simeng.execute(p);

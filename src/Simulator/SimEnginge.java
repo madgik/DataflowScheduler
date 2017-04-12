@@ -7,6 +7,7 @@ import Scheduler.Plan;
 import Scheduler.RuntimeConstants;
 import utils.Pair;
 
+import javax.xml.bind.SchemaOutputResolver;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -89,6 +90,23 @@ public class SimEnginge {
         System.out.println("SimEngine plan simulated (sched,sim) Time: ("+state.plan.stats.runtime_MS+","+state.masterEndTime_ms+") Money: ("
         +state.plan.stats.money +","+money +")");
 
+
+//        System.out.println("//////////plan");
+//        for(Container c : p.cluster.containersList){
+//            System.out.println(c.id + " "+ c.contType + " " + c.contType.container_price + " "+
+//                c.UsedUpTo_MS+ " " +c.startofUse_MS+ " " + (c.UsedUpTo_MS-c.startofUse_MS) +
+//                (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS) + " "+
+//                (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS) * c.contType.container_price);
+//        }
+//        System.out.println("/////////sim");
+//        for(Long cid : state.workerStartEndTime_MS.keySet()){
+//            Container pcont = state.plan.cluster.getContainer(cid);
+//            Pair<Long,Long> pair = state.workerStartEndTime_MS.get(cid);
+//            System.out.println(cid + " "+ pcont.contType + " " + pcont.contType.container_price + " "+
+//                (pair.b)+ " " +(pair.a)+ " " + (pair.b - pair.a) +
+//                (int) Math.ceil((double)(pair.b - pair.a)/RuntimeConstants.quantum_MS) + " "+
+//                (int) Math.ceil((double)(pair.b - pair.a)/RuntimeConstants.quantum_MS) * pcont.contType.container_price);
+//        }
 
     }
 
