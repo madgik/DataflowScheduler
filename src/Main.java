@@ -7,28 +7,27 @@ import Scheduler.Scheduler;
 import Scheduler.*;
 import Simulator.SimEnginge;
 import Tree.TreeGraphGenerator;
-import utils.*;
+import utils.MultiplePlotInfo;
+import utils.Pair;
+import utils.RandomParameters;
+import utils.plotUtility;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
 
 
 
 public class Main {
 
-    static Boolean savePlot = false;
-    static Boolean showPlot = false;
+    static Boolean savePlot = true;
+    static Boolean showPlot = true;
     static String pathPlot;
     static String pathOut;
     static Boolean showOutput = true;
-    static Boolean saveOutput = false;
+    static Boolean saveOutput = true;
     static Boolean validate = true;
 
     public static void main(String[] args) {
@@ -66,8 +65,7 @@ public class Main {
 //                    }
 //                }}
 
-//            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
-//            runDax(false,"LIGO.n.100.0.dax",100,100);
+            runDax(false,"MONTAGE.n.100.0.dax",1,1);
 //
 //
 //            HashMap<String,Pair<Integer,Integer>> flowsandParasms = new HashMap<>();
@@ -77,7 +75,7 @@ public class Main {
             //            flowsandParasms.put("LIGO.n.500.0.dax",new Pair<>(500,500));
 //            runDax(true,"MONTAGE.n.100.0.dax",2000,1000);
 
-                        runDax(false,"LIGO.n.100.0.dax",100,100);
+//                        runDax(false,"LIGO.n.100.0.dax",100,100);
 //            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
 
             ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
