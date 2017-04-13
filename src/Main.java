@@ -22,12 +22,12 @@ import static utils.SolutionSpaceUtils.computeDistance;
 public class Main {
 
     static Boolean savePlot = false;
-    static Boolean showPlot = false;
+    static Boolean showPlot = true;
     static String pathPlot;
     static String pathOut;
     static Boolean showOutput = true;
     static Boolean saveOutput = false;
-    static Boolean validate = true;
+    static Boolean validate = false;
 
     public static void main(String[] args) {
 
@@ -52,7 +52,7 @@ public class Main {
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
-
+            runOneMultiple(true,"/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000);
 //                                    runDax(false,"LIGO.n.50.0.dax",100,100);
 //                        runDax(false,"Example.dax",1,1);
 
@@ -66,7 +66,7 @@ public class Main {
 //                    }
 //                }}
 
-            runDax(false,"MONTAGE.n.100.0.dax",1,1);
+//            runDax(false,"MONTAGE.n.100.0.dax",1,1);
 //
 //
 //            HashMap<String,Pair<Integer,Integer>> flowsandParasms = new HashMap<>();
@@ -81,12 +81,12 @@ public class Main {
 
             ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
 //            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
-//            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
+            flowsandParasms.add(new Triple("LIGO.n.100.0.dax",2000,1000));
 //
-//            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
+            flowsandParasms.add(new Triple("MONTAGE.n.25.0.dax",2000,1000));
 //
 ////            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
-//            runMultipleFlows(true,flowsandParasms);
+//            runMultipleFlows(false,flowsandParasms);
 //            //
 
 
@@ -340,54 +340,123 @@ public class Main {
 
     }
 
-    private static void runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms){
-
-
-
-
-        ArrayList<String> filenames = new ArrayList<>();
-
-        filenames.add("LIGO.n.100.0.dax");
-        filenames.add("MONTAGE.n.1000.0.dax");
-        filenames.add("CyberShake.n.100.0.dax");
-        filenames.add("CyberShake.n.100.0.dax");
-        filenames.add("MONTAGE.n.100.0.dax");
-
-        //        filenames.add();
-
+    private static void runOneMultiple(boolean jar,String file, int mt, int md){
         DAG graph = new DAG();
+        DAG tmpGraph = null;
 
         try {
-            for(Triple<String,Integer,Integer> p: flowsandParasms) {
-                PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
-                if(jar){
-                    graph.add(parser.parseDax(p.a));
 
+                if(file.contains("lattice") || file.contains("Lattice")){
+
+                    double z = 1.0;
+                    double randType = 0.0;
+                    double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                    double[] cpuUtil = {1.0};
+                    double[] memory = {0.3};
+                    double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+
+                    RandomParameters
+                        params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+                    tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0);
                 }else {
-                    graph.add(parser.parseDax(Main.class.getResource(p.a).getFile()));
+
+                    PegasusDaxParser parser = new PegasusDaxParser(mt, md);
+                    if (jar) {
+                        tmpGraph = parser.parseDax(file);
+
+                    } else {
+                        tmpGraph = parser.parseDax(Main.class.getResource(file).getFile());
+                    }
                 }
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-//        double z = 1.0;
-//        double randType = 0.0;
-//        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-//        double[] cpuUtil = {1.0};
-//        double[] memory = {0.3};
-//        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
-//
-//        RandomParameters
-//            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
-//
-//
-//        //        graph.add( LatticeGenerator.createLatticeGraph(11,3,params,0) );
-//        //        graph.add( LatticeGenerator.createLatticeGraph(5,21,params,0) );
-//        //        graph.add( LatticeGenerator.createLatticeGraph(d,b,params,0) );
+        graph.add(tmpGraph);
+        for (int i = 0; i <1 ; i++) {
+            graph.addEnd(tmpGraph);
+        }
+        for (int i = 0; i <2 ; i++) {
+            DAG inGraph = new DAG();
+            inGraph.add(tmpGraph);
+            inGraph.add(tmpGraph);
+            graph.addEnd(inGraph);
+        }
+        for (int i = 0; i <2 ; i++) {
+            graph.addEnd(tmpGraph);
+        }
+
+        runDAG(graph," oneFlowMultipleTime +sumdata:"+graph.sumdata_B /1073741824,"multiple");
+
+    }
+
+    private static void runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms){
+
+            DAG graph = new DAG();
+            ArrayList<DAG> graphs = new ArrayList<>();
+
+            try {
+                for(Triple<String,Integer,Integer> p: flowsandParasms) {
+                    if(p.a.contains("lattice") || p.a.contains("Lattice")){
+
+                        double z = 1.0;
+                        double randType = 0.0;
+                        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                        double[] cpuUtil = {1.0};
+                        double[] memory = {0.3};
+                        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+
+                        RandomParameters
+                            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+                        graphs.add(LatticeGenerator.createLatticeGraph(p.b,p.c,params,0));
+                    }else {
+
+                        PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
+                        if (jar) {
+                            graphs.add(parser.parseDax(p.a));
+
+                        } else {
+                            graphs.add(parser.parseDax(Main.class.getResource(p.a).getFile()));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //////////////////all start together
+    //        for(DAG g:graphs){
+    //            graph.add(g);
+    //        }
+    //
+    //        ////////////////connect randomly
+    //        for(DAG g:graphs){
+    //            graph.addRandomPoint(g);
+    //        }
 
 
-        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple");
+            ///////////////connect at half point
+            for(DAG g:graphs){
+                graph.addHalfPoint(g);
+            }
+            /////////////add end
+            for(DAG g:graphs){
+                graph.addEnd(g);
+            }
+
+
+            //////////conenctPoisson
+
+            for(DAG g:graphs){
+                graph.addPoisson(g);
+            }
+
+            /////////////////////
+
+            runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple");
 
     }
 

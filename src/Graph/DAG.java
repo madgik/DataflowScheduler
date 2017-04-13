@@ -5,6 +5,8 @@ import Scheduler.RuntimeConstants;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static utils.random.randomInRange;
+
 
 /**
  * Created by johnchronis on 2/18/17.
@@ -41,26 +43,7 @@ public class DAG {
         sumdata_B = 0;
     }
 
-    public DAG add(DAG g){
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
 
-        Long oldid,newid;
-        for(Operator op:g.getOperators()){
-            oldid = op.getId();
-            newid = this.addOperator(op);
-            OldIdToNewId.put(oldid,newid);
-        }
-
-        for(ArrayList<Edge> ae: g.edges.values()){
-            for(Edge e:ae){
-
-                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
-            }
-        }
-
-        this.sumdata_B +=g.sumdata_B;
-        return this;
-    }
 
 
 
@@ -148,6 +131,144 @@ public class DAG {
 
         Double ccr = com/comp;
         return ccr;
+    }
+
+    public DAG add(DAG g){
+        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+
+        Long oldid,newid;
+        for(Operator op:g.getOperators()){
+            oldid = op.getId();
+            Operator newop = new Operator(op.name,op.resourcesRequirements);
+            newid = this.addOperator(newop);
+            OldIdToNewId.put(oldid,newid);
+        }
+
+        for(ArrayList<Edge> ae: g.edges.values()){
+            for(Edge e:ae){
+
+                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
+            }
+        }
+
+        this.sumdata_B +=g.sumdata_B;
+        return this;
+    }
+
+    long midPoint = -1;
+
+    public DAG addHalfPoint(DAG g) {
+
+        long minOldIdNewG;
+
+        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+
+        Long oldid,newid;
+        for(Operator op:g.getOperators()){
+            oldid = op.getId();
+            newid = this.addOperator(op);
+            Operator newop = new Operator(op.name,op.resourcesRequirements);
+            newid = this.addOperator(newop);        }
+
+        for(ArrayList<Edge> ae: g.edges.values()){
+            for(Edge e:ae){
+                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
+            }
+        }
+
+        if(midPoint != -1) {
+            midPoint = OldIdToNewId.get(g.operatorsList.size() / 2);
+            Data d = new Data("", 0);
+            this.addEdge(new Edge(midPoint, OldIdToNewId.get(0), d));
+        }
+        this.sumdata_B +=g.sumdata_B;
+        return this;
+
+    }
+
+    public DAG addRandomPoint(DAG g) {
+        long randomId = randomInRange(0,Math.toIntExact(g.nextId-1));
+        long random = g.operators.get(randomId).getId();
+
+        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+
+        Long oldid,newid;
+        for(Operator op:g.getOperators()){
+            oldid = op.getId();
+            Operator newop = new Operator(op.name,op.resourcesRequirements);
+            newid = this.addOperator(newop);
+            OldIdToNewId.put(oldid,newid);
+        }
+
+        for(ArrayList<Edge> ae: g.edges.values()){
+            for(Edge e:ae){
+                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
+            }
+        }
+
+        if(midPoint != -1) {
+            Data d = new Data("", 0);
+            this.addEdge(new Edge(random, OldIdToNewId.get(0), d));
+        }
+        this.sumdata_B +=g.sumdata_B;
+        return this;
+    }
+
+    public DAG addPoisson(DAG g) {
+
+
+
+        long randomId = randomInRange(0,Math.toIntExact(g.nextId-1));
+        long random = g.operators.get(randomId).getId();
+
+        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+
+        Long oldid,newid;
+        for(Operator op:g.getOperators()){
+            oldid = op.getId();
+            Operator newop = new Operator(op.name,op.resourcesRequirements);
+            newid = this.addOperator(newop);
+            OldIdToNewId.put(oldid,newid);
+        }
+
+        for(ArrayList<Edge> ae: g.edges.values()){
+            for(Edge e:ae){
+                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
+            }
+        }
+
+        if(midPoint != -1) {
+            Data d = new Data("", 0);
+            this.addEdge(new Edge(random, OldIdToNewId.get(0), d));
+        }
+        this.sumdata_B +=g.sumdata_B;
+        return this;
+
+    }
+
+    public DAG addEnd(DAG g) {
+        long endPrev = g.nextId-1;
+        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+
+        Long oldid,newid;
+        for(Operator op:g.getOperators()){
+            oldid = op.getId();
+            Operator newop = new Operator(op.name,op.resourcesRequirements);
+            newid = this.addOperator(newop);
+            OldIdToNewId.put(oldid,newid);
+        }
+
+        for(ArrayList<Edge> ae: g.edges.values()){
+            for(Edge e:ae){
+                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
+            }
+        }
+
+        Data d = new Data("", 0);
+        this.addEdge(new Edge(endPrev, OldIdToNewId.get(0L), d));
+
+        this.sumdata_B +=g.sumdata_B;
+        return this;
     }
 
     //    public void addFile(Data data){
