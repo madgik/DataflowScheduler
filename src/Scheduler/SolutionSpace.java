@@ -227,7 +227,7 @@ public class SolutionSpace implements Iterable<Plan> {
             for (Plan sp : skyline) {
                 HashSet<Plan> t = new HashSet<>();
                 for (Plan p : results) {
-                    if (sp.stats.runtime_MS < p.stats.runtime_MS && Math.abs(sp.stats.money - sp.stats.money)
+                    if (sp.stats.runtime_MS < p.stats.runtime_MS &&   sp.stats.money < p.stats.money && Math.abs(sp.stats.money - p.stats.money)
                         > RuntimeConstants.precisionError) {
                         t.add(p);
                     }
@@ -299,6 +299,15 @@ public class SolutionSpace implements Iterable<Plan> {
         return jacc;
     }
 
+    public void retainAll(SolutionSpace skylinePlansNew) {
+        HashSet<Plan> t = new HashSet<>();
+        t.addAll(results);
+        t.retainAll(skylinePlansNew.results);
+        this.results.clear();
+        this.results.addAll(t);
+
+
+    }
 }
 
 

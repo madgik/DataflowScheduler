@@ -21,7 +21,7 @@ public class paretoNoHomogen implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 40;
-    public int pruneSkylineSize = 10;
+    public int pruneSkylineSize = 20;
 
 
 
@@ -571,16 +571,23 @@ public class paretoNoHomogen implements Scheduler {
 
             }
 
-            result.addAll(computeNewSkyline(plansInner, skylinePlansNew));
-
-
-
-
-            plansInner.clear();
-
             plansInner.addAll(skylinePlansNew);
 
             plansInner.computeSkyline(pruneEnabled,pruneSkylineSize);
+
+            plansInner.retainAll(skylinePlansNew);
+
+//            result.addAll(computeNewSkyline(plansInner, skylinePlansNew));
+
+            result.addAll(plansInner);
+
+
+
+//            plansInner.clear();
+
+//            plansInner.addAll(skylinePlansNew);
+//
+//            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize);
 
             skylinePlansNew.clear();
         }
