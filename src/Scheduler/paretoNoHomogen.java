@@ -20,8 +20,8 @@ public class paretoNoHomogen implements Scheduler {
 
     public LinkedList<Long> opsSorted ;
 
-    public int homoPlanstoKeep = 40;
-    public int pruneSkylineSize = 20;
+    public int homoPlanstoKeep = 80;
+    public int pruneSkylineSize = 30;
 
 
 
@@ -311,7 +311,7 @@ public class paretoNoHomogen implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false);
         return space;
 
     }

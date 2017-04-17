@@ -61,8 +61,12 @@ public class Main {
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 
-            runDax(false,"MONTAGE.n.100.0.dax",500,100);
-//            runDax(false,"MONTAGE.n.100.0.dax",10000,1000);
+            runDax(false,"LIGO.n.100.0.dax",1000,100);
+            runDax(false,"LIGO.n.200.0.dax",1000,100);
+
+            //            runDax(false,"MONTAGE.n.100.0.dax",7000,1000);
+
+            //            runDax(false,"MONTAGE.n.100.0.dax",10000,1000);
 //            runDax(false,"MONTAGE.n.100.0.dax",10000,10000);
 
 

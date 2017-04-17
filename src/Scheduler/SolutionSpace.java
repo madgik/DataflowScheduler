@@ -312,7 +312,18 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public void keepK(int k) {
-        results = (ArrayList)results.subList(0,k);
+        if(results.size() == 0) {
+            System.out.println("empty");
+            return;
+        }
+        ArrayList<Plan> t = new ArrayList<>();
+        t.addAll(results);
+        if (k>results.size()){
+            k = results.size();
+        }
+        results.clear();
+        System.out.println(t.size()+" "+k);
+        results.addAll(t.subList(0,k-1));
     }
 }
 
