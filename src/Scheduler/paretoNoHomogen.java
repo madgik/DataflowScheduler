@@ -234,7 +234,7 @@ public class paretoNoHomogen implements Scheduler {
 
 
         paretoPlans.addAll(skylinePlans.results);
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep);
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false);
 
 
 //        for(Plan p:paretoPlans){
@@ -573,7 +573,7 @@ public class paretoNoHomogen implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true);
 
             plansInner.retainAll(skylinePlansNew);
 
@@ -755,7 +755,7 @@ public class paretoNoHomogen implements Scheduler {
 //            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);

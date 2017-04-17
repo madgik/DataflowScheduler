@@ -204,7 +204,7 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
 
-    public void computeSkyline(boolean pruneEnabled, int k){
+    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole){
         ArrayList<Plan> skyline = getSkyline();
 
         if(!pruneEnabled){
@@ -212,7 +212,9 @@ public class SolutionSpace implements Iterable<Plan> {
             this.results.addAll(skyline);
             return;
         }else {
-
+            if(keepWhole){
+                k = results.size();
+            }
             if (k > skyline.size()) {
                 this.results.clear();
                 this.results.addAll(skyline);
