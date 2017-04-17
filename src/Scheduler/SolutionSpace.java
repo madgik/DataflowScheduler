@@ -310,6 +310,10 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
     }
+
+    public void keepK(int k) {
+        results = (ArrayList)results.subList(0,k);
+    }
 }
 
 

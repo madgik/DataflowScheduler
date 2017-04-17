@@ -577,6 +577,8 @@ public class paretoNoHomogen implements Scheduler {
 
             plansInner.retainAll(skylinePlansNew);
 
+            plansInner.keepK(pruneSkylineSize);
+
 //            result.addAll(computeNewSkyline(plansInner, skylinePlansNew));
 
             result.addAll(plansInner);
