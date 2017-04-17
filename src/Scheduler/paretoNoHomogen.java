@@ -20,6 +20,11 @@ public class paretoNoHomogen implements Scheduler {
 
     public LinkedList<Long> opsSorted ;
 
+    public int homoPlanstoKeep = 40;
+    public int pruneSkylineSize = 10;
+
+
+
     public int maxContainers = 10000000;
 
     public boolean backfilling = false;
@@ -28,10 +33,12 @@ public class paretoNoHomogen implements Scheduler {
 
     public boolean heteroStartEnabled = false;
     public boolean HEFT = false;
+    public boolean pruneEnabled = false;
 
     private HashMap<Long, Integer> opLevel;
 
-    public paretoNoHomogen(DAG graph,Cluster cl){
+    public paretoNoHomogen(DAG graph,Cluster cl,boolean prune){
+        this.pruneEnabled = prune;
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
@@ -55,30 +62,31 @@ public class paretoNoHomogen implements Scheduler {
 
         skylinePlans.clear();
 
-        if(heteroStartEnabled) {
+        if (heteroStartEnabled) {
 
-            ArrayList<containerType> cTypes  =new ArrayList<>();
+            ArrayList<containerType> cTypes = new ArrayList<>();
             cTypes.clear();
             cTypes.add(containerType.A);
             cTypes.add(containerType.H);
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
+            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
 
             cTypes.clear();
             cTypes.add(containerType.C);
             cTypes.add(containerType.G);
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
+            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
 
         }
 
-        if(!heteroStartEnabled)
-        for(containerType cType: containerType.values()) {
+        if (!heteroStartEnabled){
+
+        for (containerType cType : containerType.values()) {
 
 
             if (maxContainers == 1) {
                 skylinePlans.add(onlyOneContainer());
             } else {
-                if(HEFT){
+                if (HEFT) {
                     int maxHEFTContainers = 70;
                     ///////HEFT////////////////
                     if (cType.equals(containerType.getLargest())) {
@@ -89,13 +97,13 @@ public class paretoNoHomogen implements Scheduler {
                         Cluster cluster;
                         Scheduler sched;
                         SolutionSpace solutions = new SolutionSpace();
-                        for(int i=1;i<maxHEFTContainers;++i){
+                        for (int i = 1; i < maxHEFTContainers; ++i) {
                             cluster = new Cluster();
-                            sched = new HEFT(graph, cluster,i,cType);
+                            sched = new HEFT(graph, cluster, i, cType);
                             solutions.addAll(sched.schedule());
 
                         }
-                        for(Plan p : solutions){
+                        for (Plan p : solutions) {
                             p.vmUpgrading = "decreasing";
                         }
 
@@ -112,20 +120,20 @@ public class paretoNoHomogen implements Scheduler {
                         Cluster cluster;
                         Scheduler sched;
                         SolutionSpace solutions = new SolutionSpace();
-                        for(int i=1;i<maxHEFTContainers;++i){
+                        for (int i = 1; i < maxHEFTContainers; ++i) {
                             cluster = new Cluster();
-                            sched = new HEFT(graph, cluster,i,cType);
+                            sched = new HEFT(graph, cluster, i, cType);
                             solutions.addAll(sched.schedule());
 
                         }
-                        for(Plan p : solutions){
+                        for (Plan p : solutions) {
                             p.vmUpgrading = "increasing";
                         }
 
                         skylinePlans_INC.addAll(solutions);
                         //                    plotPlans("inc",skylinePlans);
                         //                    System.out.println("s2 "+skylinePlans.size());
-                    } else{
+                    } else {
                         ArrayList<containerType> cTypes = new ArrayList<>();
                         cTypes.add(cType);
 
@@ -133,13 +141,13 @@ public class paretoNoHomogen implements Scheduler {
                         Cluster cluster;
                         Scheduler sched;
                         SolutionSpace solutions = new SolutionSpace();
-                        for(int i=1;i<maxHEFTContainers;++i){
+                        for (int i = 1; i < maxHEFTContainers; ++i) {
                             cluster = new Cluster();
-                            sched = new HEFT(graph, cluster,i,cType);
+                            sched = new HEFT(graph, cluster, i, cType);
                             solutions.addAll(sched.schedule());
 
                         }
-                        for(Plan p : solutions){
+                        for (Plan p : solutions) {
                             p.vmUpgrading = "increasing/decreasing";
                         }
 
@@ -148,8 +156,9 @@ public class paretoNoHomogen implements Scheduler {
                         //                    System.out.println("s3 "+skylinePlans.size());
                     }
 
-                }else {
+                } else {
                     ////INC DEC/////
+//                    System.out.println("calc "+cType.name);
                     if (cType.equals(containerType.getLargest())) {
                         ArrayList<containerType> cTypes = new ArrayList<>();
                         cTypes.add(cType);
@@ -169,6 +178,7 @@ public class paretoNoHomogen implements Scheduler {
                         ArrayList<containerType> cTypes = new ArrayList<>();
                         cTypes.add(cType);
 
+
                         skylinePlans_INCDEC
                             .addAll(this.createAssignments("increasing/decreasing", cTypes));
                         //                    plotPlans("inc,dec",skylinePlans);
@@ -180,7 +190,9 @@ public class paretoNoHomogen implements Scheduler {
 
                 /////////////////////////
             }
+
         }
+    }
 
 //        ArrayList<containerType> cTypes = new ArrayList<>();
 //        cTypes.add(containerType.C);
@@ -220,7 +232,10 @@ public class paretoNoHomogen implements Scheduler {
 //        skylinePlans.sort(true);
 //        skylinePlans.print();
 
-        paretoPlans.addAll(computeSkyline(skylinePlans));
+
+        paretoPlans.addAll(skylinePlans.results);
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep);
+
 
 //        for(Plan p:paretoPlans){
 //            HashSet<containerType> temp = new HashSet<>();
@@ -240,7 +255,8 @@ public class paretoNoHomogen implements Scheduler {
 //        paretoPlans.plot("pareto");
         mpinfo.add("pareto",paretoPlans.results);
 
-
+        long homoEnd = System.currentTimeMillis();
+        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
 
         skylinePlans.clear();
 
@@ -261,9 +277,9 @@ public class paretoNoHomogen implements Scheduler {
         paretoPlans.clear();
 
 
-
         paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
+        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
 
         paretoPlans.addAll(skylinePlans);
 
@@ -564,6 +580,8 @@ public class paretoNoHomogen implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize);
+
             skylinePlansNew.clear();
         }
 
@@ -677,7 +695,7 @@ public class paretoNoHomogen implements Scheduler {
 
     private SolutionSpace createAssignments(String vmUpgrading, ArrayList<containerType> cTypes) {
 
-
+//        System.out.println("createass start");
         Plan firstPlan = new Plan(graph, cluster);
         firstPlan.vmUpgrading = vmUpgrading;
 
@@ -727,15 +745,16 @@ public class paretoNoHomogen implements Scheduler {
 //            }else{
 //                plans = new ArrayList<>(allCandidates);
 //            }
-            plans = computeSkyline(allCandidates);
+//            plans = computeSkyline(allCandidates);
+            plans = new SolutionSpace();
+            plans.addAll(allCandidates.results);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize);
 
-//            System.out.println("skyline");
-//            for(Plan p:plans){
-//                p.printInfo();
-//            }
+
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
 
         }
+//        System.out.println("createass end");
 
         return plans;
     }

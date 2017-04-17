@@ -16,7 +16,7 @@ public class OutputParseNew {
     public static void main(String[] args) throws IOException {
 
 
-        File folder = new File("/Users/johnchronis/Desktop/MyScheduler/");
+        File folder = new File("/Users/johnchronis/code/MyScheduler/mul/");
 
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -89,6 +89,8 @@ public class OutputParseNew {
                 line = br.readLine();
                 line = br.readLine();
                 line = br.readLine();
+                line = br.readLine();
+                line = br.readLine();
 
                 String toComp[] = line.split(" ");
 
@@ -100,7 +102,7 @@ public class OutputParseNew {
 
 
                 plot.plotMultipleWithLine(comb, legendInfo, mpinfo, filename,
-                    "/Users/johnchronis/Desktop/MyScheduler/Outplots/", true, false);
+                    "/Users/johnchronis/Desktop/MyScheduler/Outplots/", false, true);
 
 
 

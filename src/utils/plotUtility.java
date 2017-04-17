@@ -5,6 +5,8 @@ import Scheduler.SolutionSpace;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.ui.RefineryUtilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class plotUtility {
     public plotUtility(){};
 
     public  void plotPoints(String n,ArrayList<Pair<Long,Double>> a){
-        final Plot demo = new Plot(n,a);
+        final Plot demo = new Plot(n,a,n);
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);
@@ -28,10 +30,11 @@ public class plotUtility {
         for(Plan p: b){
             a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
         }
-        final Plot demo = new Plot(n, a);
+        final Plot demo = new Plot(n, a,"./SpaceExpsLIGOSMALL/"+n+".png");
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);
+
 
     }
 

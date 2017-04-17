@@ -21,12 +21,12 @@ import static utils.SolutionSpaceUtils.computeDistance;
 
 public class Main {
 
-    static Boolean savePlot = false;
+    static Boolean savePlot = true;
     static Boolean showPlot = true;
     static String pathPlot;
     static String pathOut;
     static Boolean showOutput = true;
-    static Boolean saveOutput = false;
+    static Boolean saveOutput = true;
     static Boolean validate = false;
 
     public static void main(String[] args) {
@@ -52,7 +52,25 @@ public class Main {
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
-            runOneMultiple(true,"/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000);
+//            runLattice(5,21);
+//            runDax(false,"MONTAGE.n.100.0.dax",1,100);
+//
+//            runDax(false,"MONTAGE.n.100.0.dax",10,100);
+//            runDax(false,"LIGO.n.100.0.dax",100,100);
+//
+//            runDax(false,"LIGO.n.100.0.dax",1000,100);
+            runDax(false,"LIGO.n.100.0.dax",1000,100);
+
+            runDax(false,"MONTAGE.n.100.0.dax",10000,1000);
+//            runDax(false,"MONTAGE.n.100.0.dax",10000,1000);
+//            runDax(false,"MONTAGE.n.100.0.dax",10000,10000);
+
+
+
+            //            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
+
+
+            //            runOneMultiple(true,"/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000);
 //                                    runDax(false,"LIGO.n.50.0.dax",100,100);
 //                        runDax(false,"Example.dax",1,1);
 
@@ -79,14 +97,15 @@ public class Main {
 //                        runDax(false,"LIGO.n.50.0.dax",100,100);
 //            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
 
-            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
-//            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
-            flowsandParasms.add(new Triple("LIGO.n.100.0.dax",2000,1000));
+//            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
+////            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
+//            flowsandParasms.add(new Triple("/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000));
+//            flowsandParasms.add(new Triple("/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000));
+//            flowsandParasms.add(new Triple("/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000));
 //
-            flowsandParasms.add(new Triple("MONTAGE.n.25.0.dax",2000,1000));
-//
-////            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
-//            runMultipleFlows(false,flowsandParasms);
+//            //
+//////            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
+//            runMultipleFlows(true,flowsandParasms);
 //            //
 
 
@@ -160,14 +179,27 @@ public class Main {
 
         Cluster cluster = new Cluster();
 
-        Scheduler sched = new paretoNoHomogen(graph, cluster);
+        Scheduler sched = new paretoNoHomogen(graph, cluster,true);
 
         SolutionSpace solutions = sched.schedule();
 
         sbOut.append(solutions.toString());
 
-        mpinfo.add("pareto "+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
 
+
+        Cluster clusterPNP = new Cluster();
+
+        Scheduler schedPNP = new paretoNoHomogen(graph, clusterPNP,false);
+
+        SolutionSpace solutionsPNP = schedPNP.schedule();
+
+        sbOut.append(solutionsPNP.toString());
+
+        mpinfo.add("paretoP("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
+
+        mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
+
+        System.out.println("paretoDone");
 
         Cluster clusterM = new Cluster();
 
@@ -186,8 +218,9 @@ public class Main {
 
         sbOut.append("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges()).append("\n");
         sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
-        sbOut.append("pareto "+type+" time -> " + solutions.optimizationTime_MS).append("\n");
-        sbOut.append("moheft "+type+" time -> " + solutionsM.optimizationTime_MS).append("\n");
+        sbOut.append("pareto "+type+" time -> " + solutions.optimizationTime_MS/1000).append("\n");
+        sbOut.append("paretoNP "+type+" time -> " + solutionsPNP.optimizationTime_MS/1000).append("\n");
+        sbOut.append("moheft "+type+" time -> " + solutionsM.optimizationTime_MS/1000).append("\n");
 
 
         SolutionSpace combined = new SolutionSpace();
@@ -233,6 +266,21 @@ public class Main {
 
             legendInfo.add(new Pair<String,Double>("nodes",(double)graph.getOperators().size()));
             legendInfo.add(new Pair<String,Double>("edges",(double)graph.sumEdges()));
+
+            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
+            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
+            double diffF = solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS;
+            double diffS = solutions.optimizationTime_MS/solutions.getSlowest().stats.runtime_MS;
+            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastest().stats.runtime_MS+solutions.getSlowest().stats.runtime_MS)/2);
+
+            legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
+            legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
+            legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
+            legendInfo.add(new Pair<String,Double>("Moheft-paretoNP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutions.optimizationTime_MS)));
+            legendInfo.add(new Pair<String,Double>("Moheft-paretoP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutionsPNP.optimizationTime_MS)));
+
+
+
 
 
         } catch (RemoteException e) {
@@ -428,9 +476,9 @@ public class Main {
             }
 
             //////////////////all start together
-    //        for(DAG g:graphs){
-    //            graph.add(g);
-    //        }
+            for(DAG g:graphs){
+                graph.add(g);
+            }
     //
     //        ////////////////connect randomly
     //        for(DAG g:graphs){
@@ -439,20 +487,20 @@ public class Main {
 
 
             ///////////////connect at half point
-            for(DAG g:graphs){
-                graph.addHalfPoint(g);
-            }
+//            for(DAG g:graphs){
+//                graph.addHalfPoint(g);
+//            }
             /////////////add end
-            for(DAG g:graphs){
-                graph.addEnd(g);
-            }
+//            for(DAG g:graphs){
+//                graph.addEnd(g);
+//            }
 
 
             //////////conenctPoisson
 
-            for(DAG g:graphs){
-                graph.addPoisson(g);
-            }
+//            for(DAG g:graphs){
+//                graph.addPoisson(g);
+//            }
 
             /////////////////////
 

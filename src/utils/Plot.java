@@ -43,7 +43,7 @@ public class Plot extends ApplicationFrame {
      */
 
 
-    public Plot(final String title, ArrayList<Pair<Long, Double>> mydata) {
+    public Plot(final String title, ArrayList<Pair<Long, Double>> mydata,String path) {
 
         super(title);
         final XYSeries series = new XYSeries("Random Data");
@@ -59,6 +59,14 @@ public class Plot extends ApplicationFrame {
         final ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
         setContentPane(chartPanel);
+
+        File f = new File(path);
+        try {
+            ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

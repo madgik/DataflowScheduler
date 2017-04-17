@@ -4,6 +4,7 @@ import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
 import utils.Check;
+import utils.plotUtility;
 
 import java.util.*;
 
@@ -215,12 +216,24 @@ public class Moheft implements Scheduler {
                 getCandidateContainers(opId, plan, allCandidates);
             }
             skylinePlans.clear();
+//            skylinePlans = allCandidates;
+
+//            System.out.println(operAssigned+allCandidates.size());
+//
+//
+//            if(operAssigned%10==0) {
+//                plotUtility plot = new plotUtility();
+//                plot.plotPlans("Step:" + operAssigned, allCandidates.results);
+//            }
+//            // Compute new skyline
+//            if(allCandidates.size()>10000) {
+//                skylinePlans = computeSkyline(allCandidates);
+//            }else {
+//                skylinePlans = allCandidates;
+//            }
 
 
-            // Compute new skyline
             skylinePlans = computeSkyline(allCandidates);
-
-
             // Prune the skyline ...
 //            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 1) {
 //                // Keep only some schedules in the skyline according to their crowding distance
