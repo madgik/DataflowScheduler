@@ -212,7 +212,7 @@ public class SolutionSpace implements Iterable<Plan> {
             this.results.addAll(skyline);
             return;
         }else {
-            if(keepWhole){
+            if (keepWhole) {
                 k = results.size();
             }
             if (k > skyline.size()) {
@@ -221,7 +221,7 @@ public class SolutionSpace implements Iterable<Plan> {
                 return;
             }
             //        System.out.println("enter prune");
-
+            HashSet<Plan> retset = new HashSet<>();
             HashMap<Plan, HashSet<Plan>> spToDom = new HashMap<>();
             HashMap<Plan, Integer> spToDomSize = new HashMap<>();
             ///////
@@ -229,8 +229,8 @@ public class SolutionSpace implements Iterable<Plan> {
             for (Plan sp : skyline) {
                 HashSet<Plan> t = new HashSet<>();
                 for (Plan p : results) {
-                    if (sp.stats.runtime_MS < p.stats.runtime_MS &&   sp.stats.money < p.stats.money && Math.abs(sp.stats.money - p.stats.money)
-                        > RuntimeConstants.precisionError) {
+                    if (sp.stats.runtime_MS < p.stats.runtime_MS && sp.stats.money < p.stats.money
+                        && Math.abs(sp.stats.money - p.stats.money) > RuntimeConstants.precisionError) {
                         t.add(p);
                     }
                 }
@@ -238,7 +238,6 @@ public class SolutionSpace implements Iterable<Plan> {
                 spToDomSize.put(sp, t.size());
             }
             /////////////
-            HashSet<Plan> retset = new HashSet<>();
             Plan maxp = null;
             int maxdom = -1;
             for (Plan sp : skyline) {
@@ -249,31 +248,83 @@ public class SolutionSpace implements Iterable<Plan> {
             }
             retset.add(maxp);
 
-            int skylineCoverage = maxdom;
-            int tempSkylineCoverage = -1;
-            Plan tempSkylineCovP = null;
+            boolean newGreedy = true;
 
-            while (retset.size() < k) {
-                tempSkylineCovP = null;
-                tempSkylineCoverage = -1;
+            if (newGreedy) {
 
-                for (Plan sp : skyline) {
-                    if (retset.contains(sp)) {
-                        continue;
-                    }
-                    int newSkylineCov = calcNewCoverage(retset, sp, spToDom);
-                    if (newSkylineCov > tempSkylineCoverage) {
-                        tempSkylineCoverage = newSkylineCov;
-                        tempSkylineCovP = sp;
-                    }
+                Plan lastAddition = maxp;
+                int  lastdom = maxdom;
+                double lastDist = -1;
+
+                while(retset.size()<k){
+                 int maxDOM = -1;
+                 double maxDIST = -1;
+                 Plan toadd = null;
+
+                 for(Plan sp: skyline){
+                     if (retset.contains(sp)) {
+                         continue;
+                     }
+                     double jacdist = jaccardDist(sp,lastAddition,spToDom);
+
+                     if(jacdist >= maxDIST){
+                         if(jacdist>maxDIST){
+                             toadd = sp;
+                             maxDIST = jacdist;
+                             maxDOM = spToDomSize.get(sp);
+                         }
+                         else if(maxDOM<spToDomSize.get(toadd) ){
+                             toadd = sp;
+                             maxDIST = jacdist;
+                             maxDOM = spToDomSize.get(sp);
+
+
+                         }
+
+
+                     }
+
+
+
+                 }
+
+                 if(toadd!=null){
+                     retset.add(toadd);
+                 }
+
                 }
-                retset.add(tempSkylineCovP);
-                skylineCoverage = tempSkylineCoverage;
+            } else {
+
+
+                int skylineCoverage = maxdom;
+                int tempSkylineCoverage = -1;
+                Plan tempSkylineCovP = null;
+
+                while (retset.size() < k) {
+                    tempSkylineCovP = null;
+                    tempSkylineCoverage = -1;
+
+                    for (Plan sp : skyline) {
+                        if (retset.contains(sp)) {
+                            continue;
+                        }
+                        int newSkylineCov = calcNewCoverage(retset, sp, spToDom);
+                        if (newSkylineCov > tempSkylineCoverage) {
+                            tempSkylineCoverage = newSkylineCov;
+                            tempSkylineCovP = sp;
+                        }
+                    }
+                    retset.add(tempSkylineCovP);
+                    skylineCoverage = tempSkylineCoverage;
+                }
+                ////reset contains the result
+                this.results.clear();
+                this.results.addAll(retset);
+                //        System.out.println("leave prune");
             }
-            ////reset contains the result
+
             this.results.clear();
             this.results.addAll(retset);
-            //        System.out.println("leave prune");
         }
     }
 
@@ -292,6 +343,17 @@ public class SolutionSpace implements Iterable<Plan> {
         return t.size();
     }
 
+
+    public double jaccardDist(Plan a, Plan b,HashMap<Plan, HashSet<Plan>> spToDom){
+        HashSet<Plan> intersection = new HashSet<>();
+        intersection.addAll(spToDom.get(a));
+        intersection.retainAll(spToDom.get(b));
+        if(intersection.size() == (spToDom.get(a).size()+spToDom.get(b).size())){
+            return 0;
+        }
+        return 1.0 - (intersection.size())/(spToDom.get(a).size()+spToDom.get(b).size()-intersection.size());
+
+    }
 
     public int calcJaccard(HashSet<Plan> a,HashSet<Plan> b){
         HashSet<Plan> intersection = new HashSet<>(a);

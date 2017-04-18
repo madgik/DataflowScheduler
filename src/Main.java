@@ -55,23 +55,23 @@ public class Main {
 //            runLattice(5,21);
 //            runDax(false,"MONTAGE.n.100.0.dax",1,100);
 //
-//            runDax(false,"MONTAGE.n.100.0.dax",10,100);
-//            runDax(false,"LIGO.n.100.0.dax",100,100);
+            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
+//            runDax(false,"LIGO.n.200.0.dax",100,100);
 //
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 //            runDax(false,"LIGO.n.200.0.dax",1000,100);
-            runLattice(4,10);
-
-            runLattice(11,3);
-
-            runLattice(5,21);
-
-            runLattice(9,4);
-
-            runLattice(7,7);
+//            runLattice(4,10);
+//
+//            runLattice(11,3);
+//
+//            runLattice(5,21);
+//
+//            runLattice(9,4);
+//
+//            runLattice(7,7);
 
             //            runDax(false,"MONTAGE.n.100.0.dax",7000,1000);
 
