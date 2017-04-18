@@ -61,8 +61,17 @@ public class Main {
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 
-            runDax(false,"LIGO.n.100.0.dax",1000,100);
-            runDax(false,"LIGO.n.200.0.dax",1000,100);
+//            runDax(false,"LIGO.n.100.0.dax",1000,100);
+//            runDax(false,"LIGO.n.200.0.dax",1000,100);
+            runLattice(4,10);
+
+            runLattice(11,3);
+
+            runLattice(5,21);
+
+            runLattice(9,4);
+
+            runLattice(7,7);
 
             //            runDax(false,"MONTAGE.n.100.0.dax",7000,1000);
 
@@ -189,6 +198,7 @@ public class Main {
 
         sbOut.append(solutions.toString());
 
+        mpinfo.add("paretoP("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
 
 
         Cluster clusterPNP = new Cluster();
@@ -199,7 +209,6 @@ public class Main {
 
         sbOut.append(solutionsPNP.toString());
 
-        mpinfo.add("paretoP("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
 
         mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
 
