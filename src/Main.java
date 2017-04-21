@@ -62,7 +62,7 @@ public class Main {
 //            runLattice(5,21);
 //            runDax(false,"MONTAGE.n.100.0.dax",1,100);
 //
-            runDax(jar,jarpath+"LIGO.n.400.0.dax",1000,100);
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",500,300);
 
 //            runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",1000,100);
 
