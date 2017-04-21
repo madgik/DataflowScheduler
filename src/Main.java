@@ -28,6 +28,8 @@ public class Main {
     static Boolean showOutput = true;
     static Boolean saveOutput = true;
     static Boolean validate = false;
+    static boolean jar = false;
+    static String jarpath ="";
 
     public static void main(String[] args) {
 
@@ -52,11 +54,29 @@ public class Main {
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
+
+            if (System.getProperty("user.name").equals("gsmyris")) {
+                jar = true;
+                jarpath = "/home/gsmyris/jc/";
+            }
 //            runLattice(5,21);
 //            runDax(false,"MONTAGE.n.100.0.dax",1,100);
 //
-            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
-//            runDax(false,"LIGO.n.200.0.dax",100,100);
+            runDax(jar,jarpath+"LIGO.n.400.0.dax",1000,100);
+
+//            runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",1000,100);
+
+//            runOneMultipleHALF(jar,jarpath+"LIGO.50.0.n.dax",1000,100);
+
+
+
+
+            //            runDax(jar,jarpath+"MONTAGE.n.300.0.dax",1000,100);
+
+
+            //            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
+
+            //            runDax(false,"LIGO.n.200.0.dax",100,100);
 //
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
 //            runDax(false,"LIGO.n.100.0.dax",1000,100);
@@ -192,25 +212,50 @@ public class Main {
 
         Cluster cluster = new Cluster();
 
-        Scheduler sched = new paretoNoHomogen(graph, cluster,true);
+        Scheduler sched = new paretoNoHomogen(graph, cluster,true,"all");
 
         SolutionSpace solutions = sched.schedule();
 
         sbOut.append(solutions.toString());
 
-        mpinfo.add("paretoP("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
+        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
+
+
+//        Cluster clusterValkanas = new Cluster();
+//
+//        Scheduler schedValkanas = new paretoNoHomogen(graph, clusterValkanas,true,"valkanas");
+//
+//        SolutionSpace solutionsValkanas = schedValkanas.schedule();
+//
+//        sbOut.append(solutionsValkanas.toString());
+//
+//        mpinfo.add("paretoPValkanas("+solutionsValkanas.size()+")"+(solutionsValkanas.optimizationTime_MS)+" "+solutionsValkanas.getScoreElastic(), solutionsValkanas.results);
+//
+//
+//        Cluster clusterCrow = new Cluster();
+//
+//        Scheduler schedCrow = new paretoNoHomogen(graph, clusterCrow,true,"crowding");
+//
+//        SolutionSpace solutionsCrow = schedCrow.schedule();
+//
+//        sbOut.append(solutionsCrow.toString());
+//
+//        mpinfo.add("paretoPCrow("+solutionsCrow.size()+")"+(solutionsCrow.optimizationTime_MS)+" "+solutionsCrow.getScoreElastic(), solutionsCrow.results);
 
 
         Cluster clusterPNP = new Cluster();
 
-        Scheduler schedPNP = new paretoNoHomogen(graph, clusterPNP,false);
+        Scheduler schedPNP = new paretoNoHomogen(graph, clusterPNP,false,"");
 
         SolutionSpace solutionsPNP = schedPNP.schedule();
 
         sbOut.append(solutionsPNP.toString());
 
 
+
         mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
+
+
 
         System.out.println("paretoDone");
 
@@ -225,8 +270,6 @@ public class Main {
         mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
 
         plotUtility plot = new plotUtility();
-
-        //        showOptimizationResult("aaaa",solutions.results.get(solutions.size()-1));
 
 
         sbOut.append("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges()).append("\n");
@@ -401,7 +444,7 @@ public class Main {
 
     }
 
-    private static void runOneMultiple(boolean jar,String file, int mt, int md){
+    private static void runOneMultipleEND(boolean jar,String file, int mt, int md){
         DAG graph = new DAG();
         DAG tmpGraph = null;
 
@@ -436,20 +479,73 @@ public class Main {
         }
 
         graph.add(tmpGraph);
-        for (int i = 0; i <1 ; i++) {
-            graph.addEnd(tmpGraph);
-        }
-        for (int i = 0; i <2 ; i++) {
-            DAG inGraph = new DAG();
-            inGraph.add(tmpGraph);
-            inGraph.add(tmpGraph);
-            graph.addEnd(inGraph);
-        }
-        for (int i = 0; i <2 ; i++) {
+        for (int i = 0; i <30 ; i++) {
             graph.addEnd(tmpGraph);
         }
 
-        runDAG(graph," oneFlowMultipleTime +sumdata:"+graph.sumdata_B /1073741824,"multiple");
+//        for (int i = 0; i <2 ; i++) {
+//            DAG inGraph = new DAG();
+//            inGraph.add(tmpGraph);
+//            inGraph.add(tmpGraph);
+//            graph.addEnd(inGraph);
+//        }
+//        for (int i = 0; i <2 ; i++) {
+//            graph.addEnd(tmpGraph);
+//        }
+
+        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple");
+
+    }
+    private static void runOneMultipleHALF(boolean jar,String file, int mt, int md){
+        DAG graph = new DAG();
+        DAG tmpGraph = null;
+
+        try {
+
+            if(file.contains("lattice") || file.contains("Lattice")){
+
+                double z = 1.0;
+                double randType = 0.0;
+                double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                double[] cpuUtil = {1.0};
+                double[] memory = {0.3};
+                double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+
+                RandomParameters
+                    params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+                tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0);
+            }else {
+
+                PegasusDaxParser parser = new PegasusDaxParser(mt, md);
+                if (jar) {
+                    tmpGraph = parser.parseDax(file);
+
+                } else {
+                    tmpGraph = parser.parseDax(Main.class.getResource(file).getFile());
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        graph.add(tmpGraph);
+        for (int i = 0; i <30 ; i++) {
+            graph.addHalfPoint(tmpGraph);
+        }
+
+        //        for (int i = 0; i <2 ; i++) {
+        //            DAG inGraph = new DAG();
+        //            inGraph.add(tmpGraph);
+        //            inGraph.add(tmpGraph);
+        //            graph.addEnd(inGraph);
+        //        }
+        //        for (int i = 0; i <2 ; i++) {
+        //            graph.addEnd(tmpGraph);
+        //        }
+
+        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple");
 
     }
 

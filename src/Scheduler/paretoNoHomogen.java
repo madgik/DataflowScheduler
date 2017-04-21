@@ -21,7 +21,7 @@ public class paretoNoHomogen implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 30;
+    public int pruneSkylineSize = 20;
 
 
 
@@ -34,16 +34,18 @@ public class paretoNoHomogen implements Scheduler {
     public boolean heteroStartEnabled = false;
     public boolean HEFT = false;
     public boolean pruneEnabled = false;
+    public String PruneMethod = "";
 
     private HashMap<Long, Integer> opLevel;
 
-    public paretoNoHomogen(DAG graph,Cluster cl,boolean prune){
+    public paretoNoHomogen(DAG graph,Cluster cl,boolean prune,String PruneMethod){
         this.pruneEnabled = prune;
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
         this.opsSorted = new LinkedList<>();
         opLevel = new HashMap<>();
+        this.PruneMethod = PruneMethod;
     }
 
     @Override
@@ -234,7 +236,8 @@ public class paretoNoHomogen implements Scheduler {
 
 
         paretoPlans.addAll(skylinePlans.results);
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false);
+
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
 
 
 //        for(Plan p:paretoPlans){
@@ -311,7 +314,7 @@ public class paretoNoHomogen implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false);
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
         return space;
 
     }
@@ -573,11 +576,11 @@ public class paretoNoHomogen implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod);
 
-            plansInner.retainAll(skylinePlansNew);
+            plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
-            plansInner.keepK(pruneSkylineSize);
+//            plansInner.keepK(pruneSkylineSize);
 
 //            result.addAll(computeNewSkyline(plansInner, skylinePlansNew));
 
@@ -757,7 +760,7 @@ public class paretoNoHomogen implements Scheduler {
 //            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
