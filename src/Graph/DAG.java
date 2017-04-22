@@ -24,6 +24,14 @@ public class DAG {
     public HashMap<Long, HashMap<Long,Edge>> edgesMap;
     private HashMap<Long,ArrayList<Edge>> reverseEdges;
 
+    public Long getNextId() {
+        return nextId;
+    }
+
+    public void setNextId(Long nextId) {
+        this.nextId = nextId;
+    }
+
     private Long nextId;
 
 //    public  HashMap<String,Data> nameToFile;

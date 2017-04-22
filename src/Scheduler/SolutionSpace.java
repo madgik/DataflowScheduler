@@ -54,6 +54,19 @@ public class SolutionSpace implements Iterable<Plan> {
         return results.get(results.size()-1);
     }
 
+    public  Plan getKnee(){
+        Plan tp=null;
+        double t= Double.MAX_VALUE;
+        for(Plan p:results){
+            double tt = p.stats.runtime_MS*0.5+0.5*p.stats.money;
+            if(tt<t){
+                tp = p;
+                t=tt;
+            }
+        }
+        return tp;
+    }
+
 
     public void print() {
         System.out.println(this.toString());

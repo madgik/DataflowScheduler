@@ -18,15 +18,15 @@ public class MultiplePlotInfo {
     public void add(String name, ArrayList<Plan> ps){
         XYSeries xy = new XYSeries(name);
         for(Plan p:ps){
-            xy.add((p.stats.runtime_MS / 60000),(Double)p.stats.money);
+            xy.add(p.stats.money,p.stats.runtime_MS / 60000);
         }
         series.add(xy);
     }
 
-    public void addPairs(String name, ArrayList<Pair<Long,Double>> ps){
+    public void addPairs(String name, ArrayList<PairPlot> ps){
         XYSeries xy = new XYSeries(name);
-        for(Pair<Long,Double> p:ps){
-            xy.add((double)(p.a / 60000),(Double)p.b);
+        for(PairPlot<Long,Double> p:ps){
+            xy.add(p.getMoney(),(p.getTime()/ 60000));
         }
         series.add(xy);
     }

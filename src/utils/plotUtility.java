@@ -17,7 +17,7 @@ public class plotUtility {
 
     public plotUtility(){};
 
-    public  void plotPoints(String n,ArrayList<Pair<Long,Double>> a){
+    public  void plotPoints(String n,ArrayList<PairPlot> a){
         final Plot demo = new Plot(n,a,n);
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
@@ -26,9 +26,9 @@ public class plotUtility {
     }
 
     public  void plotPlans(String n,List<Plan> b) {
-        ArrayList<Pair<Long,Double>> a = new ArrayList<>();
+        ArrayList<PairPlot> a = new ArrayList<>();
         for(Plan p: b){
-            a.add(new Pair<Long, Double>(p.stats.runtime_MS,p.stats.money));
+            a.add(new PairPlot(p.stats.runtime_MS,p.stats.money));
         }
         final Plot demo = new Plot(n, a,"./SpaceExpsLIGOSMALL/"+n+".png");
         demo.pack();

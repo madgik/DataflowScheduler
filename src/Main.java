@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
@@ -40,7 +41,14 @@ public class Main {
 
         if(savePlot){System.out.println("saving plots to "+ pathPlot);}
         if(saveOutput){System.out.println("saving output to "+ pathOut);}
-
+        if (System.getProperty("user.name").equals("gsmyris")) {
+            jar = true;
+            jarpath = "/home/gsmyris/jc/";
+        }
+        if (System.getProperty("user.name").equals("vaggelis")) {
+            jar = true;
+            jarpath = "/home/vaggelis/jc/";
+        }
 
         String flow = System.getProperty("flow");
         if( flow != null){
@@ -48,6 +56,10 @@ public class Main {
                 String d = System.getProperty("d");
                 String b = System.getProperty("b");
                 runLattice(Integer.parseInt(d),Integer.parseInt(b));
+            }else if(flow.contains("runMul")) {
+                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,100);
+
+                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",100,100);
             }else{
                 String mt = System.getProperty("mt");
                 String md = System.getProperty("md");
@@ -55,36 +67,34 @@ public class Main {
             }
         }else{
 
-            if (System.getProperty("user.name").equals("gsmyris")) {
-                jar = true;
-                jarpath = "/home/gsmyris/jc/";
-            }
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,1000);
+
+            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
+
+//
+//            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
+//            for(int i=0;i<5;++i) {
+//                flowsandParasms.add(new Triple(jarpath+"LIGO.n.100.0.dax", 1000 , 100));
+//            }
+//
+//            runMultipleFlows(jar,flowsandParasms);
+
 //            runLattice(5,21);
 //            runDax(false,"MONTAGE.n.100.0.dax",1,100);
 //
-            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",500,300);
+//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",500,300);
 
 //            runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",1000,100);
 
 //            runOneMultipleHALF(jar,jarpath+"LIGO.50.0.n.dax",1000,100);
 
-
-
-
             //            runDax(jar,jarpath+"MONTAGE.n.300.0.dax",1000,100);
 
 
-            //            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
+//            runDax(jar,jarpath+"LIGO.n.100.0.dax",1000,100);
 
-            //            runDax(false,"LIGO.n.200.0.dax",100,100);
-//
-//            runDax(false,"LIGO.n.100.0.dax",1000,100);
-//            runDax(false,"LIGO.n.100.0.dax",1000,100);
-
-//            runDax(false,"LIGO.n.100.0.dax",1000,100);
-//            runDax(false,"LIGO.n.200.0.dax",1000,100);
 //            runLattice(4,10);
-//
+////
 //            runLattice(11,3);
 //
 //            runLattice(5,21);
@@ -92,102 +102,6 @@ public class Main {
 //            runLattice(9,4);
 //
 //            runLattice(7,7);
-
-            //            runDax(false,"MONTAGE.n.100.0.dax",7000,1000);
-
-            //            runDax(false,"MONTAGE.n.100.0.dax",10000,1000);
-//            runDax(false,"MONTAGE.n.100.0.dax",10000,10000);
-
-
-
-            //            runDax(false,"MONTAGE.n.100.0.dax",1000,100);
-
-
-            //            runOneMultiple(true,"/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000);
-//                                    runDax(false,"LIGO.n.50.0.dax",100,100);
-//                        runDax(false,"Example.dax",1,1);
-
-            //            File folder = new File("/Users/johnchronis/Desktop/MyScheduler/resources");
-//
-//            for (final File fileEntry : folder.listFiles()) {
-//                if (fileEntry.isDirectory()) {
-//                } else {
-//                    if(fileEntry.getName().startsWith("TPCH")) {
-//                        runJson(false, fileEntry.getName(), 100, 300000);
-//                    }
-//                }}
-
-//            runDax(false,"MONTAGE.n.100.0.dax",1,1);
-//
-//
-//            HashMap<String,Pair<Integer,Integer>> flowsandParasms = new HashMap<>();
-//            flowsandParasms.put("MONTAGE.n.100.0.dax",new Pair<>(2000,100));
-//            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
-//            runMultipleFlows(flowsandParasms);
-            //            flowsandParasms.put("LIGO.n.500.0.dax",new Pair<>(500,500));
-//            runDax(true,"MONTAGE.n.100.0.dax",2000,1000);
-
-//                        runDax(false,"LIGO.n.50.0.dax",100,100);
-//            runDax(false,"MONTAGE.n.100.0.dax",2000,100);
-
-//            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
-////            flowsandParasms.add(new Triple("MONTAGE.n.100.0.dax",2000,1000));
-//            flowsandParasms.add(new Triple("/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000));
-//            flowsandParasms.add(new Triple("/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000));
-//            flowsandParasms.add(new Triple("/home/gsmyris/jc/LIGO.n.100.0.dax",50,1000));
-//
-//            //
-//////            flowsandParasms.put("LIGO.n.100.0.dax",new Pair<>(100,100));
-//            runMultipleFlows(true,flowsandParasms);
-//            //
-
-
-            //
-//            ArrayList<Integer> times = new ArrayList<>();
-//            ArrayList<Integer> datas = new ArrayList<>();
-//
-//            times.add(1);times.add(10);times.add(30);
-//            times.add(50);times.add(100);times.add(500);
-//            times.add(1000);times.add(5000);times.add(10000);
-//
-//           datas.add(1);datas.add(100);datas.add(500);
-//           datas.add(1000);datas.add(5000);datas.add(10000);
-//           datas.add(200000);
-//
-//
-//            for(int t:times){
-//                for(int d:datas){
-//                    runDax(false,"LIGO.n.50.0.dax",t,d);
-//                    runDax(false,"LIGO.n.100.0.dax",t,d);
-//                    runDax(false,"LIGO.n.500.0.dax",t,d);
-//                }
-//            }
-//            for(int t:times){
-//                for(int d:datas){
-//                    runDax(false,"CYBERSHAKE.n.50.0.dax",t,d);
-//                    runDax(false,"CYBERSHAKE.n.100.0.dax",t,d);
-//                    runDax(false,"CYBERSHAKE.n.500.0.dax",t,d);
-//                }
-//            }
-//            for(int t:times){
-//                for(int d:datas){
-//                    runDax(false,"SIPHT.n.50.0.dax",t,d);
-//                    runDax(false,"SIPHT.n.100.0.dax",t,d);
-//                    runDax(false,"SIPHT.n.500.0.dax",t,d);
-//                }
-//            }
-//            for(int t:times){
-//                for(int d:datas){
-//                    runDax(false,"MONTAGE.n.50.0.dax",t,d);
-//                    runDax(false,"MONTAGE.n.100.0.dax",t,d);
-//                    runDax(false,"MONTAGE.n.500.0.dax",t,d);
-//                }
-//            }
-
-
-//            runJson("TPCH_9_0_4.json",1,100);
-//
-//            runMultipleFlows(50,1000);
 
 
 //            runLattice(11,3); //6 vs 32 solutions alla kaliteres
@@ -210,18 +124,9 @@ public class Main {
 
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
-        Cluster cluster = new Cluster();
-
-        Scheduler sched = new paretoNoHomogen(graph, cluster,true,"all");
-
-        SolutionSpace solutions = sched.schedule();
-
-        sbOut.append(solutions.toString());
-
-        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
 
 
-//        Cluster clusterValkanas = new Cluster();
+        //        Cluster clusterValkanas = new Cluster();
 //
 //        Scheduler schedValkanas = new paretoNoHomogen(graph, clusterValkanas,true,"valkanas");
 //
@@ -255,6 +160,16 @@ public class Main {
 
         mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
 
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph, cluster,true,"all");
+
+        SolutionSpace solutions = sched.schedule();
+
+        sbOut.append(solutions.toString());
+
+        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
 
 
         System.out.println("paretoDone");
@@ -447,6 +362,8 @@ public class Main {
     private static void runOneMultipleEND(boolean jar,String file, int mt, int md){
         DAG graph = new DAG();
         DAG tmpGraph = null;
+        System.out.println("Running runOneMultipleEND mt "+mt+" md: "+md + " Pareto, Moheft " + file);
+
 
         try {
 
@@ -479,7 +396,7 @@ public class Main {
         }
 
         graph.add(tmpGraph);
-        for (int i = 0; i <30 ; i++) {
+        for (int i = 0; i <10 ; i++) {
             graph.addEnd(tmpGraph);
         }
 
@@ -496,9 +413,289 @@ public class Main {
         runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple");
 
     }
+
+    private static void  runEnseble(boolean jar,String file, int mt, int md,int times){
+        DAG graph = new DAG();
+        DAG tmpGraph = null;
+        System.out.println("Running runEnseble "+times+" mt "+mt+" md: "+md + " Pareto, Moheft " + file);
+
+
+        try {
+
+            if(file.contains("lattice") || file.contains("Lattice")){
+
+                double z = 1.0;
+                double randType = 0.0;
+                double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                double[] cpuUtil = {1.0};
+                double[] memory = {0.3};
+                double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+
+                RandomParameters
+                    params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+
+                tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0);
+            }else {
+
+                PegasusDaxParser parser = new PegasusDaxParser(mt, md);
+                if (jar) {
+                    tmpGraph = parser.parseDax(file);
+
+                } else {
+                    tmpGraph = parser.parseDax(Main.class.getResource(file).getFile());
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+       graph = tmpGraph;
+
+
+        runDAGS(graph," Ensevlw +sumdata:"+graph.sumdata_B /1073741824,"multiple",times);
+
+    }
+
+    private static void runDAGS(DAG graph, String paremetersToPrint, String type, int times) {
+
+        StringBuilder sbOut = new StringBuilder();
+
+        sbOut.append("Running "+type+" "+paremetersToPrint+ " Pareto, Moheft").append("\n");
+
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+
+
+
+        //        Cluster clusterValkanas = new Cluster();
+        //
+        //        Scheduler schedValkanas = new paretoNoHomogen(graph, clusterValkanas,true,"valkanas");
+        //
+        //        SolutionSpace solutionsValkanas = schedValkanas.schedule();
+        //
+        //        sbOut.append(solutionsValkanas.toString());
+        //
+        //        mpinfo.add("paretoPValkanas("+solutionsValkanas.size()+")"+(solutionsValkanas.optimizationTime_MS)+" "+solutionsValkanas.getScoreElastic(), solutionsValkanas.results);
+        //
+        //
+        //        Cluster clusterCrow = new Cluster();
+        //
+        //        Scheduler schedCrow = new paretoNoHomogen(graph, clusterCrow,true,"crowding");
+        //
+        //        SolutionSpace solutionsCrow = schedCrow.schedule();
+        //
+        //        sbOut.append(solutionsCrow.toString());
+        //
+        //        mpinfo.add("paretoPCrow("+solutionsCrow.size()+")"+(solutionsCrow.optimizationTime_MS)+" "+solutionsCrow.getScoreElastic(), solutionsCrow.results);
+
+
+        Cluster clusterPNP = new Cluster();
+
+        Scheduler schedPNP = new paretoNoHomogen(graph, clusterPNP,false,"");
+
+        SolutionSpace solutionsPNP = schedPNP.schedule();
+
+        long nextID = graph.getNextId();
+
+        for(int i=0;i<times-1;++i){
+
+            DAG tg = new DAG();
+            tg.setNextId(nextID);
+            tg.add(graph);
+            nextID = tg.getNextId();
+            Plan knee = solutionsPNP.getKnee();
+
+            schedPNP = new paretoNoHomogen(tg, knee.cluster,false,"");
+
+            solutionsPNP = schedPNP.schedule();
+        }
+
+        sbOut.append(solutionsPNP.toString());
+
+
+
+        mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
+
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph, cluster,true,"all");
+
+        SolutionSpace solutions = sched.schedule();
+
+        for(int i=0;i<times-1;++i) {
+
+            DAG tg = new DAG();
+            tg.setNextId(nextID);
+            tg.add(graph);
+            nextID = tg.getNextId();
+            Plan knee = solutionsPNP.getKnee();
+
+
+            sched = new paretoNoHomogen(tg, knee.cluster,true,"all");
+
+            solutions = sched.schedule();
+
+        }
+
+        sbOut.append(solutions.toString());
+
+        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
+
+
+        System.out.println("paretoDone");
+
+        Cluster clusterM = new Cluster();
+
+        Scheduler schedM = new Moheft(graph, clusterM);
+
+        SolutionSpace solutionsM = schedM.schedule();
+
+        for(int i=0;i<times-1;++i) {
+
+            schedM = new Moheft(graph, solutionsM.getKnee().cluster);
+
+            solutionsM = schedM.schedule();
+
+        }
+
+        sbOut.append(solutionsM.toString());
+
+        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
+
+        plotUtility plot = new plotUtility();
+
+
+        sbOut.append("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges()).append("\n");
+        sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
+        sbOut.append("pareto "+type+" time -> " + solutions.optimizationTime_MS/1000).append("\n");
+        sbOut.append("paretoNP "+type+" time -> " + solutionsPNP.optimizationTime_MS/1000).append("\n");
+        sbOut.append("moheft "+type+" time -> " + solutionsM.optimizationTime_MS/1000).append("\n");
+
+
+        SolutionSpace combined = new SolutionSpace();
+        combined.addAll(solutions);
+        combined.addAll(solutionsM);
+
+        combined.computeSkyline(false);
+
+        double distMtoC=0.0,distPtoC=0.0,distCtoM=0.0,distCtoP=0.0;
+        double JaccardMtoC=0.0,JaccardPtoC=0.0;
+
+        ArrayList<Pair<String,Double>> legendInfo = new ArrayList<>();
+
+
+        try {
+            distMtoC = computeDistance(solutionsM,combined).P2Sky;
+            legendInfo.add(new Pair<>("distMtoC",distMtoC));
+
+            distPtoC = computeDistance(solutions,combined).P2Sky;
+            legendInfo.add(new Pair<>("distPtoC",distPtoC));
+
+            distCtoM = computeDistance(combined,solutionsM).P2Sky;
+            legendInfo.add(new Pair<>("distCtoM",distCtoM));
+
+            distCtoP = computeDistance(combined,solutions).P2Sky;
+            legendInfo.add(new Pair<>("distCtoP",distCtoP));
+
+            JaccardMtoC = computeJaccard(solutionsM,combined);
+            legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
+
+            JaccardPtoC = computeJaccard(solutions,combined);
+            legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
+
+            sbOut.append("Jaccard from M to C "+JaccardMtoC).append("\n");
+            sbOut.append("Jaccard from P to C "+JaccardPtoC).append("\n");
+
+
+            sbOut.append("distance from M to C "+distMtoC).append("\n");
+            sbOut.append("distance from P to C "+distPtoC).append("\n");
+            sbOut.append("distance from C to M "+distCtoM).append("\n");
+            sbOut.append("distance from C to P "+distCtoP).append("\n");
+
+
+            legendInfo.add(new Pair<String,Double>("nodes",(double)graph.getOperators().size()));
+            legendInfo.add(new Pair<String,Double>("edges",(double)graph.sumEdges()));
+
+            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
+            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
+            double diffF = solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS;
+            double diffS = solutions.optimizationTime_MS/solutions.getSlowest().stats.runtime_MS;
+            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastest().stats.runtime_MS+solutions.getSlowest().stats.runtime_MS)/2);
+
+            legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
+            legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
+            legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
+            legendInfo.add(new Pair<String,Double>("Moheft-paretoNP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutions.optimizationTime_MS)));
+            legendInfo.add(new Pair<String,Double>("Moheft-paretoP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutionsPNP.optimizationTime_MS)));
+
+
+
+
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        double ccr =  graph.computeCCR();
+
+        legendInfo.add(new Pair<String,Double>("ccr",ccr));
+
+
+        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +" "+
+            paremetersToPrint               +
+            " paretoOptTime_MS: "+ solutions.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
+            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP + " JMtoC "+ JaccardMtoC +" JPtoC "+ JaccardPtoC)
+            .append(" ccr ").append(ccr).append("\n");
+
+
+        String filesname =
+            type +
+                "___"+paremetersToPrint.replace(" ","_")+
+                "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+"_ccr_"+ccr+"__"+
+                (new java.util.Date()).toString().replace(" ","_");
+
+
+
+        if(showOutput){
+            System.out.println(sbOut.toString());
+        }
+        if(saveOutput){
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(pathOut+filesname+".txt");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            out.println(sbOut.toString());
+            out.close();
+
+        }
+
+        plot.plotMultipleWithLine(combined, legendInfo ,mpinfo, filesname,
+            pathPlot,
+            savePlot,
+            showPlot);
+
+        if(validate){
+            System.out.println("Running sims");
+            SimEnginge simeng = new SimEnginge();
+            for (Plan p:solutions){
+                simeng.execute(p);
+            }
+
+        }
+
+
+
+    }
+
+
+
     private static void runOneMultipleHALF(boolean jar,String file, int mt, int md){
         DAG graph = new DAG();
         DAG tmpGraph = null;
+        System.out.println("Running runOneMultipleHALF mt "+mt+" md: "+md + " Pareto, Moheft " + file);
 
         try {
 
@@ -531,7 +728,7 @@ public class Main {
         }
 
         graph.add(tmpGraph);
-        for (int i = 0; i <30 ; i++) {
+        for (int i = 0; i <10 ; i++) {
             graph.addHalfPoint(tmpGraph);
         }
 
@@ -549,7 +746,16 @@ public class Main {
 
     }
 
+
+
+
+
     private static void runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms){
+
+        System.out.println("runinng multFLow");
+        for(Triple<String,Integer,Integer> tr: flowsandParasms){
+            System.out.println(tr.a+" "+tr.b+" "+tr.c);
+        }
 
             DAG graph = new DAG();
             ArrayList<DAG> graphs = new ArrayList<>();

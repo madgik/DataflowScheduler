@@ -39,23 +39,23 @@ public class OutputParse {
                 br.readLine();
                 br.readLine();
                 String line = br.readLine();
-                ArrayList<Pair<Long,Double>> pareto = new ArrayList<>();
+                ArrayList<PairPlot> pareto = new ArrayList<>();
                 if(line==null)continue;
                 while (line.charAt(0) != '/')   {
                     line = line.trim();
                     String splits[] = line.split(" ");
-                    pareto.add(new Pair<>(Long.parseLong(splits[0]),Double.parseDouble(splits[1])));
+                    pareto.add(new PairPlot(Long.parseLong(splits[0]),Double.parseDouble(splits[1])));
                     line = br.readLine();
                 }
                 mpinfo.addPairs("pareto",pareto);
 
                 line = br.readLine();
-                ArrayList<Pair<Long,Double>> moheft = new ArrayList<>();
+                ArrayList<PairPlot> moheft = new ArrayList<>();
                 while (line.charAt(0) != '/')   {
                     line = line.trim();
 
                     String splits[] = line.split(" ");
-                    moheft.add(new Pair<>(Long.parseLong(splits[0]),Double.parseDouble(splits[1])));
+                    moheft.add(new PairPlot(Long.parseLong(splits[0]),Double.parseDouble(splits[1])));
                     line = br.readLine();
                 }
                 mpinfo.addPairs("moheft",moheft);
@@ -67,16 +67,16 @@ public class OutputParse {
 
                 SolutionSpace comb = new SolutionSpace();
 
-                for(Pair<Long,Double> p : moheft){
+                for(PairPlot p : moheft){
                     Plan pl = new Plan(new DAG(),new Cluster());
-                    pl.stats.runtime_MS = p.a;
-                    pl.stats.money = p.b;
+                    pl.stats.runtime_MS = p.getTime();
+                    pl.stats.money = p.getMoney();
                     comb.add(pl);
                 }
-                for(Pair<Long,Double> p : moheft){
+                for(PairPlot p : moheft){
                     Plan pl = new Plan(new DAG(),new Cluster());
-                    pl.stats.runtime_MS = p.a;
-                    pl.stats.money = p.b;
+                    pl.stats.runtime_MS = p.getTime();
+                    pl.stats.money = p.getMoney();
                     comb.add(pl);
                 }
                 comb.computeSkyline(false);

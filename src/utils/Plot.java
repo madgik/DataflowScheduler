@@ -43,26 +43,26 @@ public class Plot extends ApplicationFrame {
      */
 
 
-    public Plot(final String title, ArrayList<Pair<Long, Double>> mydata,String path) {
+    public Plot(final String title, ArrayList<PairPlot> mydata,String path) {
 
         super(title);
         final XYSeries series = new XYSeries("Random Data");
-        for (Pair p : mydata) {
-            series.add((Number) p.a, (Number) p.b);
+        for (PairPlot p : mydata) {
+            series.add( p.getMoney(),p.getTime()/60000);
         }
 
         final XYSeriesCollection data = new XYSeriesCollection(series);
         final JFreeChart chart = ChartFactory
-            .createScatterPlot("Time/Money", "Time", "Money", data, PlotOrientation.VERTICAL, true,
+            .createScatterPlot("Time/Money", "Money", "Time (Minutes)", data, PlotOrientation.VERTICAL, true,
                 true, false);
 
         final ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+        chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
         setContentPane(chartPanel);
 
         File f = new File(path);
         try {
-            ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
+            ChartUtilities.saveChartAsPNG(f, chart, 1024, 768);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,20 +81,20 @@ public class Plot extends ApplicationFrame {
             data.addSeries(s);
         }
         final JFreeChart chart = ChartFactory
-            .createScatterPlot("Time/Money", "Time (Minutes)", "Money", data,
+            .createScatterPlot("Time/Money",  "Money", "Time (Minutes)",data,
                 PlotOrientation.VERTICAL, true, true, false);
 
 
 
             ChartPanel chartPanel;
             chartPanel = new ChartPanel(chart);
-            chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+            chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
             setContentPane(chartPanel);
 
         if (save) {
             File f = new File(path + name+".png");
             try {
-                ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
+                ChartUtilities.saveChartAsPNG(f, chart, 1024, 768);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -115,13 +115,13 @@ public class Plot extends ApplicationFrame {
 
         XYSeries comb = new XYSeries("combined");
         for(Plan p:combined){
-            comb.add((double)(p.stats.runtime_MS / 60000),(Number)p.stats.money);
+            comb.add(p.stats.money,p.stats.runtime_MS / 60000);
         }
 
         data.addSeries(comb);
 
 
-        JFreeChart chart = ChartFactory.createXYLineChart("Time/Money", "Time (Minutes)", "Money", data, PlotOrientation.VERTICAL, true, true, false);
+        JFreeChart chart = ChartFactory.createXYLineChart("Time/Money",  "Money", "Time (Minutes)",data, PlotOrientation.VERTICAL, true, true, false);
 
         XYPlot plot = (XYPlot)chart.getPlot();
 
@@ -154,7 +154,7 @@ public class Plot extends ApplicationFrame {
         if (save) {
             File f = new File(path + name+ ".png");
             try {
-                ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
+                ChartUtilities.saveChartAsPNG(f, chart, 1024, 768);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -162,7 +162,7 @@ public class Plot extends ApplicationFrame {
         if(show) {
             ChartPanel chartPanel;
             chartPanel = new ChartPanel(chart);
-            chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+            chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
             setContentPane(chartPanel);
         }
 

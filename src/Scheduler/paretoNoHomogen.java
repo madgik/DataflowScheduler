@@ -474,8 +474,24 @@ public class paretoNoHomogen implements Scheduler {
                 Comparator<Long> contSlackComparator = new Comparator<Long>() {
                     @Override
                     public int compare(Long vm1, Long vm2) {
-                        double s1 = contSlack.get(vm1);///(double)contOps.get(vm1);
-                        double s2 = contSlack.get(vm2);///(double)contOps.get(vm2);
+//                        System.out.println(vm1);
+//                        System.out.println(vm2);
+//                        System.out.println(contSlack);
+//                        System.out.println(contSlack.get(vm1));
+//                        System.out.println(contSlack.get(vm2));
+double s1;
+double s2;
+                        if(!contSlack.containsKey(vm1)){
+                            s1 = Double.MAX_VALUE;
+                        }else {
+                            s1 = contSlack.get(vm1);///(double)contOps.get(vm1);
+                        }
+
+                        if(!contSlack.containsKey(vm2)){
+                            s2 = Double.MAX_VALUE;//TODO check asap
+                        }else {
+                            s2 = contSlack.get(vm2);///(double)contOps.get(vm1);
+                        }
                         if (s1 > s2)//TODO: add precision error
                             return -1;
                         else if (s1 < s2)
@@ -485,8 +501,10 @@ public class paretoNoHomogen implements Scheduler {
                     }
                 };
 
-                if(plan.vmUpgrading.contains("decreasing"))
+                if(plan.vmUpgrading.contains("decreasing")) {
+//                    System.out.println("ss " + planContainersTobeModified.size()+" "+planContainersTobeModified);
                     Collections.sort(planContainersTobeModified, contSlackComparator);
+                }
                 else Collections.sort(planContainersTobeModified, Collections.reverseOrder(contSlackComparator));
 
                 Plan newPlan = null;
