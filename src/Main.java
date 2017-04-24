@@ -57,7 +57,7 @@ public class Main {
                 String b = System.getProperty("b");
                 runLattice(Integer.parseInt(d),Integer.parseInt(b));
             }else if(flow.contains("runMul")) {
-                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,100);
+                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,100);
 
                 runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",100,100);
             }else{
@@ -67,9 +67,11 @@ public class Main {
             }
         }else{
 
-            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,1000);
+            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100);
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,100);
 
-            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
+
+            //            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
 
 //
 //            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
@@ -115,6 +117,24 @@ public class Main {
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
+    public static SolutionSpace execute(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined){
+        SolutionSpace space = new SolutionSpace();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoNoHomogen(graph,cluster,prune,method);
+
+        space = sched.schedule();
+
+        sbOut.append(space.toString());
+
+        mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+
+        combined.addAll(space);
+
+        return space;
+    }
+
     public static void runDAG(DAG graph, String paremetersToPrint, String type)
     {
 
@@ -124,53 +144,27 @@ public class Main {
 
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
+        SolutionSpace combined = new SolutionSpace();
 
 
-        //        Cluster clusterValkanas = new Cluster();
-//
-//        Scheduler schedValkanas = new paretoNoHomogen(graph, clusterValkanas,true,"valkanas");
-//
-//        SolutionSpace solutionsValkanas = schedValkanas.schedule();
-//
-//        sbOut.append(solutionsValkanas.toString());
-//
-//        mpinfo.add("paretoPValkanas("+solutionsValkanas.size()+")"+(solutionsValkanas.optimizationTime_MS)+" "+solutionsValkanas.getScoreElastic(), solutionsValkanas.results);
-//
-//
-//        Cluster clusterCrow = new Cluster();
-//
-//        Scheduler schedCrow = new paretoNoHomogen(graph, clusterCrow,true,"crowding");
-//
-//        SolutionSpace solutionsCrow = schedCrow.schedule();
-//
-//        sbOut.append(solutionsCrow.toString());
-//
-//        mpinfo.add("paretoPCrow("+solutionsCrow.size()+")"+(solutionsCrow.optimizationTime_MS)+" "+solutionsCrow.getScoreElastic(), solutionsCrow.results);
+        //        SolutionSpace solValkanas = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined,combined);
+//        SolutionSpace solValkanas1and2 = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined,combined);
+        System.out.println("valkDone");
+//        SolutionSpace solCrowdscoreDistMaxMoney = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
+
+        //        SolutionSpace solCrowd = execute(graph,true,"crowding", mpinfo, "P_crowding", sbOut,combined);
+//        SolutionSpace solCrowdMoney = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
+//        SolutionSpace solCrowdRuntime = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
+//        SolutionSpace solCrowdRuntime = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
+        SolutionSpace solCrowdScoreDist2 = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);
+
+        SolutionSpace solCrowdScoreDist = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
+//        System.out.println("paretoCrowdDonw");
+//        SolutionSpace solCrowdNewAll = execute(graph,true,"newall", mpinfo,"NewAll",sbOut,combined);//
+//        SolutionSpace solCrowdNewAll2 = execute(graph,true,"newall2", mpinfo,"NewAll_Money",sbOut,combined);
 
 
-        Cluster clusterPNP = new Cluster();
-
-        Scheduler schedPNP = new paretoNoHomogen(graph, clusterPNP,false,"");
-
-        SolutionSpace solutionsPNP = schedPNP.schedule();
-
-        sbOut.append(solutionsPNP.toString());
-
-
-
-        mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
-
-
-        Cluster cluster = new Cluster();
-
-        Scheduler sched = new paretoNoHomogen(graph, cluster,true,"all");
-
-        SolutionSpace solutions = sched.schedule();
-
-        sbOut.append(solutions.toString());
-
-        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
-
+//        SolutionSpace solCrowdNoPrune = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
 
         System.out.println("paretoDone");
 
@@ -182,21 +176,20 @@ public class Main {
 
         sbOut.append(solutionsM.toString());
 
-        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
+        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS), solutionsM.results);
 
         plotUtility plot = new plotUtility();
+
+        combined.addAll(solutionsM);
 
 
         sbOut.append("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges()).append("\n");
         sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
-        sbOut.append("pareto "+type+" time -> " + solutions.optimizationTime_MS/1000).append("\n");
-        sbOut.append("paretoNP "+type+" time -> " + solutionsPNP.optimizationTime_MS/1000).append("\n");
+//        sbOut.append("paretoAll "+type+" time -> " + solCrowdNewAll.optimizationTime_MS/1000).append("\n");
+//        sbOut.append("paretoNP "+type+" time -> " + solCrowdNoPrune.optimizationTime_MS/1000).append("\n");
         sbOut.append("moheft "+type+" time -> " + solutionsM.optimizationTime_MS/1000).append("\n");
 
 
-        SolutionSpace combined = new SolutionSpace();
-        combined.addAll(solutions);
-        combined.addAll(solutionsM);
 
         combined.computeSkyline(false);
 
@@ -207,23 +200,23 @@ public class Main {
 
 
         try {
-            distMtoC = computeDistance(solutionsM,combined).P2Sky;
-            legendInfo.add(new Pair<>("distMtoC",distMtoC));
-
-            distPtoC = computeDistance(solutions,combined).P2Sky;
-            legendInfo.add(new Pair<>("distPtoC",distPtoC));
-
-            distCtoM = computeDistance(combined,solutionsM).P2Sky;
-            legendInfo.add(new Pair<>("distCtoM",distCtoM));
-
-            distCtoP = computeDistance(combined,solutions).P2Sky;
-            legendInfo.add(new Pair<>("distCtoP",distCtoP));
-
-            JaccardMtoC = computeJaccard(solutionsM,combined);
-            legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
-
-            JaccardPtoC = computeJaccard(solutions,combined);
-            legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
+//            distMtoC = computeDistance(solutionsM,combined).P2Sky;
+//            legendInfo.add(new Pair<>("distMtoC",distMtoC));
+//
+//            distPtoC = computeDistance(solutions,combined).P2Sky;
+//            legendInfo.add(new Pair<>("distPtoC",distPtoC));
+//
+//            distCtoM = computeDistance(combined,solutionsM).P2Sky;
+//            legendInfo.add(new Pair<>("distCtoM",distCtoM));
+//
+//            distCtoP = computeDistance(combined,solutions).P2Sky;
+//            legendInfo.add(new Pair<>("distCtoP",distCtoP));
+//
+//            JaccardMtoC = computeJaccard(solutionsM,combined);
+//            legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
+//
+//            JaccardPtoC = computeJaccard(solutions,combined);
+//            legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
 
             sbOut.append("Jaccard from M to C "+JaccardMtoC).append("\n");
             sbOut.append("Jaccard from P to C "+JaccardPtoC).append("\n");
@@ -238,23 +231,23 @@ public class Main {
             legendInfo.add(new Pair<String,Double>("nodes",(double)graph.getOperators().size()));
             legendInfo.add(new Pair<String,Double>("edges",(double)graph.sumEdges()));
 
-            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
-            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
-            double diffF = solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS;
-            double diffS = solutions.optimizationTime_MS/solutions.getSlowest().stats.runtime_MS;
-            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastest().stats.runtime_MS+solutions.getSlowest().stats.runtime_MS)/2);
-
-            legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
-            legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
-            legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
-            legendInfo.add(new Pair<String,Double>("Moheft-paretoNP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutions.optimizationTime_MS)));
-            legendInfo.add(new Pair<String,Double>("Moheft-paretoP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutionsPNP.optimizationTime_MS)));
-
-
+//            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
+//            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
+//            double diffF = solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS;
+//            double diffS = solutions.optimizationTime_MS/solutions.getSlowest().stats.runtime_MS;
+//            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastest().stats.runtime_MS+solutions.getSlowest().stats.runtime_MS)/2);
+//
+//            legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
+//            legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
+//            legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
+//            legendInfo.add(new Pair<String,Double>("Moheft-paretoNP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutions.optimizationTime_MS)));
+//            legendInfo.add(new Pair<String,Double>("Moheft-paretoP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutionsPNP.optimizationTime_MS)));
 
 
 
-        } catch (RemoteException e) {
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -263,11 +256,11 @@ public class Main {
         legendInfo.add(new Pair<String,Double>("ccr",ccr));
 
 
-        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +" "+
-            paremetersToPrint               +
-            " paretoOptTime_MS: "+ solutions.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
-            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP + " JMtoC "+ JaccardMtoC +" JPtoC "+ JaccardPtoC)
-            .append(" ccr ").append(ccr).append("\n");
+//        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +" "+
+//            paremetersToPrint               +
+//            " paretoOptTime_MS: "+ solCrowdNoPrune.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
+//            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP + " JMtoC "+ JaccardMtoC +" JPtoC "+ JaccardPtoC)
+//            .append(" ccr ").append(ccr).append("\n");
 
 
         String filesname =
@@ -298,14 +291,14 @@ public class Main {
             savePlot,
             showPlot);
 
-        if(validate){
-            System.out.println("Running sims");
-            SimEnginge simeng = new SimEnginge();
-            for (Plan p:solutions){
-                simeng.execute(p);
-            }
-
-        }
+//        if(validate){
+//            System.out.println("Running sims");
+//            SimEnginge simeng = new SimEnginge();
+//            for (Plan p:solutions){
+//                simeng.execute(p);
+//            }
+//
+//        }
 
 
 

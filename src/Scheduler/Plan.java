@@ -22,6 +22,8 @@ public class Plan  {
     String vmUpgrading;
     public ArrayList<Long> opsMigrated = null;
 
+    public double SimpleDist = Double.MAX_VALUE;
+
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEndProcessing_MS;
 
     public HashMap<Long, Long> opIdToContainerRuntime_MS; //runtime for the assigned container;
@@ -34,6 +36,9 @@ public class Plan  {
     public HashMap<Long,Long> opIdToAfterDTDuration_MS;
 
     public HashMap<Long,Stack<Long>> contIdToSortedOps = null;
+
+
+
 
     //copies the cluster
     public Plan(DAG graph, Cluster cluster) {
