@@ -57,7 +57,7 @@ public class Main {
                 String b = System.getProperty("b");
                 runLattice(Integer.parseInt(d),Integer.parseInt(b));
             }else if(flow.contains("runMul")) {
-                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,100);
+                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
 
                 runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",100,100);
             }else{
@@ -67,7 +67,7 @@ public class Main {
             }
         }else{
 
-            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100);
+            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
             runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,100);
 
 
@@ -95,7 +95,7 @@ public class Main {
 
 //            runDax(jar,jarpath+"LIGO.n.100.0.dax",1000,100);
 
-//            runLattice(4,10);
+            runLattice(4,10);
 ////
 //            runLattice(11,3);
 //
@@ -146,8 +146,7 @@ public class Main {
 
         SolutionSpace combined = new SolutionSpace();
 
-
-        //        SolutionSpace solValkanas = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined,combined);
+        //SolutionSpace solValkanas = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined,combined);
 //        SolutionSpace solValkanas1and2 = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined,combined);
         System.out.println("valkDone");
 //        SolutionSpace solCrowdscoreDistMaxMoney = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);

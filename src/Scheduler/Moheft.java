@@ -23,7 +23,7 @@ public class Moheft implements Scheduler {
 
 
 
-    protected int skylinePlansToKeep =20;//10//20
+    protected int skylinePlansToKeep = 20;//10//20
     protected int skylinePruningOption = 2;
 
     public int maxContainers = 10000000;
