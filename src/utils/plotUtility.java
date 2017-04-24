@@ -30,7 +30,7 @@ public class plotUtility {
         for(Plan p: b){
             a.add(new PairPlot(p.stats.runtime_MS,p.stats.money));
         }
-        final Plot demo = new Plot(n, a,"./SpaceExpsLIGOSMALL/"+n+".png");
+        final Plot demo = new Plot(n, a,"./crowdScore/"+n+".png");
         demo.pack();
         RefineryUtilities.centerFrameOnScreen(demo);
         demo.setVisible(true);

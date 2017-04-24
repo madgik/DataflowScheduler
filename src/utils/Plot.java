@@ -75,7 +75,6 @@ public class Plot extends ApplicationFrame {
         super(name);
 
 
-
         final XYSeriesCollection data = new XYSeriesCollection();
         for (XYSeries s : info.series) {
             data.addSeries(s);
@@ -105,8 +104,6 @@ public class Plot extends ApplicationFrame {
     public Plot(SolutionSpace combined,ArrayList<Pair<String,Double>> legendInfo , MultiplePlotInfo info, String name, String path,
         Boolean save,Boolean show) {
         super(name);
-
-
 
         final XYSeriesCollection data = new XYSeriesCollection();
         for (XYSeries s : info.series) {

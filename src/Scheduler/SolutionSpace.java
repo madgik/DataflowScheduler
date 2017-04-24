@@ -253,76 +253,65 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.addAll(skyline);
                 return;
             }
+            HashSet<Plan> retset  = new HashSet<>();
+
 
             if (method.equals("valkanas")) {
-                HashSet<Plan> retset  = new HashSet<>();
                 valkanasPruning(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("valkanas1and2")){
-                HashSet<Plan> retset = new HashSet<>();
                 valkanasPruning1and2(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("crowdingScoreDist")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceScoreNormalized(skyline, k, retset);
                 this.results.clear();
                 this.results.addAll(retset);
             } else if (method.equals("crowdingDistanceScoreNormalizedMin")) {
-                    HashSet<Plan> retset = new HashSet<>();
                     crowdingDistanceScoreNormalizedMin(skyline,k,retset);
                     this.results.clear();
                     this.results.addAll(retset);
             }
             else if (method.equals("crowdingScoreDist2")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceScoreNormalized2(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
             else if (method.equals("crowdingMoney")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceMoney(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("crowdingRuntime")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceRuntime(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("crowdingSimpleDist")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceSimpleDist(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("crowding")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistance(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
             else if (method.equals("crowdingMaxMoney")) {
-                HashSet<Plan> retset = new HashSet<Plan>();
                 crowdingMaxMoney(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
             else if (method.equals("newall")) {
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceScoreNormalized(skyline, k / 2, retset);
                 crowdingDistanceRuntime(skyline, k, retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
             else if (method.equals("newall2")){
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceScoreNormalized(skyline,k/2,retset);
                 crowdingDistanceMoney(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("scoreDist+maxMoney")){
-                HashSet<Plan> retset = new HashSet<>();
                 crowdingMaxMoney(skyline,k/2+1,retset);
                 crowdingDistanceScoreNormalized(skyline,k,retset);
                 this.results.clear();
@@ -338,8 +327,8 @@ public class SolutionSpace implements Iterable<Plan> {
         //valkPruning and add the 10 lowest in dom Size
 //        HashSet<Plan> retset = new HashSet<>();
 
-        retset.add(skyline.get(0));
-        retset.add(skyline.get(skyline.size()-1));
+        addExtremes(skyline,retset);
+
 
         HashMap<Plan, HashSet<Plan>> spToDom = new HashMap<>();
         HashMap<Plan, Integer> spToDomSize = new HashMap<>();
@@ -371,7 +360,7 @@ public class SolutionSpace implements Iterable<Plan> {
         int tempSkylineCoverage = -1;
         Plan tempSkylineCovP = null;
 
-        while (retset.size() < k) {
+        while (retset.size() < k-4) {
             tempSkylineCovP = null;
             tempSkylineCoverage = -1;
 
@@ -402,9 +391,10 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         });
 
-        for(int i=0;i<10;++i){
+        int i=0;
+        while (i<sorted.size()-1 && retset.size() < k) {
             retset.add(sorted.get(i).a);
-
+            ++i;
         }
 
         return retset;
@@ -483,53 +473,6 @@ public class SolutionSpace implements Iterable<Plan> {
         results.addAll(t);
     }
 
-//    private HashSet<Plan>  valkanasPruning2(ArrayList<Plan> skyline, int k, HashSet<Plan> retset>) {
-//
-//        HashMap<Plan, HashSet<Plan>> spToDom = new HashMap<>();
-//        HashMap<Plan, Integer> spToDomSize = new HashMap<>();
-//        ///////
-//        //for each point calculate how many points it dominates
-//        for (Plan sp : skyline) {
-//            HashSet<Plan> t = new HashSet<>();
-//            for (Plan p : results) {
-//                if (sp.stats.runtime_MS < p.stats.runtime_MS && sp.stats.money < p.stats.money
-//                    && Math.abs(sp.stats.money - p.stats.money) > RuntimeConstants.precisionError) {
-//                    t.add(p);
-//                }
-//            }
-//            spToDom.put(sp, t);
-//            spToDomSize.put(sp, t.size());
-//        }
-//        /////////////
-//        Plan maxp = null;
-//        int maxdom = -1;
-//        for (Plan sp : skyline) {
-//            if (spToDomSize.get(sp) > maxdom) {
-//                maxp = sp;
-//                maxdom = spToDomSize.get(sp);
-//            }
-//        }
-//        retset.add(maxp);
-//
-//        ArrayList<Pair<Plan,Integer>> sorted = new ArrayList<>();
-//        for(Plan sp:spToDomSize.keySet()){
-//            sorted.add(new Pair<Plan,Integer>(sp,spToDomSize.get(sp)));
-//        }
-//        Collections.sort(sorted, new Comparator<Pair<Plan, Integer>>() {
-//            @Override
-//            public int compare(Pair<Plan, Integer> o1, Pair<Plan, Integer> o2) {
-//                return o2.b - o1.b;
-//            }
-//        });
-//
-//        for(int i=0;i<k;++i){
-//         retset.add(sorted.get(i).a);
-//
-//        }
-//
-//        return retset;
-//    }
-
     public double getScore(Plan p, long longest, double maxcost){
         return (0.5*(p.stats.money/maxcost))+(0.5*(p.stats.runtime_MS/longest));
     }
@@ -537,12 +480,10 @@ public class SolutionSpace implements Iterable<Plan> {
         return Math.abs((0.5*(p.stats.money/maxcost))-(0.5*(p.stats.runtime_MS/longest)));
     }
 
-
     public HashSet<Plan> valkanasPruning(ArrayList<Plan> skyline, int k, HashSet<Plan> retset){
 //        HashSet<Plan> retset = new HashSet<>();
 
-        retset.add(skyline.get(0));
-        retset.add(skyline.get(skyline.size()-1));
+       addExtremes(skyline,retset);
 
         HashMap<Plan, HashSet<Plan>> spToDom = new HashMap<>();
         HashMap<Plan, Integer> spToDomSize = new HashMap<>();
@@ -600,7 +541,9 @@ public class SolutionSpace implements Iterable<Plan> {
     public HashSet<Plan> crowdingDistanceScoreNormalized(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
 
 
-//        HashSet<Plan> ret = new HashSet<>();
+        addExtremes(donotchange,ret);
+
+
         if(donotchange.size()<=skylinePlansToKeep){
             ret.addAll(donotchange);
             return ret;
@@ -622,9 +565,6 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         });
 
-        this.sort(true);
-        ret.add(results.get(0));
-        ret.add(results.get(results.size()-1));
 
         int i=0;
         while(i<skylinePlans.size() && ret.size()<skylinePlansToKeep){
@@ -640,7 +580,8 @@ public class SolutionSpace implements Iterable<Plan> {
     public HashSet<Plan> crowdingDistanceScoreNormalizedMin(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
 
 
-        //        HashSet<Plan> ret = new HashSet<>();
+        addExtremes(donotchange,ret);
+
         if(donotchange.size()<=skylinePlansToKeep){
             ret.addAll(donotchange);
             return ret;
@@ -653,7 +594,7 @@ public class SolutionSpace implements Iterable<Plan> {
         long maxRuntime = getMaxRuntime();
         double maxcost = getMaxCost();
         for(Plan p:results){
-            planToScore.put(p,getScore(p,maxRuntime,maxcost));
+            planToScore.put(p,getScoreMin(p,maxRuntime,maxcost));
         }
 
         Collections.sort(skylinePlans, new Comparator<Plan>() {
@@ -661,10 +602,6 @@ public class SolutionSpace implements Iterable<Plan> {
                 return Double.compare(planToScore.get(o2),planToScore.get(o1));
             }
         });
-
-        this.sort(true);
-        ret.add(results.get(0));
-        ret.add(results.get(results.size()-1));
 
         int i=0;
         while(i<skylinePlans.size() && ret.size()<skylinePlansToKeep){
@@ -677,11 +614,11 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-
     public HashSet<Plan> crowdingDistanceScoreNormalized2(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
 
 
-        //        HashSet<Plan> ret = new HashSet<>();
+        addExtremes(donotchange,ret);
+
         if(donotchange.size()<=skylinePlansToKeep){
             ret.addAll(donotchange);
             return ret;
@@ -703,9 +640,6 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         });
 
-        this.sort(true);
-        ret.add(results.get(0));
-        ret.add(results.get(results.size()-1));
 
         int i=0;
         while(i<skylinePlans.size() && ret.size()<skylinePlansToKeep-3){
@@ -727,12 +661,11 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-
     public HashSet<Plan> crowdingDistanceRuntime(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
         //uses runtime to sort crowded spaces
 
-//        HashSet<Plan> ret = new HashSet<>();
-        if(donotchange.size()<=skylinePlansToKeep){
+    addExtremes(donotchange,ret);
+    if(donotchange.size()<=skylinePlansToKeep){
             ret.addAll(donotchange);
             return ret;
         }
@@ -746,9 +679,7 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         });
 
-        this.sort(true);
-        ret.add(results.get(0));
-        ret.add(results.get(results.size()-1));
+
 
         int i=0;
         while(ret.size()<skylinePlansToKeep){
@@ -831,14 +762,12 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public HashSet<Plan> crowdingDistance(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret){
-//        HashSet<Plan> ret = new HashSet<>();
-        ret.add(donotchange.get(0));
-        ret.add(donotchange.get(donotchange.size()-1));
+
+        addExtremes(donotchange,ret);
+
 
         ArrayList<Plan> skylinePlans = new ArrayList<>();
         skylinePlans.addAll(donotchange);
-        skylinePlansToKeep-=2;
-
         int schedulesKept = 0;
         final HashMap<Plan, Double> planDistance = new HashMap<>();
 
@@ -849,12 +778,12 @@ public class SolutionSpace implements Iterable<Plan> {
         });
         for (int p = 0; p < skylinePlans.size(); ++p) {
             if (p == 0 || p == skylinePlans.size() - 1) {
-                planDistance.put(skylinePlans.get(p), 0.0);
+                planDistance.put(skylinePlans.get(p), Double.MAX_VALUE);
             } else {
                 long makespan_prev = skylinePlans.get(0).stats.runtime_MS;
                 long makespan_next = skylinePlans.get(p).stats.runtime_MS;
                 planDistance.put(skylinePlans.get(p),
-                    Math.pow((makespan_next - makespan_prev) / makespan_prev, 2));
+                    (double)Math.abs(makespan_next - makespan_prev));
             }
         }
 
@@ -865,56 +794,37 @@ public class SolutionSpace implements Iterable<Plan> {
         });
         for (int p = 0; p < skylinePlans.size(); ++p) {
             if (p == 0 || p == skylinePlans.size() - 1) {
-                planDistance.put(skylinePlans.get(p), 0.0);
+                planDistance.put(skylinePlans.get(p), Double.MAX_VALUE);
             } else {
                 Double money_prev = skylinePlans.get(0).stats.money;
                 Double money_next = skylinePlans.get(p).stats.money;
                 planDistance.put(skylinePlans.get(p),
-                    planDistance.get(skylinePlans.get(p)) + Math
-                        .pow((double) ((money_next - money_prev) / money_prev), 2));
+                    planDistance.get(skylinePlans.get(p)) * Math
+                        .abs(money_next - money_prev));
             }
         }
 
         Collections.sort(skylinePlans, new Comparator<Plan>() {
             @Override public int compare(Plan o1, Plan o2) {
-                return Double.compare(Math.sqrt(planDistance.get(o1)),
-                    Math.sqrt(planDistance.get(o2)));
+                return Double.compare(planDistance.get(o1),
+                    planDistance.get(o2));
             }
         });
 
-
-
-        for (int p = 0; p < skylinePlans.size(); ++p) {
-            if (p < skylinePlansToKeep) {
-                ++schedulesKept;
-                sortedPrunned.put(p,skylinePlans.get(p));
-            } else
-                skylinePlans.set(p, null);
+        int i=0;
+        while(i<skylinePlans.size()-1 && ret.size()<skylinePlansToKeep){
+                ret.add(skylinePlans.get(i));
+                ++i;
         }
-
-        for(Plan p:skylinePlans){
-            if(p!=null){
-                ret.add(p);
-            }
-        }
-
         return ret;
     }
 
     public HashSet<Plan> crowdingMaxMoney(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret){
-        //        HashSet<Plan> ret = new HashSet<>();
-//        Collections.sort(donotchange, new Comparator<Plan>() {
-//            @Override public int compare(Plan o1, Plan o2) {
-//                return (int) (o1.stats.runtime_MS  - o2.stats.runtime_MS);
-//            }
-//        });
-//
-//        ret.add(donotchange.get(0));
-//        ret.add(donotchange.get(donotchange.size()-1));
+
+        addExtremes(donotchange,ret);
 
         ArrayList<Plan> skylinePlans = new ArrayList<>();
         skylinePlans.addAll(donotchange);
-        skylinePlansToKeep-=2;
 
         int schedulesKept = 0;
         final HashMap<Plan, Double> planDistance = new HashMap<>();
@@ -956,6 +866,24 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
+    public void addExtremes(ArrayList<Plan> plans,HashSet<Plan> ret){
+        Plan maxCost = null, slowest = null;
+        long slowestTime = 0;
+        double maxCostCost = 0.0;
+
+        for(Plan p:plans){
+            if(p.stats.runtime_MS>slowestTime){
+                slowest=p;
+                slowestTime = p.stats.runtime_MS;
+            }
+            if(p.stats.money>maxCostCost){
+                maxCost = p;
+                maxCostCost = p.stats.money;
+            }
+        }
+        ret.add(slowest);
+        ret.add(maxCost);
+    }
 
     public void retainAllAndKeep(SolutionSpace skylinePlansNew, int pruneSkylineSize) {
         HashSet<Plan> tointe = new HashSet<>();
