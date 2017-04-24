@@ -24,7 +24,7 @@ public class Moheft implements Scheduler {
 
 
     protected int skylinePlansToKeep = 20;//10//20
-    protected int skylinePruningOption = 2;
+    protected int skylinePruningOption = 20;
 
     public int maxContainers = 10000000;
 
@@ -336,6 +336,63 @@ public class Moheft implements Scheduler {
                     @Override public int compare(Plan o1, Plan o2) {
                         return Double.compare(Math.sqrt(planDistance.get(o1)),
                             Math.sqrt(planDistance.get(o2)));
+                    }
+                });
+
+                for (int p = 0; p < skylinePlans.size(); ++p) {
+                    if (p < skylinePlansToKeep) {
+                        ++schedulesKept;
+                    } else
+                        skylinePlans.results.set(p, null);
+                }
+
+                Check.True(schedulesKept <= skylinePlansToKeep + 1,
+                    "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
+            }
+
+            if (skylinePlans.size() > skylinePlansToKeep && skylinePruningOption == 20) {
+                // Keep only some schedules in the skyline according to their crowding distance
+
+                int schedulesKept = 0;
+                final HashMap<Plan, Double> planDistance = new HashMap<>();
+
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                    @Override public int compare(Plan o1, Plan o2) {
+                        return Double.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+                    }
+                });
+                for (int p = 0; p < skylinePlans.size(); ++p) {
+                    if (p == 0 || p == skylinePlans.size() - 1) {
+                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
+                    } else {
+                        long makespan_prev = skylinePlans.results.get(0).stats.runtime_MS;
+                        long makespan_next = skylinePlans.results.get(p).stats.runtime_MS;
+                        planDistance.put(skylinePlans.results.get(p),
+                            (double)Math.abs(makespan_next - makespan_prev));
+                    }
+                }
+
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                    @Override public int compare(Plan o1, Plan o2) {
+                        return Double.compare(o1.stats.money, o2.stats.money);
+                    }
+                });
+                for (int p = 0; p < skylinePlans.size(); ++p) {
+                    if (p == 0 || p == skylinePlans.size() - 1) {
+                        planDistance.put(skylinePlans.results.get(p), Double.MAX_VALUE);
+                    } else {
+                        Double money_prev = skylinePlans.results.get(0).stats.money;
+                        Double money_next = skylinePlans.results.get(p).stats.money;
+                        planDistance.put(skylinePlans.results.get(p),
+                            planDistance.get(skylinePlans.results.get(p)) * Math
+                                .abs(money_next - money_prev));
+                    }
+                }
+
+                Collections.sort(skylinePlans.results, new Comparator<Plan>() {
+                    @Override public int compare(Plan o1, Plan o2) {
+                        return Double.compare(planDistance.get(o1),
+                            planDistance.get(o2));
                     }
                 });
 

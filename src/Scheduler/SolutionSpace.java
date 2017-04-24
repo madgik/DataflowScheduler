@@ -73,10 +73,10 @@ public class SolutionSpace implements Iterable<Plan> {
         Plan tp=null;
         double t= Double.MAX_VALUE;
         for(Plan p:results){
-            double tt = p.stats.runtime_MS*0.5+0.5*p.stats.money;
-            if(tt<t){
+            double tt = p.stats.runtime_MS*0.5-0.5*p.stats.money;
+            if( tt<t ){
                 tp = p;
-                t=tt;
+                t = tt;
             }
         }
         return tp;
@@ -266,10 +266,16 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.addAll(retset);
             }else if (method.equals("crowdingScoreDist")) {
                 HashSet<Plan> retset = new HashSet<>();
-                crowdingDistanceScoreNormalized(skyline,k,retset);
+                crowdingDistanceScoreNormalized(skyline, k, retset);
                 this.results.clear();
                 this.results.addAll(retset);
-            }else if (method.equals("crowdingScoreDist2")) {
+            } else if (method.equals("crowdingDistanceScoreNormalizedMin")) {
+                    HashSet<Plan> retset = new HashSet<>();
+                    crowdingDistanceScoreNormalizedMin(skyline,k,retset);
+                    this.results.clear();
+                    this.results.addAll(retset);
+            }
+            else if (method.equals("crowdingScoreDist2")) {
                 HashSet<Plan> retset = new HashSet<>();
                 crowdingDistanceScoreNormalized2(skyline,k,retset);
                 this.results.clear();
@@ -302,10 +308,10 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.clear();
                 this.results.addAll(retset);
             }
-            else if (method.equals("newall")){
+            else if (method.equals("newall")) {
                 HashSet<Plan> retset = new HashSet<>();
-                crowdingDistanceScoreNormalized(skyline,k/2,retset);
-                crowdingDistanceRuntime(skyline,k,retset);
+                crowdingDistanceScoreNormalized(skyline, k / 2, retset);
+                crowdingDistanceRuntime(skyline, k, retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
@@ -527,6 +533,9 @@ public class SolutionSpace implements Iterable<Plan> {
     public double getScore(Plan p, long longest, double maxcost){
         return (0.5*(p.stats.money/maxcost))+(0.5*(p.stats.runtime_MS/longest));
     }
+    public double getScoreMin(Plan p, long longest, double maxcost){
+        return Math.abs((0.5*(p.stats.money/maxcost))-(0.5*(p.stats.runtime_MS/longest)));
+    }
 
 
     public HashSet<Plan> valkanasPruning(ArrayList<Plan> skyline, int k, HashSet<Plan> retset){
@@ -627,6 +636,47 @@ public class SolutionSpace implements Iterable<Plan> {
 
         return ret;
     }
+
+    public HashSet<Plan> crowdingDistanceScoreNormalizedMin(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
+
+
+        //        HashSet<Plan> ret = new HashSet<>();
+        if(donotchange.size()<=skylinePlansToKeep){
+            ret.addAll(donotchange);
+            return ret;
+        }
+
+        ArrayList<Plan> skylinePlans = new ArrayList<>();
+        skylinePlans.addAll(donotchange);
+
+        HashMap<Plan,Double> planToScore = new HashMap<>();
+        long maxRuntime = getMaxRuntime();
+        double maxcost = getMaxCost();
+        for(Plan p:results){
+            planToScore.put(p,getScore(p,maxRuntime,maxcost));
+        }
+
+        Collections.sort(skylinePlans, new Comparator<Plan>() {
+            @Override public int compare(Plan o1, Plan o2) {
+                return Double.compare(planToScore.get(o2),planToScore.get(o1));
+            }
+        });
+
+        this.sort(true);
+        ret.add(results.get(0));
+        ret.add(results.get(results.size()-1));
+
+        int i=0;
+        while(i<skylinePlans.size() && ret.size()<skylinePlansToKeep){
+            if(!ret.contains(skylinePlans.get(i))){
+                ret.add(skylinePlans.get(i));
+            }
+            i++;
+        }
+
+        return ret;
+    }
+
 
     public HashSet<Plan> crowdingDistanceScoreNormalized2(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
 

@@ -67,7 +67,7 @@ public class Main {
             }
         }else{
 
-            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
+            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
             runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,100);
 
 
@@ -146,24 +146,27 @@ public class Main {
 
         SolutionSpace combined = new SolutionSpace();
 
-        //SolutionSpace solValkanas = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined,combined);
-//        SolutionSpace solValkanas1and2 = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined,combined);
+//        SolutionSpace solValkanas = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined);
+//        SolutionSpace solValkanas1and2 = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
         System.out.println("valkDone");
 //        SolutionSpace solCrowdscoreDistMaxMoney = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
 
-        //        SolutionSpace solCrowd = execute(graph,true,"crowding", mpinfo, "P_crowding", sbOut,combined);
+        //SolutionSpace solCrowd = execute(graph,true,"crowding", mpinfo, "P_crowding", sbOut,combined);
 //        SolutionSpace solCrowdMoney = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
 //        SolutionSpace solCrowdRuntime = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
 //        SolutionSpace solCrowdRuntime = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
-        SolutionSpace solCrowdScoreDist2 = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);
+//        SolutionSpace solCrowdScoreDist2 = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);
 
-        SolutionSpace solCrowdScoreDist = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
+
+        SolutionSpace solCrowdScoreDistMIN = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
+
+                SolutionSpace solCrowdScoreDist = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
 //        System.out.println("paretoCrowdDonw");
 //        SolutionSpace solCrowdNewAll = execute(graph,true,"newall", mpinfo,"NewAll",sbOut,combined);//
 //        SolutionSpace solCrowdNewAll2 = execute(graph,true,"newall2", mpinfo,"NewAll_Money",sbOut,combined);
 
 
-//        SolutionSpace solCrowdNoPrune = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
+        SolutionSpace solCrowdNoPrune = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
 
         System.out.println("paretoDone");
 
