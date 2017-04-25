@@ -11,7 +11,7 @@ public class RuntimeConstants {
      * Quantum size (in seconds)
      * Default: 1 hour
      */
-    public static long quantum_MS = 3600 * 1000;
+    public static long quantum_MS = 1000;//3600 * 1000;
 
     /**
      * Network speed (in MB/sec)

@@ -34,7 +34,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./crowdScore/";
+        pathPlot = "./crowdScore2/";
         pathOut = "./results/";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
@@ -67,9 +67,10 @@ public class Main {
             }
         }else{
 
-            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
-            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
-//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,100);
+            runDax(jar,jarpath+"LIGO.n.100.0.dax",1,1);
+            runDax(jar,jarpath+"LIGO.n.200.0.dax",1,1);
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1,100);
+//            runDax(jar,jarpath+"GENOME.n.100.0.dax",100,10);
 
 
             //            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
@@ -117,7 +118,6 @@ public class Main {
         }
         //TODO: Run the simulation to validate the results for the space of solutions
     }
-    static String finamename = "";
 
     public static SolutionSpace execute(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined){
         SolutionSpace space = new SolutionSpace();
@@ -142,12 +142,6 @@ public class Main {
     public static void runDAG(DAG graph, String paremetersToPrint, String type)
     {
 
-        String filesname =
-            type +
-                "___"+paremetersToPrint.replace(" ","_")+
-                "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+//"_ccr_"+ccr+"__"+
-                (new java.util.Date()).toString().replace(" ","_");
-
         StringBuilder sbOut = new StringBuilder();
 
         sbOut.append("Running "+type+" "+paremetersToPrint+ " Pareto, Moheft").append("\n");
@@ -157,31 +151,32 @@ public class Main {
         SolutionSpace combined = new SolutionSpace();
         plotUtility plot = new plotUtility();
 
-        finamename = filesname;
-//       SolutionSpace solValkanas = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined);
-//        SolutionSpace solValkanas1and2 = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
-        System.out.println("valkDone");
-        SolutionSpace solCrowdscoreDistMaxMoney = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
+        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
 
-//        SolutionSpace solCrowd = execute(graph,true,"crowding", mpinfo, "P_crowding", sbOut,combined);
-//        SolutionSpace solCrowdMoney = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
-//        SolutionSpace solCrowdRuntime = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
-//        SolutionSpace solCrowdRuntime = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
-//        SolutionSpace solCrowdScoreDist2 = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowding", mpinfo, "P_crowding", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);
+//          SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxDist", mpinfo,"P_crowdingMaxDist", sbOut,combined);
 
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
 
-//        SolutionSpace solCrowdScoreDistMIN = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
-//        SolutionSpace solCrowdScoreDist = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
-//        System.out.println("paretoCrowdDonw");
-//        SolutionSpace solCrowdNewAll = execute(graph,true,"newall", mpinfo,"NewAll",sbOut,combined);//
-//        SolutionSpace solCrowdNewAll2 = execute(graph,true,"newall2", mpinfo,"NewAll_Money",sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"newall", mpinfo,"NewAll",sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"newall2", mpinfo,"NewAll_Money",sbOut,combined);
 
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdandScore", mpinfo,"P_crowdAndScore", sbOut,combined);
 
-//        SolutionSpace solCrowdNoPrune = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
 
+        String addToFilename = "_MinValk";
 
+        combined.addAll(paretoToCompare);
 
-        boolean moheft = false;
+        boolean moheft = true;
 
         System.out.println("paretoDone");
 
@@ -200,11 +195,11 @@ public class Main {
 
         }
 
+
     sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges()).append("\n");
     sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
-    //        sbOut.append("paretoAll "+type+" time -> " + solCrowdNewAll.optimizationTime_MS/1000).append("\n");
-    //        sbOut.append("paretoNP "+type+" time -> " + solCrowdNoPrune.optimizationTime_MS/1000).append("\n");
-    sbOut.append("moheft " + type + " time -> " + solutionsM.optimizationTime_MS / 1000).append("\n");
+    sbOut.append("pareto " + type + " time(sec) -> " + paretoToCompare.optimizationTime_MS/1000).append("\n");
+    sbOut.append("moheft " + type + " time(sec) -> " + solutionsM.optimizationTime_MS / 1000).append("\n");
 
 
 
@@ -217,32 +212,32 @@ public class Main {
 
 
     try {
-        //            distMtoC = computeDistance(solutionsM,combined).P2Sky;
-        //            legendInfo.add(new Pair<>("distMtoC",distMtoC));
-        //
-        //            distPtoC = computeDistance(solutions,combined).P2Sky;
-        //            legendInfo.add(new Pair<>("distPtoC",distPtoC));
-        //
-        //            distCtoM = computeDistance(combined,solutionsM).P2Sky;
-        //            legendInfo.add(new Pair<>("distCtoM",distCtoM));
-        //
-        //            distCtoP = computeDistance(combined,solutions).P2Sky;
-        //            legendInfo.add(new Pair<>("distCtoP",distCtoP));
-        //
-        //            JaccardMtoC = computeJaccard(solutionsM,combined);
-        //            legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
-        //
-        //            JaccardPtoC = computeJaccard(solutions,combined);
-        //            legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
+
+        distMtoC = computeDistance(solutionsM,combined).P2Sky;
+        legendInfo.add(new Pair<>("distMtoC",distMtoC));
+
+        distPtoC = computeDistance(paretoToCompare,combined).P2Sky;
+        legendInfo.add(new Pair<>("distPtoC",distPtoC));
+
+//        distCtoM = computeDistance(combined,solutionsM).P2Sky;
+//        legendInfo.add(new Pair<>("distCtoM",distCtoM));
+//
+//        distCtoP = computeDistance(combined,paretoToCompare).P2Sky;
+//        legendInfo.add(new Pair<>("distCtoP",distCtoP));
+
+        JaccardMtoC = computeJaccard(solutionsM,combined);
+        legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
+
+        JaccardPtoC = computeJaccard(paretoToCompare,combined);
+        legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
 
         sbOut.append("Jaccard from M to C " + JaccardMtoC).append("\n");
         sbOut.append("Jaccard from P to C " + JaccardPtoC).append("\n");
 
-
         sbOut.append("distance from M to C " + distMtoC).append("\n");
         sbOut.append("distance from P to C " + distPtoC).append("\n");
-        sbOut.append("distance from C to M " + distCtoM).append("\n");
-        sbOut.append("distance from C to P " + distCtoP).append("\n");
+//        sbOut.append("distance from C to M " + distCtoM).append("\n");
+//        sbOut.append("distance from C to P " + distCtoP).append("\n");
 
 
         legendInfo.add(new Pair<String, Double>("nodes", (double) graph.getOperators().size()));
@@ -250,15 +245,14 @@ public class Main {
 
         //            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
         //            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
-        //            double diffF = solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS;
-        //            double diffS = solutions.optimizationTime_MS/solutions.getSlowest().stats.runtime_MS;
-        //            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastest().stats.runtime_MS+solutions.getSlowest().stats.runtime_MS)/2);
-        //
-        //            legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
-        //            legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
-        //            legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
-        //            legendInfo.add(new Pair<String,Double>("Moheft-paretoNP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutions.optimizationTime_MS)));
-        //            legendInfo.add(new Pair<String,Double>("Moheft-paretoP (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - solutionsPNP.optimizationTime_MS)));
+        double diffF = paretoToCompare.optimizationTime_MS/paretoToCompare.getFastest().stats.runtime_MS;
+        double diffS = paretoToCompare.optimizationTime_MS/paretoToCompare.getSlowest().stats.runtime_MS;
+        double meanDiff = paretoToCompare.optimizationTime_MS / ((paretoToCompare.getFastest().stats.runtime_MS+paretoToCompare.getSlowest().stats.runtime_MS)/2);
+
+        legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
+        legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
+        legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
+        legendInfo.add(new Pair<String,Double>("Moheft-pareto (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - paretoToCompare.optimizationTime_MS)));
 
 
 
@@ -268,16 +262,14 @@ public class Main {
 
     double ccr = graph.computeCCR();
 
+    String filesname =
+            type +addToFilename+
+                "___"+paremetersToPrint.replace(" ","_")+
+                "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+"_ccr_"+ccr+"__"+
+                (new java.util.Date()).toString().replace(" ","_");
+
+
     legendInfo.add(new Pair<String, Double>("ccr", ccr));
-
-
-    //        sbOut.append("toCompare: "+ type + " sumDataGB: "+(graph.sumdata_B / 1073741824) +" "+
-    //            paremetersToPrint               +
-    //            " paretoOptTime_MS: "+ solCrowdNoPrune.optimizationTime_MS + " MoheftOptimizationTime_MS: "+solutionsM.optimizationTime_MS +
-    //            " MtoC "+ distMtoC +" PtoC "+ distPtoC+" CtoM "+ distCtoM +" CtoP "+ distCtoP + " JMtoC "+ JaccardMtoC +" JPtoC "+ JaccardPtoC)
-    //            .append(" ccr ").append(ccr).append("\n");
-
-
 
     if (showOutput) {
         System.out.println(sbOut.toString());

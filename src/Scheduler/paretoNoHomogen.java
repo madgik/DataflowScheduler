@@ -21,7 +21,7 @@ public class paretoNoHomogen implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 25;
+    public int pruneSkylineSize = 30;
 
 
 

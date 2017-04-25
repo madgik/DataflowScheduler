@@ -286,8 +286,8 @@ public class SolutionSpace implements Iterable<Plan> {
                 crowdingDistanceRuntime(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
-            }else if (method.equals("crowdingSimpleDist")) {
-                crowdingDistanceSimpleDist(skyline,k,retset);
+            }else if (method.equals("crowdingMaxDist")) {
+                crowdingDistanceMaxDist(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("crowding")) {
@@ -314,6 +314,12 @@ public class SolutionSpace implements Iterable<Plan> {
             }else if (method.equals("scoreDist+maxMoney")){
                 crowdingMaxMoney(skyline,k/2+1,retset);
                 crowdingDistanceScoreNormalized(skyline,k,retset);
+                this.results.clear();
+                this.results.addAll(retset);
+            }
+            else if (method.equals("crowdandScore")){
+                crowdingDistanceScoreNormalized(skyline,5*k/7,retset);
+                crowdingDistance(skyline,k,retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
@@ -727,16 +733,42 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-    public HashSet<Plan> crowdingDistanceSimpleDist(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
+    public HashSet<Plan> crowdingDistanceMaxDist(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
 
-//        HashSet<Plan> ret = new HashSet<>();
+
         if(donotchange.size()<=skylinePlansToKeep){
             ret.addAll(donotchange);
             return ret;
         }
 
+        addExtremes(donotchange,ret);
+
         ArrayList<Plan> skylinePlans = new ArrayList<>();
         skylinePlans.addAll(donotchange);
+
+//        double dist1= Double.MAX_VALUE;
+//        double dist2 = Double.MAX_VALUE;
+
+        final HashMap<Plan, Double> planDistance = new HashMap<>();
+
+        ArrayList<Double> sortedList = new ArrayList<>();
+
+//        dist1 = Math.min(calculateEuclidean(donotchange.get(2),donotchange.get(0)),calculateEuclidean(donotchange.get(2),donotchange.get(1)));
+//        dist2 = Math.max(calculateEuclidean(donotchange.get(2),donotchange.get(0)),calculateEuclidean(donotchange.get(2),donotchange.get(1)));
+
+        for(Plan p:donotchange){
+//            dist1= Double.MAX_VALUE;
+//            dist2 = Double.MAX_VALUE;
+            sortedList.clear();
+            for(int i=0;i<donotchange.size();++i){
+                Plan pp = donotchange.get(i);
+                if(p == pp)continue;
+                sortedList.add(calculateEuclidean(p,pp));
+            }
+            Collections.sort(sortedList);
+            planDistance.put(p,Math.max(sortedList.get(0),sortedList.get(1)));
+
+        }
 
 
         Collections.sort(skylinePlans, new Comparator<Plan>() {
@@ -744,10 +776,6 @@ public class SolutionSpace implements Iterable<Plan> {
                 return Double.compare(o1.stats.money, o2.stats.money);
             }
         });
-
-        this.sort(true);
-        ret.add(results.get(0));
-        ret.add(results.get(results.size()-1));
 
         int i=0;
         while(ret.size()<skylinePlansToKeep){
@@ -896,6 +924,12 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         }
         results=t;
+    }
+
+    public double calculateEuclidean(Plan a,Plan b){
+        double x = a.stats.runtime_MS - a.stats.runtime_MS;
+        double y = b.stats.money - b.stats.money;
+        return Math.sqrt((x*x)+(y*y));
     }
 }
 
