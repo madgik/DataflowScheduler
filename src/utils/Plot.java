@@ -6,12 +6,14 @@ import Scheduler.Plan;
 
 import Scheduler.SolutionSpace;
 import org.jfree.chart.*;
+import org.jfree.chart.axis.AxisState;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
+import org.jfree.ui.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.ChartFactory;
@@ -23,6 +25,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -84,11 +88,14 @@ public class Plot extends ApplicationFrame {
                 PlotOrientation.VERTICAL, true, true, false);
 
 
+            chart.getXYPlot().getDomainAxis().setLowerMargin(0);
+        chart.getXYPlot().getRangeAxis().setLowerMargin(0);
 
-            ChartPanel chartPanel;
+        ChartPanel chartPanel;
             chartPanel = new ChartPanel(chart);
             chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
             setContentPane(chartPanel);
+
 
         if (save) {
             File f = new File(path + name+".png");
@@ -121,6 +128,9 @@ public class Plot extends ApplicationFrame {
         JFreeChart chart = ChartFactory.createXYLineChart("Time/Money",  "Money", "Time (Minutes)",data, PlotOrientation.VERTICAL, true, true, false);
 
         XYPlot plot = (XYPlot)chart.getPlot();
+
+        plot.getDomainAxis().setLowerMargin(0);
+        plot.getRangeAxis().setLowerMargin(0);
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 

@@ -45,9 +45,13 @@ public class SolutionSpace implements Iterable<Plan> {
         return results.size();
     }
 
-    public Plan getFastest(){
-        this.sort(true);
-        return results.get(0);
+    public long getFastestTime(){
+        long runtime=Long.MAX_VALUE;
+        for(Plan p:results){
+            runtime = Math.min(runtime,p.stats.runtime_MS);
+        }
+        return runtime;
+
     }
     public long getMaxRuntime(){
         long runtime=0;
@@ -60,6 +64,21 @@ public class SolutionSpace implements Iterable<Plan> {
         double cost = 0;
         for(Plan p:results){
             cost = Math.max(cost,p.stats.money);
+        }
+        return cost;
+    }
+
+    public long getMinRuntime(){
+        long runtime=Long.MAX_VALUE;
+        for(Plan p:results){
+            runtime = Math.min(runtime,p.stats.runtime_MS);
+        }
+        return runtime;
+    }
+    public double getMinCost(){
+        double cost = Double.MAX_VALUE;
+        for(Plan p:results){
+            cost = Math.min(cost,p.stats.money);
         }
         return cost;
     }
@@ -306,6 +325,11 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.clear();
                 this.results.addAll(retset);
             }
+            else if (method.equals("jjPrune")) {
+                jjPrune(skyline, k , retset);
+                this.results.clear();
+                this.results.addAll(retset);
+            }
             else if (method.equals("newall2")){
                 crowdingDistanceScoreNormalized(skyline,k/2,retset);
                 crowdingDistanceMoney(skyline,k,retset);
@@ -482,6 +506,7 @@ public class SolutionSpace implements Iterable<Plan> {
     public double getScore(Plan p, long longest, double maxcost){
         return (0.5*(p.stats.money/maxcost))+(0.5*(p.stats.runtime_MS/longest));
     }
+
     public double getScoreMin(Plan p, long longest, double maxcost){
         return Math.abs((0.5*(p.stats.money/maxcost))-(0.5*(p.stats.runtime_MS/longest)));
     }
@@ -894,6 +919,117 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
+    public HashSet<Plan> jjPrune(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret){
+
+        addExtremes(donotchange,ret);
+        
+//        Collections.sort(donotchange, new Comparator<Plan>() {
+//            @Override public int compare(Plan o1, Plan o2) {
+//                return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+//            }
+//        });
+//
+//        Plan slowest = donotchange.get(donotchange.size()-1);
+//        Plan fastest = donotchange.get(0);
+//
+//
+//        ArrayList<Plan> skylinePlans = new ArrayList<>();
+//
+//        Collections.sort(results, new Comparator<Plan>() {
+//            @Override public int compare(Plan o1, Plan o2) {
+//                return Double.compare(o1.stats.money,o2.stats.money);
+//            }
+//        });
+//        ArrayList<Pair<Plan,Double>> tosort = new ArrayList<>();
+//
+//        for(int i=0;i<size()-1;++i){
+//            tosort.add(new Pair( results.get(i),costPerTime(results.get(i),results.get(i+1)) ) );
+//        }
+//        Collections.sort(tosort, new Comparator<Pair<Plan, Double>>() {
+//            @Override
+//            public int compare(Pair<Plan, Double> o1, Pair<Plan, Double> o2) {
+//                return (int)Double.compare(o1.b,o2.b);
+//            }
+//        });
+//
+////        Plan knee = tosort.get(0).a;
+////
+////        long dist1 = slowest.stats.runtime_MS - knee.stats.runtime_MS;
+////        long dist2 = knee.stats.runtime_MS - fastest.stats.runtime_MS;
+
+        HashMap<Plan,Double> planMetric = new HashMap<>();
+        ArrayList<Plan> knees = getKneess(donotchange,planMetric);
+        ArrayList<Pair<Plan,Double>> tosort = new ArrayList<>();
+
+
+
+//        for(Plan p:donotchange){
+        for(int j=1;j<donotchange.size()-1;++j){
+            Plan p = donotchange.get(j);
+            tosort.add(new Pair<Plan, Double>(p,(0.5*planMetric.get(p))+(0.5*minDist(p,knees)) ));
+        }
+
+        Collections.sort(tosort, new Comparator<Pair<Plan, Double>>() {
+                        @Override
+                        public int compare(Pair<Plan, Double> o1, Pair<Plan, Double> o2) {
+                            return (int)Double.compare(o1.b,o2.b);
+                        }
+                    });
+
+        int i=0;
+        while(ret.size()<k){
+            ret.add(tosort.get(i).a);
+            ++i;
+        }
+
+        return ret;
+    }
+
+
+    public ArrayList<Plan> getKneess(ArrayList<Plan> pp,HashMap<Plan,Double> planMetric){
+        Collections.sort(pp,new Comparator<Plan>() {
+            @Override public int compare(Plan o1, Plan o2) {
+                return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+            }
+        });
+        SolutionSpace plans = new SolutionSpace();
+        ArrayList<Plan> knees = new ArrayList<>();
+        plans.addAll(pp);
+        int i=1;
+        double d = 0.0;
+        for(;i<plans.size()-1;++i){
+            Plan p0 = plans.results.get(i-1);
+            Plan p1 = plans.results.get(i);
+            Plan p2 = plans.results.get(i+1);
+            d+=plans.getDer(p0,p1,p2);
+            planMetric.put(p1,d);
+        }
+        i=1;
+        double davvg = d/(plans.results.size()-2);
+        for(;i<plans.results.size()-1;++i){
+            Plan p0 = plans.results.get(i-1);
+            Plan p1 = plans.results.get(i);
+            Plan p2 = plans.results.get(i+1);
+            if(plans.getDer(p0,p1,p2)>davvg){
+                knees.add(p1);
+            }
+        }
+        return knees;
+    }
+    public double minDist(Plan p,ArrayList<Plan> knees){
+        Plan r = null;
+        double dist = Double.MAX_VALUE;
+        double td;
+        for(Plan pp:knees){
+            td = calculateEuclidean(p,pp);
+            if( td<dist ) {
+                dist = td;
+                r = pp;
+            }
+        }
+        return Math.abs(r.stats.money - p.stats.money);
+    }
+
     public void addExtremes(ArrayList<Plan> plans,HashSet<Plan> ret){
         Plan maxCost = null, slowest = null;
         long slowestTime = 0;
@@ -927,10 +1063,66 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public double calculateEuclidean(Plan a,Plan b){
-        double x = a.stats.runtime_MS - a.stats.runtime_MS;
-        double y = b.stats.money - b.stats.money;
+        double x = a.stats.runtime_MS - b.stats.runtime_MS;
+        double y = a.stats.money - b.stats.money;
         return Math.sqrt((x*x)+(y*y));
     }
+
+    public Plan getMaxCostPlan() {
+        double cost = 0;
+        Plan pl = null;
+
+        for(Plan p:results){
+            if(p.stats.money>cost){
+                cost = p.stats.money;
+                pl = p;
+            }
+
+        }
+        return pl;
+    }
+    public Plan getMinCostPlan() {
+        double cost = Double.MAX_VALUE;
+        Plan pl = null;
+
+        for(Plan p:results){
+            if(p.stats.money<cost){
+                cost = p.stats.money;
+                pl = p;
+            }
+
+        }
+        return pl;
+    }
+
+    public  double costPerTime(Plan p0, Plan p1){
+        //sort by money first
+        double moneyImprov = ((p1.stats.money - p0.stats.money) *100 )/ p0.stats.money;
+        double timeImprov = ((double)(Math.abs(p1.stats.runtime_MS - p0.stats.runtime_MS))*100 )/ (double)p0.stats.runtime_MS;
+
+        return timeImprov/moneyImprov;
+
+    }
+
+    public double getDer(Plan p0, Plan p1, Plan p2){
+        //sort by money first
+        Statistics p0Stats = p0.stats;
+        Statistics p1Stats = p1.stats;
+        Statistics p2Stats = p2.stats;
+
+        double aR = p0Stats.money - p1Stats.money;
+        double bR = p1Stats.runtime_MS - p0Stats.runtime_MS;
+        double aL = p2Stats.money - p1Stats.money;
+        double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
+
+        double thetaL = bR/aR;
+        double thetaR = bL/aL;
+        double theta2P1 = Math.abs(thetaL - thetaR);
+
+        return theta2P1;
+    }
+
+
 }
 
 

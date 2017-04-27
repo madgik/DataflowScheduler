@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import static utils.Jaccard.computeJaccard;
@@ -34,7 +36,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./crowdScore2/";
+        pathPlot = "./plots/";
         pathOut = "./results/";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
@@ -59,7 +61,7 @@ public class Main {
             }else if(flow.contains("runMul")) {
                 runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
 
-                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",100,100);
+                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
             }else{
                 String mt = System.getProperty("mt");
                 String md = System.getProperty("md");
@@ -67,11 +69,11 @@ public class Main {
             }
         }else{
 
-            runDax(jar,jarpath+"LIGO.n.100.0.dax",1,1);
-            runDax(jar,jarpath+"LIGO.n.200.0.dax",1,1);
-            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1,100);
-//            runDax(jar,jarpath+"GENOME.n.100.0.dax",100,10);
-
+            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
+            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,10);
+            runDax(jar,jarpath+"GENOME.n.100.0.dax",100,10);
+//
 
             //            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
 
@@ -151,7 +153,7 @@ public class Main {
         SolutionSpace combined = new SolutionSpace();
         plotUtility plot = new plotUtility();
 
-        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
 
@@ -159,10 +161,12 @@ public class Main {
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);jjPrune
 //          SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxDist", mpinfo,"P_crowdingMaxDist", sbOut,combined);
+        SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"P_jjPrune", sbOut,combined);
 
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
+
+        //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
 
 //        SolutionSpace paretoToCompare = execute(graph,true,"newall", mpinfo,"NewAll",sbOut,combined);
@@ -174,6 +178,55 @@ public class Main {
 
         String addToFilename = "_MinValk";
 
+        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
+            @Override public int compare(Plan o1, Plan o2) {
+                return Double.compare(o1.stats.money,o2.stats.money);
+            }
+        });
+        int i=1;
+        double d = 0.0;
+        for(;i<paretoToCompare.size()-1;++i){
+            Plan p0 = paretoToCompare.results.get(i-1);
+            Plan p1 = paretoToCompare.results.get(i);
+            Plan p2 = paretoToCompare.results.get(i+1);
+//            System.out.println(paretoToCompare.getDer(p0,p1,p2) );
+            d+=paretoToCompare.getDer(p0,p1,p2);
+        }
+        String a;i=1;
+        double davvg = d/(paretoToCompare.size()-2);
+        for(;i<paretoToCompare.size()-1;++i){
+            Plan p0 = paretoToCompare.results.get(i-1);
+            Plan p1 = paretoToCompare.results.get(i);
+            Plan p2 = paretoToCompare.results.get(i+1);
+            if(paretoToCompare.getDer(p0,p1,p2)>davvg){
+                a = "KNEE";
+            }else{
+                a="";
+            }
+            System.out.println(paretoToCompare.getDer(p0,p1,p2) + "  "+i+"  " + a);
+        }
+
+
+
+        double c=0.0;
+        System.out.println("#############");
+        for(i=0;i<paretoToCompare.size()-1;++i){
+//            System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1)));
+            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
+        }
+        double avg = (c/(paretoToCompare.size()-2));
+        System.out.println("%%% "+(c/(paretoToCompare.size()-2)));
+        for(i=0;i<paretoToCompare.size()-1;++i){
+            double dist = paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
+            if(dist>avg) {
+                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
+                    paretoToCompare.results.get(i + 1)) +" "+ (i+1) + " KNEE");
+            }else{
+                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
+                    paretoToCompare.results.get(i + 1))  +" "+ (i+1) );
+            }
+            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
+        }
         combined.addAll(paretoToCompare);
 
         boolean moheft = true;
@@ -190,7 +243,7 @@ public class Main {
 
             sbOut.append(solutionsM.toString());
 
-            mpinfo.add("moheft " + (solutionsM.optimizationTime_MS), solutionsM.results);
+//            mpinfo.add("moheft ("+solutionsM.size()+") " + (solutionsM.optimizationTime_MS), solutionsM.results);
             combined.addAll(solutionsM);
 
         }
@@ -212,6 +265,10 @@ public class Main {
 
 
     try {
+
+        addImprovementsToLegend(solutionsM,paretoToCompare,legendInfo);
+
+        addDistanceToLegend(solutionsM,paretoToCompare,legendInfo);
 
         distMtoC = computeDistance(solutionsM,combined).P2Sky;
         legendInfo.add(new Pair<>("distMtoC",distMtoC));
@@ -243,11 +300,11 @@ public class Main {
         legendInfo.add(new Pair<String, Double>("nodes", (double) graph.getOperators().size()));
         legendInfo.add(new Pair<String, Double>("edges", (double) graph.sumEdges()));
 
-        //            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
-        //            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
-        double diffF = paretoToCompare.optimizationTime_MS/paretoToCompare.getFastest().stats.runtime_MS;
+        //            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastestTime());
+        //            System.out.println((solutions.optimizationTime_MS/solutions.getFastestTime()));
+        double diffF = paretoToCompare.optimizationTime_MS/paretoToCompare.getFastestTime();
         double diffS = paretoToCompare.optimizationTime_MS/paretoToCompare.getSlowest().stats.runtime_MS;
-        double meanDiff = paretoToCompare.optimizationTime_MS / ((paretoToCompare.getFastest().stats.runtime_MS+paretoToCompare.getSlowest().stats.runtime_MS)/2);
+        double meanDiff = paretoToCompare.optimizationTime_MS / ((paretoToCompare.getFastestTime()+paretoToCompare.getSlowest().stats.runtime_MS)/2);
 
         legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
         legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
@@ -301,6 +358,90 @@ public class Main {
 
     }
 
+    private static void addDistanceToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare,ArrayList<Pair<String, Double>> legendInfo) {
+
+        double disM = calculateRangeDistance(solutionsM);
+        double disP = calculateRangeDistance(paretoToCompare);
+        legendInfo.add(new Pair<String,Double>("disRangeMoheft",disM));
+        legendInfo.add(new Pair<String,Double>("disRangePareto",disP));
+        legendInfo.add(new Pair<String,Double>("disRangeComparison (+)",disM-disP));
+
+    }
+    private static double calculateRangeDistance(SolutionSpace space) {
+        double range = calculateEuclidean(space.getMaxCostPlan(),space.getMinCostPlan());
+        double sum = 0.0;
+        Collections.sort(space.results, new Comparator<Plan>() {
+            @Override public int compare(Plan o1, Plan o2) {
+                return Double.compare(o1.stats.money,o2.stats.money);
+            }
+        });
+        for(int i=0;i<space.size()-1;++i){
+            sum += calculateEuclidean(space.results.get(i+1), space.results.get(i));
+        }
+        double avg = sum/(space.size()-1);
+
+        sum = 0.0;
+        for(int i=0;i<space.size()-1;++i){
+            sum += ( Math.abs( calculateEuclidean(space.results.get(i+1), space.results.get(i))  - avg))/range;
+        }
+
+        return sum;
+    }
+
+    private static void addImprovementsToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare, ArrayList<Pair<String, Double>> legendInfo) {
+        double maxdist = 0.0;
+        double mindist = Double.MAX_VALUE;
+        Plan tplan = null;
+
+        double maxdistMoney =  Double.MAX_VALUE;
+        double maxdistTime = Long.MAX_VALUE;
+
+        double dist = 0.0;
+        double tdist;
+        boolean isparetoSmaller = true;
+        SolutionSpace minSpace = paretoToCompare;
+        SolutionSpace maxSpace = solutionsM;
+
+        if( minSpace.size() > maxSpace.size() ){
+            minSpace = solutionsM;
+            maxSpace = paretoToCompare;
+            isparetoSmaller = false;
+        }
+
+        for(Plan minp:solutionsM){
+            tdist = Double.MAX_VALUE;
+            for(Plan maxp:paretoToCompare){
+                if(tdist>calculateEuclidean(minp,maxp)){
+                    tdist = calculateEuclidean(minp,maxp);
+                    tplan = maxp;
+                }
+                tdist = Math.min(tdist, calculateEuclidean(minp,maxp));
+            }
+            if(isparetoSmaller){
+                maxdistMoney = Math.max(maxdistMoney,  ( (minp.stats.money - tplan.stats.money)/tplan.stats.money)*100 );//pros8esa () kai sta tessera!
+                maxdistTime  = Math.max(maxdistTime,    ( (minp.stats.runtime_MS - tplan.stats.runtime_MS) /tplan.stats.runtime_MS)*100   );
+            }else{
+                maxdistMoney = Math.max(maxdistMoney,  ( (tplan.stats.money - minp.stats.money) /minp.stats.money)*100  );
+                maxdistTime  = Math.max(maxdistTime,    ( (tplan.stats.runtime_MS - minp.stats.runtime_MS) /minp.stats.runtime_MS)*100   );
+            }
+
+        }
+
+
+        legendInfo.add(new Pair<String,Double>("FastestImprovement (+)", (double) ( ((solutionsM.getFastestTime() - paretoToCompare.getFastestTime())/paretoToCompare.getFastestTime()) * (100) ) ));
+        legendInfo.add(new Pair<String,Double>("CheapestImprovement (+)", (double) ( ((solutionsM.getMinCost() - paretoToCompare.getMinCost())/paretoToCompare.getMinCost()) * (100) ) ));
+
+        legendInfo.add(new Pair<>("maxMoneyImprov (+)",maxdistMoney));
+        legendInfo.add(new Pair<>("maxTimeImprov (+)",maxdistTime));
+
+
+    }
+
+    public static double calculateEuclidean(Plan a,Plan b){
+        double x = a.stats.runtime_MS - b.stats.runtime_MS;
+        double y = a.stats.money - b.stats.money;
+        return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
+    }
 
     private static void runDax(boolean jar, String file, int mulTime, int mulData) {
 
@@ -607,11 +748,11 @@ public class Main {
             legendInfo.add(new Pair<String,Double>("nodes",(double)graph.getOperators().size()));
             legendInfo.add(new Pair<String,Double>("edges",(double)graph.sumEdges()));
 
-            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastest().stats.runtime_MS);
-            System.out.println((solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS));
-            double diffF = solutions.optimizationTime_MS/solutions.getFastest().stats.runtime_MS;
+            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastestTime());
+            System.out.println((solutions.optimizationTime_MS/solutions.getFastestTime()));
+            double diffF = solutions.optimizationTime_MS/solutions.getFastestTime();
             double diffS = solutions.optimizationTime_MS/solutions.getSlowest().stats.runtime_MS;
-            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastest().stats.runtime_MS+solutions.getSlowest().stats.runtime_MS)/2);
+            double meanDiff = solutions.optimizationTime_MS / ((solutions.getFastestTime()+solutions.getSlowest().stats.runtime_MS)/2);
 
             legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
             legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));

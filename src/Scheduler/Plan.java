@@ -61,6 +61,8 @@ public class Plan  {
 
     }
 
+
+
     public Plan(Plan p) {
         this.vmUpgrading = p.vmUpgrading;
         this.graph = p.graph;
@@ -662,6 +664,7 @@ public class Plan  {
 
         }
     }
+
 
 
 
