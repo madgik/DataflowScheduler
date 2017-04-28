@@ -51,6 +51,7 @@ public class plotUtility {
     public  void plotMultipleWithLine(SolutionSpace combined,ArrayList<Pair<String,Double>> legendInfo ,MultiplePlotInfo info,String name,String path, Boolean save,Boolean show){
         final Plot demo = new Plot(combined,legendInfo,info,name, path,save,show);
         if(show) {
+
             demo.pack();
             RefineryUtilities.centerFrameOnScreen(demo);
             demo.setVisible(true);

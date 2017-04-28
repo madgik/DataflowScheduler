@@ -957,28 +957,37 @@ public class SolutionSpace implements Iterable<Plan> {
 ////        long dist1 = slowest.stats.runtime_MS - knee.stats.runtime_MS;
 ////        long dist2 = knee.stats.runtime_MS - fastest.stats.runtime_MS;
 
-        HashMap<Plan,Double> planMetric = new HashMap<>();
-        ArrayList<Plan> knees = getKneess(donotchange,planMetric);
-        ArrayList<Pair<Plan,Double>> tosort = new ArrayList<>();
+        HashMap<Plan,Double> secondDer = new HashMap<>();
+        ArrayList<Plan> knees = getKneess(donotchange,secondDer);
+        ArrayList<Pair<Plan,Double>> finalMetric = new ArrayList<>();
+
+        double maxSecondDer = 0.0;
+        for(Double der:secondDer.values()){
+            maxSecondDer = Math.max(maxSecondDer,der);
+        }
+        double maxDist = calculateEuclidean(getMaxCostPlan(), getMinCostPlan());
 
 
-
-//        for(Plan p:donotchange){
         for(int j=1;j<donotchange.size()-1;++j){
             Plan p = donotchange.get(j);
-            tosort.add(new Pair<Plan, Double>(p,(0.5*planMetric.get(p))+(0.5*minDist(p,knees)) ));
+            if(knees.contains(p)){
+                finalMetric.add(new Pair<Plan, Double>(p,Double.MAX_VALUE));
+            }else{
+                finalMetric.add(new Pair<Plan, Double>(p,((0.5*secondDer.get(p))/maxSecondDer)*((0.5*minDist(p,knees))/maxDist ) ));
+
+            }
         }
 
-        Collections.sort(tosort, new Comparator<Pair<Plan, Double>>() {
+        Collections.sort(finalMetric, new Comparator<Pair<Plan, Double>>() {
                         @Override
                         public int compare(Pair<Plan, Double> o1, Pair<Plan, Double> o2) {
-                            return (int)Double.compare(o1.b,o2.b);
+                            return (int)Double.compare(o2.b,o1.b);
                         }
                     });
 
         int i=0;
         while(ret.size()<k){
-            ret.add(tosort.get(i).a);
+            ret.add(finalMetric.get(i).a);
             ++i;
         }
 
@@ -987,6 +996,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
     public ArrayList<Plan> getKneess(ArrayList<Plan> pp,HashMap<Plan,Double> planMetric){
+        //sort by one dimension just to get an orderding
         Collections.sort(pp,new Comparator<Plan>() {
             @Override public int compare(Plan o1, Plan o2) {
                 return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
@@ -1001,17 +1011,17 @@ public class SolutionSpace implements Iterable<Plan> {
             Plan p0 = plans.results.get(i-1);
             Plan p1 = plans.results.get(i);
             Plan p2 = plans.results.get(i+1);
-            d+=plans.getDer(p0,p1,p2);
-            planMetric.put(p1,d);
+            double secder = plans.getDer(p0,p1,p2);
+            d+=secder;
+            planMetric.put(p1,secder);
         }
         i=1;
-        double davvg = d/(plans.results.size()-2);
-        for(;i<plans.results.size()-1;++i){
-            Plan p0 = plans.results.get(i-1);
-            Plan p1 = plans.results.get(i);
-            Plan p2 = plans.results.get(i+1);
-            if(plans.getDer(p0,p1,p2)>davvg){
-                knees.add(p1);
+        double secder_Avg = d/(plans.results.size()-2);
+
+        for(Plan p:planMetric.keySet()){
+
+            if(planMetric.get(p)>secder_Avg){
+                knees.add(p);
             }
         }
         return knees;
@@ -1027,7 +1037,7 @@ public class SolutionSpace implements Iterable<Plan> {
                 r = pp;
             }
         }
-        return Math.abs(r.stats.money - p.stats.money);
+        return dist;
     }
 
     public void addExtremes(ArrayList<Plan> plans,HashSet<Plan> ret){

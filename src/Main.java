@@ -243,7 +243,7 @@ public class Main {
 
             sbOut.append(solutionsM.toString());
 
-//            mpinfo.add("moheft ("+solutionsM.size()+") " + (solutionsM.optimizationTime_MS), solutionsM.results);
+            mpinfo.add("moheft ("+solutionsM.size()+") " + (solutionsM.optimizationTime_MS), solutionsM.results);
             combined.addAll(solutionsM);
 
         }

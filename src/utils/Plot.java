@@ -12,6 +12,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
+import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.*;
 import org.jfree.chart.plot.PlotOrientation;
@@ -129,8 +130,10 @@ public class Plot extends ApplicationFrame {
 
         XYPlot plot = (XYPlot)chart.getPlot();
 
-        plot.getDomainAxis().setLowerMargin(0);
-        plot.getRangeAxis().setLowerMargin(0);
+        plot.getDomainAxis().setRange(0.0,combined.getMaxCost()+100);
+        plot.getRangeAxis().setRange(0.0,(combined.getMaxRuntime()/60000)+100);
+
+
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 
