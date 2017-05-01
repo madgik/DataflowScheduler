@@ -1,0 +1,22 @@
+Running LIGO.n.100.0.dax mulT: 200 mulD: 200 Pareto, Moheft
+  19251382 1324.24 || noQ Q (Avg,Max,Min) (0.91, 1.00, 0.59) (0.80, 0.53, 0.99) #fs:  23  -- #Conts: 28 G(28) 
+  53457809 1052.82 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.93) (0.95, 0.84, 1.00) #fs:   1  -- #Conts: 34 E(34) 
+  43794413 1059.53 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.94) (0.95, 0.82, 1.00) #fs:   4  -- #Conts: 32 E(32) 
+  14921220 1355.76 || noQ Q (Avg,Max,Min) (0.92, 1.00, 0.59) (0.80, 0.58, 0.99) #fs:  26  -- #Conts: 33 G(33) 
+   9105132 1828.71 || noQ Q (Avg,Max,Min) (0.80, 1.00, 0.47) (0.69, 0.44, 0.99) #fs:  27  -- #Conts: 26 G(4)  H(22) 
+/////////////////size: 5
+ 127555365 1062.82 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.96) (0.93, 0.78, 1.00) #fs:   2  -- #Conts: 22 A(2)  E(8)  G(10)  C(2) 
+ 131435087 1053.76 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.96) (0.95, 0.87, 1.00) #fs:   2  -- #Conts: 20 A(2)  E(7)  G(9)  C(2) 
+ 128549256 1056.12 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.92) (0.95, 0.87, 1.00) #fs:   4  -- #Conts: 20 A(2)  E(7)  G(9)  C(2) 
+ 128122464 1062.35 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.96) (0.93, 0.78, 1.00) #fs:   3  -- #Conts: 21 A(2)  E(6)  G(10)  C(3) 
+ 128486881 1060.12 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.92) (0.91, 0.07, 1.00) #fs:   4  -- #Conts: 21 A(2)  E(7)  G(9)  C(3) 
+/////////////////size: 5
+nodes 100 edges 123
+mulT: 200 mulD: 200  sumDataGB 571
+pareto LIGO.n.100.0.dax time(sec) -> 8.215
+moheft LIGO.n.100.0.dax time(sec) -> 0.362
+Jaccard from M to C 0.5
+Jaccard from P to C 0.5
+distance from M to C 0.0
+distance from P to C 0.0
+
