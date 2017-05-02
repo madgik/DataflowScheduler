@@ -36,8 +36,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./plots/";
-        pathOut = "./results/";
+        pathPlot = "./paperExps/presecLattice/";
+        pathOut = "./paperExps/presecLattice/";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -59,20 +59,58 @@ public class Main {
                 String b = System.getProperty("b");
                 runLattice(Integer.parseInt(d),Integer.parseInt(b));
             }else if(flow.contains("runMul")) {
+                runOneMultipleEND(jar,jarpath+"MONTAGE.n.25.0.dax",100,400);
+
+
+                runOneMultipleEND(jar,jarpath+"Example",10000,3000);
+
+                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,400);
+
                 runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
 
-                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
+//                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
             }else{
                 String mt = System.getProperty("mt");
                 String md = System.getProperty("md");
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
+//            runDax(jar,jarpath+"Example.dax",1000,3000);
+//
+//            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
+//
+//            runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100);
 
-            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
-            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
-            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,10);
-            runDax(jar,jarpath+"GENOME.n.100.0.dax",100,10);
+//            runDax(jar,jarpath+"Example.dax",10000,3000);
+//
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,300);
+
+
+
+
+//            runDax(jar,jarpath+"LIGO.n.100.0.dax",1,1);
+
+//            runDax(jar,jarpath+"LIGO.n.100.0.dax",500,500);
+
+//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1,1);
+
+//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,300);
+//
+//            runLattice(11,3);
+//
+//            runLattice(5,21);
+//
+//            runLattice(9,4);
+//
+//            runLattice(7,7);
+
+
+
+            //
+//            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
+//            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
+//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,10);
+//            runDax(jar,jarpath+"GENOME.n.100.0.dax",100,10);
 //
 
             //            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
@@ -121,6 +159,7 @@ public class Main {
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
+
     public static SolutionSpace execute(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined){
         SolutionSpace space = new SolutionSpace();
 
@@ -153,17 +192,17 @@ public class Main {
         SolutionSpace combined = new SolutionSpace();
         plotUtility plot = new plotUtility();
 
-//        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"P_valkanas", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"Dominance", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
 
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowding", mpinfo, "P_crowding", sbOut,combined);
+//        SolutionSpace paretoToCompare = execute(graph,true,"crowding", mpinfo, "Crowding Distance", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);jjPrune
 //          SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxDist", mpinfo,"P_crowdingMaxDist", sbOut,combined);
-        SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"P_jjPrune", sbOut,combined);
+        SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"Hetero", sbOut,combined);
 
 
         //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
@@ -176,60 +215,66 @@ public class Main {
 
 //        SolutionSpace paretoToCompare = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
 
-        String addToFilename = "_MinValk";
-
-        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
-            @Override public int compare(Plan o1, Plan o2) {
-                return Double.compare(o1.stats.money,o2.stats.money);
-            }
-        });
-        int i=1;
-        double d = 0.0;
-        for(;i<paretoToCompare.size()-1;++i){
-            Plan p0 = paretoToCompare.results.get(i-1);
-            Plan p1 = paretoToCompare.results.get(i);
-            Plan p2 = paretoToCompare.results.get(i+1);
-//            System.out.println(paretoToCompare.getDer(p0,p1,p2) );
-            d+=paretoToCompare.getDer(p0,p1,p2);
-        }
-        String a;i=1;
-        double davvg = d/(paretoToCompare.size()-2);
-        for(;i<paretoToCompare.size()-1;++i){
-            Plan p0 = paretoToCompare.results.get(i-1);
-            Plan p1 = paretoToCompare.results.get(i);
-            Plan p2 = paretoToCompare.results.get(i+1);
-            if(paretoToCompare.getDer(p0,p1,p2)>davvg){
-                a = "KNEE";
-            }else{
-                a="";
-            }
-            System.out.println(paretoToCompare.getDer(p0,p1,p2) + "  "+i+"  " + a);
-        }
+        executeHS(graph,true,"jjPrune", mpinfo,"Homogeneous Smallest", sbOut,combined);
+        executeHL(graph,true,"jjPrune", mpinfo,"Homogeneous Largest", sbOut,combined);
 
 
+        String addToFilename = "_OurPrune_";
+        
 
-        double c=0.0;
-        System.out.println("#############");
-        for(i=0;i<paretoToCompare.size()-1;++i){
-//            System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1)));
-            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
-        }
-        double avg = (c/(paretoToCompare.size()-2));
-        System.out.println("%%% "+(c/(paretoToCompare.size()-2)));
-        for(i=0;i<paretoToCompare.size()-1;++i){
-            double dist = paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
-            if(dist>avg) {
-                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
-                    paretoToCompare.results.get(i + 1)) +" "+ (i+1) + " KNEE");
-            }else{
-                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
-                    paretoToCompare.results.get(i + 1))  +" "+ (i+1) );
-            }
-            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
-        }
-        combined.addAll(paretoToCompare);
+//        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
+//            @Override public int compare(Plan o1, Plan o2) {
+//                return Double.compare(o1.stats.money,o2.stats.money);
+//            }
+//        });
 
-        boolean moheft = true;
+//        int i=1;
+//        double d = 0.0;
+//        for(;i<paretoToCompare.size()-1;++i){
+//            Plan p0 = paretoToCompare.results.get(i-1);
+//            Plan p1 = paretoToCompare.results.get(i);
+//            Plan p2 = paretoToCompare.results.get(i+1);
+////            System.out.println(paretoToCompare.getDer(p0,p1,p2) );
+//            d+=paretoToCompare.getDer(p0,p1,p2);
+//        }
+//        String a;i=1;
+//        double davvg = d/(paretoToCompare.size()-2);
+//        for(;i<paretoToCompare.size()-1;++i){
+//            Plan p0 = paretoToCompare.results.get(i-1);
+//            Plan p1 = paretoToCompare.results.get(i);
+//            Plan p2 = paretoToCompare.results.get(i+1);
+//            if(paretoToCompare.getDer(p0,p1,p2)>davvg){
+//                a = "KNEE";
+//            }else{
+//                a="";
+//            }
+//            System.out.println(paretoToCompare.getDer(p0,p1,p2) + "  "+i+"  " + a);
+//        }
+
+//        double c=0.0;
+//        System.out.println("#############");
+//        for(i=0;i<paretoToCompare.size()-1;++i){
+////            System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1)));
+//            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
+//        }
+//        double avg = (c/(paretoToCompare.size()-2));
+//        System.out.println("%%% "+(c/(paretoToCompare.size()-2)));
+//        for(i=0;i<paretoToCompare.size()-1;++i){
+//            double dist = paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
+//            if(dist>avg) {
+//                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
+//                    paretoToCompare.results.get(i + 1)) +" "+ (i+1) + " KNEE");
+//            }else{
+//                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
+//                    paretoToCompare.results.get(i + 1))  +" "+ (i+1) );
+//            }
+//            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
+//        }
+
+
+//        combined.addAll(paretoToCompare);
+
+        boolean moheft = false;
 
         System.out.println("paretoDone");
 
@@ -238,15 +283,19 @@ public class Main {
         Scheduler schedM = new Moheft(graph, clusterM);
 
         SolutionSpace solutionsM = new SolutionSpace();
+
         if(moheft) {
+
             solutionsM = schedM.schedule();
 
             sbOut.append(solutionsM.toString());
 
             mpinfo.add("moheft ("+solutionsM.size()+") " + (solutionsM.optimizationTime_MS), solutionsM.results);
+
             combined.addAll(solutionsM);
 
         }
+        
 
 
     sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges()).append("\n");
@@ -256,7 +305,7 @@ public class Main {
 
 
 
-    combined.computeSkyline(false);
+//    combined.computeSkyline(false);
 
     double distMtoC = 0.0, distPtoC = 0.0, distCtoM = 0.0, distCtoP = 0.0;
     double JaccardMtoC = 0.0, JaccardPtoC = 0.0;
@@ -266,9 +315,9 @@ public class Main {
 
     try {
 
-        addImprovementsToLegend(solutionsM,paretoToCompare,legendInfo);
-
-        addDistanceToLegend(solutionsM,paretoToCompare,legendInfo);
+//        addImprovementsToLegend(solutionsM,paretoToCompare,legendInfo);
+//
+//        addDistanceToLegend(solutionsM,paretoToCompare,legendInfo);
 
         distMtoC = computeDistance(solutionsM,combined).P2Sky;
         legendInfo.add(new Pair<>("distMtoC",distMtoC));
@@ -326,7 +375,7 @@ public class Main {
                 (new java.util.Date()).toString().replace(" ","_");
 
 
-    legendInfo.add(new Pair<String, Double>("ccr", ccr));
+    legendInfo.add(new Pair<String, Double>("data/comp (ccr)", ccr));
 
     if (showOutput) {
         System.out.println(sbOut.toString());
@@ -354,6 +403,45 @@ public class Main {
     //
     //        }
 
+
+
+    }
+
+    private static void executeHS(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo,
+        String toprint, StringBuilder sbOut, SolutionSpace combined) {
+
+        SolutionSpace space = new SolutionSpace();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoHomogenSmall(graph,cluster,prune,method);
+
+        space = sched.schedule();
+
+        sbOut.append(space.toString());
+
+        mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+
+        combined.addAll(space);
+
+    }
+
+    private static void executeHL(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo,
+        String toprint, StringBuilder sbOut, SolutionSpace combined) {
+
+        SolutionSpace space = new SolutionSpace();
+
+        Cluster cluster = new Cluster();
+
+        Scheduler sched = new paretoHomogenLarge(graph,cluster,prune,method);
+
+        space = sched.schedule();
+
+        sbOut.append(space.toString());
+
+        mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+
+        combined.addAll(space);
 
 
     }
@@ -396,43 +484,92 @@ public class Main {
         double maxdistMoney =  Double.MAX_VALUE;
         double maxdistTime = Long.MAX_VALUE;
 
-        double dist = 0.0;
-        double tdist;
-        boolean isparetoSmaller = true;
-        SolutionSpace minSpace = paretoToCompare;
-        SolutionSpace maxSpace = solutionsM;
+//        double dist = 0.0;
+//        double tdist;
+//        boolean isparetoSmaller = true;
+//        SolutionSpace minSpace = paretoToCompare;
+//        SolutionSpace maxSpace = solutionsM;
 
-        if( minSpace.size() > maxSpace.size() ){
-            minSpace = solutionsM;
-            maxSpace = paretoToCompare;
-            isparetoSmaller = false;
-        }
+//        if( minSpace.size() > maxSpace.size() ){
+//            minSpace = solutionsM;
+//            maxSpace = paretoToCompare;
+//            isparetoSmaller = false;
+//        }
+//
+//        for(Plan minp:solutionsM){
+//            tdist = Double.MAX_VALUE;
+//            for(Plan maxp:paretoToCompare){
+//                if(tdist>calculateEuclidean(minp,maxp)){
+//                    tdist = calculateEuclidean(minp,maxp);
+//                    tplan = maxp;
+//                }
+//                tdist = Math.min(tdist, calculateEuclidean(minp,maxp));
+//            }
+//            if(isparetoSmaller){
+//                maxdistMoney = Math.max(maxdistMoney,  ( (minp.stats.money - tplan.stats.money)/tplan.stats.money)*100 );//pros8esa () kai sta tessera!
+//                maxdistTime  = Math.max(maxdistTime,    ( (minp.stats.runtime_MS - tplan.stats.runtime_MS) /tplan.stats.runtime_MS)*100   );
+//            }else{
+//                maxdistMoney = Math.max(maxdistMoney,  ( (tplan.stats.money - minp.stats.money) /minp.stats.money)*100  );
+//                maxdistTime  = Math.max(maxdistTime,    ( (tplan.stats.runtime_MS - minp.stats.runtime_MS) /minp.stats.runtime_MS)*100   );
+//            }
+//
+//        }
 
-        for(Plan minp:solutionsM){
-            tdist = Double.MAX_VALUE;
-            for(Plan maxp:paretoToCompare){
-                if(tdist>calculateEuclidean(minp,maxp)){
-                    tdist = calculateEuclidean(minp,maxp);
-                    tplan = maxp;
+
+
+                Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
+                    @Override public int compare(Plan o1, Plan o2) {
+                        return Double.compare(o1.stats.money,o2.stats.money);
+                    }
+                });
+
+
+                double maxPKnee = 0.0;
+                double avgPKnee = 0.0;
+                for( int i=1;i<paretoToCompare.size()-1;++i){
+                    Plan p0 = paretoToCompare.results.get(i-1);
+                    Plan p1 = paretoToCompare.results.get(i);
+                    Plan p2 = paretoToCompare.results.get(i+1);
+                    double d = paretoToCompare.getDer(p0,p1,p2);
+                    maxPKnee = Math.max(maxPKnee,d);
+                    avgPKnee+=d;
                 }
-                tdist = Math.min(tdist, calculateEuclidean(minp,maxp));
-            }
-            if(isparetoSmaller){
-                maxdistMoney = Math.max(maxdistMoney,  ( (minp.stats.money - tplan.stats.money)/tplan.stats.money)*100 );//pros8esa () kai sta tessera!
-                maxdistTime  = Math.max(maxdistTime,    ( (minp.stats.runtime_MS - tplan.stats.runtime_MS) /tplan.stats.runtime_MS)*100   );
-            }else{
-                maxdistMoney = Math.max(maxdistMoney,  ( (tplan.stats.money - minp.stats.money) /minp.stats.money)*100  );
-                maxdistTime  = Math.max(maxdistTime,    ( (tplan.stats.runtime_MS - minp.stats.runtime_MS) /minp.stats.runtime_MS)*100   );
-            }
+                avgPKnee = avgPKnee/paretoToCompare.size()-2;
 
+        Collections.sort(solutionsM.results, new Comparator<Plan>() {
+            @Override public int compare(Plan o1, Plan o2) {
+                return Double.compare(o1.stats.money,o2.stats.money);
+            }
+        });
+
+
+        double maxMKnee = 0.0;
+        double avgMKnee = 0.0;
+        for( int i=1;i<solutionsM.size()-1;++i){
+            Plan p0 = solutionsM.results.get(i-1);
+            Plan p1 = solutionsM.results.get(i);
+            Plan p2 = solutionsM.results.get(i+1);
+            double d = solutionsM.getDer(p0,p1,p2);
+            maxMKnee = Math.max(maxMKnee,d);
+            avgMKnee+=d;
         }
+        avgMKnee = avgMKnee/solutionsM.size()-2;
 
+        legendInfo.add(new Pair<String,Double>("FastestImprovement (>1)", (double) ( solutionsM.getFastestTime()/paretoToCompare.getFastestTime()  )));
+        legendInfo.add(new Pair<String,Double>("CheapestImprovement (>1)", (double) ( solutionsM.getMinCost()/paretoToCompare.getMinCost() ) ));
 
-        legendInfo.add(new Pair<String,Double>("FastestImprovement (+)", (double) ( ((solutionsM.getFastestTime() - paretoToCompare.getFastestTime())/paretoToCompare.getFastestTime()) * (100) ) ));
-        legendInfo.add(new Pair<String,Double>("CheapestImprovement (+)", (double) ( ((solutionsM.getMinCost() - paretoToCompare.getMinCost())/paretoToCompare.getMinCost()) * (100) ) ));
+//        legendInfo.add(new Pair<>("maxMoneyImprov (+)",maxdistMoney));
+//        legendInfo.add(new Pair<>("maxTimeImprov (+)",maxdistTime));
 
-        legendInfo.add(new Pair<>("maxMoneyImprov (+)",maxdistMoney));
-        legendInfo.add(new Pair<>("maxTimeImprov (+)",maxdistTime));
+        legendInfo.add(new Pair<>("avgKnee Comp (>1) ",avgPKnee /avgMKnee));
+        legendInfo.add(new Pair<>("maxKnee Comp (>1) ",maxPKnee /maxMKnee));
+
+//        legendInfo.add(new Pair<>("avgPKnee ",avgPKnee));
+//        legendInfo.add(new Pair<>("maxPKnee ",maxPKnee));
+//
+//        legendInfo.add(new Pair<>("avgMKnee ",avgMKnee));
+//        legendInfo.add(new Pair<>("maxMKnee ",maxMKnee));
+
 
 
     }

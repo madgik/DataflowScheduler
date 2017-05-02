@@ -1120,14 +1120,17 @@ public class SolutionSpace implements Iterable<Plan> {
         Statistics p1Stats = p1.stats;
         Statistics p2Stats = p2.stats;
 
-        double aR = p0Stats.money - p1Stats.money;
+        double aR = p1Stats.money - p0Stats.money;
         double bR = p1Stats.runtime_MS - p0Stats.runtime_MS;
+
         double aL = p2Stats.money - p1Stats.money;
         double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
+
 
         double thetaL = bR/aR;
         double thetaR = bL/aL;
         double theta2P1 = Math.abs(thetaL - thetaR);
+
 
         return theta2P1;
     }

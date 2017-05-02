@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by johnchronis on 2/19/17.
  */
-public class paretoHomogen implements Scheduler {
+public class paretoHomogenLarge implements Scheduler {
 
     public SolutionSpace space;
     public Cluster cluster;
@@ -38,7 +38,7 @@ public class paretoHomogen implements Scheduler {
 
     private HashMap<Long, Integer> opLevel;
 
-    public paretoNoHomogen(DAG graph,Cluster cl,boolean prune,String PruneMethod){
+    public paretoHomogenLarge(DAG graph,Cluster cl,boolean prune,String PruneMethod){
         this.pruneEnabled = prune;
         space = new SolutionSpace();
         this.graph = graph;
@@ -170,21 +170,21 @@ public class paretoHomogen implements Scheduler {
                             //                    System.out.println("s1 "+skylinePlans.size());
 
                         } else if (cType.equals(containerType.getSmallest())) {
-                            ArrayList<containerType> cTypes = new ArrayList<>();
-                            cTypes.add(cType);
-
-                            skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
-                            //                    plotPlans("inc",skylinePlans);
-                            //                    System.out.println("s2 "+skylinePlans.size());
+//                            ArrayList<containerType> cTypes = new ArrayList<>();
+//                            cTypes.add(cType);
+//
+//                            skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+//                            //                    plotPlans("inc",skylinePlans);
+//                            //                    System.out.println("s2 "+skylinePlans.size());
                         } else {
-                            ArrayList<containerType> cTypes = new ArrayList<>();
-                            cTypes.add(cType);
-
-
-                            skylinePlans_INCDEC
-                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
-                            //                    plotPlans("inc,dec",skylinePlans);
-                            //                    System.out.println("s3 "+skylinePlans.size());
+//                            ArrayList<containerType> cTypes = new ArrayList<>();
+//                            cTypes.add(cType);
+//
+//
+//                            skylinePlans_INCDEC
+//                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
+//                            //                    plotPlans("inc,dec",skylinePlans);
+//                            //                    System.out.println("s3 "+skylinePlans.size());
                         }
                     }
                     ////////////////////
@@ -227,8 +227,8 @@ public class paretoHomogen implements Scheduler {
 
 
         skylinePlans.addAll(skylinePlans_DEC.results);
-        skylinePlans.addAll(skylinePlans_INC.results);
-        skylinePlans.addAll(skylinePlans_INCDEC.results);
+//        skylinePlans.addAll(skylinePlans_INC.results);
+//        skylinePlans.addAll(skylinePlans_INCDEC.results);
 
         //        System.out.println("//////////ALL///////");
         //        skylinePlans.sort(true);
@@ -256,37 +256,37 @@ public class paretoHomogen implements Scheduler {
         //        System.out.println("//////////PARETO///////");
         //        paretoPlans.print();
         //        paretoPlans.plot("pareto");
-        mpinfo.add("pareto",paretoPlans.results);
+//        mpinfo.add("pareto",paretoPlans.results);
+//
+//        long homoEnd = System.currentTimeMillis();
+//        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+//
+//        skylinePlans.clear();
+//
+//        for(Plan pp: paretoPlans.results) {
+//            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+//
+//                pp.vmUpgrading = "increasing";
+//                skylinePlans.add(pp);
+//
+//                Plan newpp = new Plan(pp);
+//                newpp.vmUpgrading="decreasing";
+//                skylinePlans.add(newpp);
+//            } else {
+//                skylinePlans.add(pp);
+//            }
+//        }
+//
+//        paretoPlans.clear();
+//
+//
+//        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+//
+//        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+//
+//        paretoPlans.addAll(skylinePlans);
 
-        long homoEnd = System.currentTimeMillis();
-        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
-
-        skylinePlans.clear();
-
-        for(Plan pp: paretoPlans.results) {
-            if (pp.vmUpgrading.equals("increasing/decreasing")) {
-
-                pp.vmUpgrading = "increasing";
-                skylinePlans.add(pp);
-
-                Plan newpp = new Plan(pp);
-                newpp.vmUpgrading="decreasing";
-                skylinePlans.add(newpp);
-            } else {
-                skylinePlans.add(pp);
-            }
-        }
-
-        paretoPlans.clear();
-
-
-        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
-
-        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
-
-        paretoPlans.addAll(skylinePlans);
-
-        space.addAll(computeSkyline(paretoPlans));
+        space.addAll(paretoPlans);
 
         //        SolutionSpace beforeMigrate = new SolutionSpace();
         //        beforeMigrate.addAll(computeSkyline(paretoPlans));
@@ -314,7 +314,7 @@ public class paretoHomogen implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+//        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
         return space;
 
     }

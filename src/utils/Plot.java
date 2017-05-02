@@ -118,6 +118,12 @@ public class Plot extends ApplicationFrame {
             data.addSeries(s);
         }
 
+        Double maxCost = combined.getMaxCost()+100;
+        Double maxRutime = ((double)combined.getMaxRuntime()/60000)+100;
+
+        combined.computeSkyline(false);
+
+
         XYSeries comb = new XYSeries("combined");
         for(Plan p:combined){
             comb.add(p.stats.money,p.stats.runtime_MS / 60000);
@@ -130,12 +136,13 @@ public class Plot extends ApplicationFrame {
 
         XYPlot plot = (XYPlot)chart.getPlot();
 
-        plot.getDomainAxis().setRange(0.0,combined.getMaxCost()+100);
-        plot.getRangeAxis().setRange(0.0,(combined.getMaxRuntime()/60000)+100);
-
+        plot.getDomainAxis().setRange(0.0,maxCost);
+        plot.getRangeAxis().setRange(0.0,maxRutime);
 
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+
+
 
 
         for(int i=0;i<info.series.size();++i) {

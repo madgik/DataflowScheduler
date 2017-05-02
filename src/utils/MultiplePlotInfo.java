@@ -18,7 +18,7 @@ public class MultiplePlotInfo {
     public void add(String name, ArrayList<Plan> ps){
         XYSeries xy = new XYSeries(name);
         for(Plan p:ps){
-            xy.add(p.stats.money,p.stats.runtime_MS / 60000);
+            xy.add(p.stats.money,p.stats.runtime_MS / 1000);
         }
         series.add(xy);
     }
@@ -26,7 +26,7 @@ public class MultiplePlotInfo {
     public void addPairs(String name, ArrayList<PairPlot> ps){
         XYSeries xy = new XYSeries(name);
         for(PairPlot<Long,Double> p:ps){
-            xy.add(p.getMoney(),(p.getTime()/ 60000));
+            xy.add(p.getMoney(),(p.getTime()/ 1000));
         }
         series.add(xy);
     }

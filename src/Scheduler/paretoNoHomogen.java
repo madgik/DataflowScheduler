@@ -286,7 +286,7 @@ public class paretoNoHomogen implements Scheduler {
 
         paretoPlans.addAll(skylinePlans);
 
-        space.addAll(computeSkyline(paretoPlans));
+        space.addAll(paretoPlans);
 
 //        SolutionSpace beforeMigrate = new SolutionSpace();
 //        beforeMigrate.addAll(computeSkyline(paretoPlans));
