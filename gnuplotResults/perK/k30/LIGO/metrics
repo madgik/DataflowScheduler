@@ -1,0 +1,8 @@
+nodes 100 edges 123
+mulT: 200 mulD: 200  sumDataGB 571
+pareto LIGO.n.100.0.dax time(sec) -> 8.582
+moheft LIGO.n.100.0.dax time(sec) -> 2.346
+Jaccard from M to C 0.8771929824561404
+Jaccard from P to C 0.19999999999999996
+distance from M to C 1.7793603316837692
+distance from P to C 0.0
