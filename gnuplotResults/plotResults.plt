@@ -11,20 +11,50 @@ set xrange [0:*]
 set yrange [0:*]
 set pointsize 0.7
 
+
+set output 'persec_LATTICE5_21.eps'
+set xlabel 'Cost ($)'
+set ylabel 'Execution Time (s)'
+plot "persec/LATTICE5_21/hh" using ($2/3600):($1/1000) title 'HHDS' with points pt 8 lc rgb 'red',\
+"persec/LATTICE5_21/moheft" using ($2/3600):($1/1000) title 'MOHEFT' with points pt 1 lc rgb 'blue'
+set output 'others.eps'
+
+set output 'persec_LATTICE11_3.eps'
+set xlabel 'Cost ($)'
+set ylabel 'Execution Time (s)'
+plot "persec/LATTICE11_3/hh" using ($2/3600):($1/1000) title 'HHDS' with points pt 8 lc rgb 'red',\
+"persec/LATTICE11_3/moheft" using ($2/3600):($1/1000) title 'MOHEFT' with points pt 1 lc rgb 'blue'
+set output 'others.eps'
+
+
 set output 'persec_LIGO.eps'
 set xlabel 'Cost ($)'
-set ylabel 'Execution Time (min)'
+set ylabel 'Execution Time (s)'
 plot "persec/LIGO/hh" using ($2/3600):($1/1000) title 'HHDS' with points pt 8 lc rgb 'red',\
 "persec/LIGO/moheft" using ($2/3600):($1/1000) title 'MOHEFT' with points pt 1 lc rgb 'blue'
 set output 'others.eps'
 
 set output 'persec_MONTAGE.eps'
 set xlabel 'Cost ($)'
-set ylabel 'Execution Time (min)'
+set ylabel 'Execution Time (s)'
 plot "persec/MONTAGE/hh" using ($2/3600):($1/1000) title 'HHDS' with points pt 8 lc rgb 'red',\
 "persec/MONTAGE/moheft" using ($2/3600):($1/1000) title 'MOHEFT' with points pt 1 lc rgb 'blue'
 set output 'others.eps'
 
+
+set output 'perhour_LATTICE5_21.eps'
+set xlabel 'Cost ($)'
+set ylabel 'Execution Time (min)'
+plot "perhour/LATTICE5_21/hh" using 2:($1/60000) title 'HHDS' with points pt 8 lc rgb 'red',\
+"perhour/LATTICE5_21/moheft" using 2:($1/60000) title 'MOHEFT' with points pt 1 lc rgb 'blue'
+set output 'others.eps'
+
+set output 'perhour_LATTICE11_3.eps'
+set xlabel 'Cost ($)'
+set ylabel 'Execution Time (min)'
+plot "perhour/LATTICE11_3/hh" using 2:($1/60000) title 'HHDS' with points pt 8 lc rgb 'red',\
+"perhour/LATTICE11_3/moheft" using 2:($1/60000) title 'MOHEFT' with points pt 1 lc rgb 'blue'
+set output 'others.eps'
 
 set output 'perhour_LIGO.eps'
 set xlabel 'Cost ($)'
@@ -70,6 +100,14 @@ plot "perpruning/MONTAGE/der" using 2:($1/60000) title 'derivative-distance' wit
 "perpruning/MONTAGE/dom" using 2:($1/60000) title 'dominance' with points pt 2 lc rgb 'green'
 set output 'others.eps'
 
+
+set output 'hhExampleLigo.eps'
+set xlabel 'Cost ($)'
+set ylabel 'Execution Time (min)'
+plot "hhExample/small" using 2:($1/60000) title 'small VMs' with points pt 8 lc rgb 'red',\
+"hhExample/large" using 2:($1/60000) title 'large VMs' with points pt 1 lc rgb 'blue',\
+"hhExample/hetero" using 2:($1/60000) title 'heterogeneous VMs' with points pt 2 lc rgb 'green'
+set output 'others.eps'
 
 
 
