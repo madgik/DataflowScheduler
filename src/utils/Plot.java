@@ -119,14 +119,14 @@ public class Plot extends ApplicationFrame {
         }
 
         Double maxCost = combined.getMaxCost()+100;
-        Double maxRutime = ((double)combined.getMaxRuntime()/60000)+100;
+        Double maxRutime = ((double)combined.getMaxRuntime())+100;
 
         combined.computeSkyline(false);
 
 
         XYSeries comb = new XYSeries("combined");
         for(Plan p:combined){
-            comb.add(p.stats.money,p.stats.runtime_MS / 60000);
+            comb.add(p.stats.money,p.stats.runtime_MS );
         }
 
         data.addSeries(comb);

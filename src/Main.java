@@ -36,8 +36,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./paperExps/presecLattice/";
-        pathOut = "./paperExps/presecLattice/";
+        pathPlot = "./paperExps/vsmoheft/perHour_k10";
+        pathOut = "./paperExps/vsmoheft/perHour_k10";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -75,7 +75,7 @@ public class Main {
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
-//            runDax(jar,jarpath+"Example.dax",1000,3000);
+            runDax(jar,jarpath+"Example.dax",1000,3000);
 //
 //            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
 //
@@ -83,7 +83,7 @@ public class Main {
 
 //            runDax(jar,jarpath+"Example.dax",10000,3000);
 //
-            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,300);
+//            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
 
 
 
@@ -102,7 +102,7 @@ public class Main {
 //
 //            runLattice(9,4);
 //
-//            runLattice(7,7);
+            runLattice(7,7);
 
 
 
@@ -215,8 +215,8 @@ public class Main {
 
 //        SolutionSpace paretoToCompare = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
 
-        executeHS(graph,true,"jjPrune", mpinfo,"Homogeneous Smallest", sbOut,combined);
-        executeHL(graph,true,"jjPrune", mpinfo,"Homogeneous Largest", sbOut,combined);
+//        executeHS(graph,true,"jjPrune", mpinfo,"Homogeneous Smallest", sbOut,combined);
+//        executeHL(graph,true,"jjPrune", mpinfo,"Homogeneous Largest", sbOut,combined);
 
 
         String addToFilename = "_OurPrune_";
@@ -274,7 +274,7 @@ public class Main {
 
 //        combined.addAll(paretoToCompare);
 
-        boolean moheft = false;
+        boolean moheft = true;
 
         System.out.println("paretoDone");
 
@@ -315,9 +315,9 @@ public class Main {
 
     try {
 
-//        addImprovementsToLegend(solutionsM,paretoToCompare,legendInfo);
+        addImprovementsToLegend(solutionsM,paretoToCompare,legendInfo);
 //
-//        addDistanceToLegend(solutionsM,paretoToCompare,legendInfo);
+        addDistanceToLegend(solutionsM,paretoToCompare,legendInfo);
 
         distMtoC = computeDistance(solutionsM,combined).P2Sky;
         legendInfo.add(new Pair<>("distMtoC",distMtoC));
@@ -357,7 +357,7 @@ public class Main {
 
         legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
         legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
-        legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(meanDiff *10000)/100)));
+        legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(diffF *10000)/100)));
         legendInfo.add(new Pair<String,Double>("Moheft-pareto (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - paretoToCompare.optimizationTime_MS)));
 
 
