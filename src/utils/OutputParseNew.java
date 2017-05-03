@@ -22,8 +22,9 @@ public class OutputParseNew {
     public static void main(String[] args) throws IOException {
 
 
-        File file = new File("/Users/johnchronis/code/MyScheduler/paperExps/test/LIGO.n.100.0.dax_OurPrune____mulT:_500_mulD:_500_sumDataGB_1428_ccr_3.522245753692526E-5__Sun_Apr_30_23:47:57_PDT_2017.txt");
-
+        String spath =
+"/Users/johnchronis/code/MyScheduler/paperExps/test/MONTAGE.n.100.0.dax_OurPrune____mulT:_20_mulD:_1000_sumDataGB_1848_ccr_1.2882492552481952__Sun_Apr_30_23:57:32_PDT_2017.txt";
+        File file = new File(spath);
 //                String filename = filepath.substring(filepath.lastIndexOf("/"), filepath.length());
 
                 MultiplePlotInfo mpinfo = new MultiplePlotInfo();
@@ -91,9 +92,9 @@ public class OutputParseNew {
 
                 System.out.println("Distribution:  "+calculateRangeDistance(pareto)+"   "+calculateRangeDistance(moheft));
 
-                System.out.println("FastestImprovement:  "+pareto.getFastestTime() +"   "+moheft.getFastestTime()+ " ___ "+ (double) ( moheft.getFastestTime()/pareto.getFastestTime()  ));
+                System.out.println("FastestImprovement:  "+pareto.getFastestTime() +"   "+moheft.getFastestTime()+ " ___ "+ (double) ( (double)moheft.getFastestTime()/(double)pareto.getFastestTime()  ));
                 
-                System.out.println("CheapestImprovement:  "+pareto.getMinCost() +moheft.getMinCost() + " ___ "+  (double) ( moheft.getMinCost()/pareto.getMinCost() ));
+                System.out.println("CheapestImprovement:  "+pareto.getMinCost() +moheft.getMinCost() + " ___ "+  (double) (  moheft.getMinCost()/pareto.getMinCost() ));
 
                 double diffF = pareto.optimizationTime_MS/pareto.getFastestTime();
                 double diffS = pareto.optimizationTime_MS/pareto.getSlowest().stats.runtime_MS;
@@ -108,6 +109,16 @@ public class OutputParseNew {
 
 
                 br.close();
+
+                File fileOUT = new File(spath+".combined");
+                FileWriter fileWriter = new FileWriter(fileOUT);
+                for(Plan p :comb) {
+                    fileWriter.write(p.stats.runtime_MS + " "+p.stats.money+"\n");
+                }
+                fileWriter.flush();
+                fileWriter.close();
+
+
             }
 
   
