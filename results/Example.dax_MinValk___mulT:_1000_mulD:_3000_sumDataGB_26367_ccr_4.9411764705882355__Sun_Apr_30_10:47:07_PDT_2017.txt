@@ -1,0 +1,18 @@
+Running Example.dax mulT: 1000 mulD: 3000 Pareto, Moheft
+   1721837 031.53 || noQ Q (Avg,Max,Min) (58.50, 58.50, 10.00) (27.98, 10.00, 27.98) #fs:   0  -- #Conts: 1 H(1) 
+   2950947 015.76 || noQ Q (Avg,Max,Min) (34.55, 34.55, 10.00) (28.32, 10.00, 28.32) #fs:   0  -- #Conts: 1 G(1) 
+   6655322 013.41 || noQ Q (Avg,Max,Min) (15.88, 15.88, 10.00) (14.67, 10.00, 14.67) #fs:   0  -- #Conts: 1 E(1) 
+/////////////////size: 3
+   1721837 031.53 || noQ Q (Avg,Max,Min) (58.50, 58.50, 10.00) (27.98, 10.00, 27.98) #fs:   0  -- #Conts: 1 H(1) 
+   2950947 015.76 || noQ Q (Avg,Max,Min) (34.55, 34.55, 10.00) (28.32, 10.00, 28.32) #fs:   0  -- #Conts: 1 G(1) 
+   6655322 013.41 || noQ Q (Avg,Max,Min) (15.88, 15.88, 10.00) (14.67, 10.00, 14.67) #fs:   0  -- #Conts: 1 E(1) 
+/////////////////size: 3
+nodes 8 edges 10
+mulT: 1000 mulD: 3000  sumDataGB 26367
+pareto Example.dax time(sec) -> 0.213
+moheft Example.dax time(sec) -> 0.013
+Jaccard from M to C 1.0
+Jaccard from P to C 0.0
+distance from M to C 0.0
+distance from P to C 0.0
+

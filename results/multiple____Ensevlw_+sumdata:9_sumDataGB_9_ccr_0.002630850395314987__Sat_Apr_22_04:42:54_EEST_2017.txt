@@ -1,0 +1,20 @@
+Running multiple  Ensevlw +sumdata:9 Pareto, Moheft
+    260826 709.41 || noQ Q (Avg,Max,Min) (0.93, 1.02, 0.00) (0.02, 0.00, 0.05) #fs:  13  -- #Conts: 28 G(4)  H(24) 
+/////////////////size: 1
+    260826 662.12 || noQ Q (Avg,Max,Min) (0.90, 1.02, 0.00) (0.02, 0.00, 0.05) #fs:  14  -- #Conts: 28 G(5)  H(23) 
+/////////////////size: 1
+    712200 882.82 || noQ Q (Avg,Max,Min) (0.11, 0.27, 0.00) (0.02, 0.00, 0.05) #fs: 141  -- #Conts: 28 H(28) 
+/////////////////size: 1
+nodes 50 edges 108
+ Ensevlw +sumdata:9  sumDataGB 9
+pareto multiple time -> 0.477
+paretoNP multiple time -> 0.496
+moheft multiple time -> 0.124
+Jaccard from M to C 1.0
+Jaccard from P to C 0.0
+distance from M to C 5.001562255935639
+distance from P to C 0.0
+distance from C to M 220.76251154847427
+distance from C to P 0.0
+toCompare: multiple sumDataGB: 9  Ensevlw +sumdata:9 paretoOptTime_MS: 477.0 MoheftOptimizationTime_MS: 124.0 MtoC 5.001562255935639 PtoC 0.0 CtoM 220.76251154847427 CtoP 0.0 JMtoC 1.0 JPtoC 0.0 ccr 0.002630850395314987
+

@@ -36,8 +36,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./paperExps/vsmoheft/perHour_k10";
-        pathOut = "./paperExps/vsmoheft/perHour_k10";
+        pathPlot = "./paperExps/pruning/";
+        pathOut = "./paperExps/pruning/";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -75,16 +75,20 @@ public class Main {
                 runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
             }
         }else{
-            runDax(jar,jarpath+"Example.dax",1000,3000);
+//            runDax(jar,jarpath+"Example.dax",1000,3000);
 //
 //            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
-//
+//            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
+            runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
+
+
+            //
 //            runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100);
 
 //            runDax(jar,jarpath+"Example.dax",10000,3000);
 //
 //            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
-
+//
 
 
 
@@ -102,7 +106,7 @@ public class Main {
 //
 //            runLattice(9,4);
 //
-            runLattice(7,7);
+//            runLattice(7,7);
 
 
 
@@ -219,10 +223,12 @@ public class Main {
 //        executeHL(graph,true,"jjPrune", mpinfo,"Homogeneous Largest", sbOut,combined);
 
 
-        String addToFilename = "_OurPrune_";
-        
+        String addToFilename = "_NPRUNE_";
 
-//        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
+        boolean moheft = true;
+
+
+        //        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
 //            @Override public int compare(Plan o1, Plan o2) {
 //                return Double.compare(o1.stats.money,o2.stats.money);
 //            }
@@ -274,7 +280,6 @@ public class Main {
 
 //        combined.addAll(paretoToCompare);
 
-        boolean moheft = true;
 
         System.out.println("paretoDone");
 
