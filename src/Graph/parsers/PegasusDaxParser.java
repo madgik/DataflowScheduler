@@ -55,9 +55,9 @@ public class PegasusDaxParser {
         sumdata=0;
     }
 
-    public  DAG parseDax(String url) throws Exception {
+    public  DAG parseDax(String url, Long dagId) throws Exception {
         sumdata=0;
-        DAG graph = new DAG();
+        DAG graph = new DAG(dagId);
         graph.name = url+multiply_by_time+"_"+multiply_by_data;
         ArrayList<Edge> edges = new ArrayList<>();
         HashMap<Long,HashMap<Long,Edge>> fEdges = new HashMap<>();
@@ -131,6 +131,7 @@ public class PegasusDaxParser {
             ResourcesRequirements res = new ResourcesRequirements(runtime_MS,memoryValue);
 
             Long opid = graph.addOperator(new Operator(name,res));
+            graph.getOperator(opid).setDAGId(dagId);
 //            System.out.println("opcreated "+opid+"  "+runtime_MS);
 
             Operator op = graph.getOperator(opid);
