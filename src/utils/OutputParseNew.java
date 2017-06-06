@@ -22,11 +22,12 @@ public class OutputParseNew {
     public static void main(String[] args) throws IOException {
 
 
-        String spath =
-"/Users/johnchronis/code/MyScheduler/paperExps/test/MONTAGE.n.100.0.dax_OurPrune____mulT:_20_mulD:_1000_sumDataGB_1848_ccr_1.2882492552481952__Sun_Apr_30_23:57:32_PDT_2017.txt";
+     //   String spath =
+//"/Users/johnchronis/code/MyScheduler/paperExps/test/MONTAGE.n.100.0.dax_OurPrune____mulT:_20_mulD:_1000_sumDataGB_1848_ccr_1.2882492552481952__Sun_Apr_30_23:57:32_PDT_2017.txt";
+        String spath = "gnuplotResults/persec/MONTAGE/parsing.txt";
         File file = new File(spath);
 //                String filename = filepath.substring(filepath.lastIndexOf("/"), filepath.length());
-
+        System.out.println(file.getAbsolutePath());
                 MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
                 FileInputStream fstream = new FileInputStream(file);
@@ -94,7 +95,7 @@ public class OutputParseNew {
 
                 System.out.println("FastestImprovement:  "+pareto.getFastestTime() +"   "+moheft.getFastestTime()+ " ___ "+ (double) ( (double)moheft.getFastestTime()/(double)pareto.getFastestTime()  ));
                 
-                System.out.println("CheapestImprovement:  "+pareto.getMinCost() +moheft.getMinCost() + " ___ "+  (double) (  moheft.getMinCost()/pareto.getMinCost() ));
+                System.out.println("CheapestImprovement:  "+pareto.getMinCost() +" " +moheft.getMinCost() + " ___ "+  (double) (  moheft.getMinCost()/pareto.getMinCost() ));
 
                 double diffF = pareto.optimizationTime_MS/pareto.getFastestTime();
                 double diffS = pareto.optimizationTime_MS/pareto.getSlowest().stats.runtime_MS;

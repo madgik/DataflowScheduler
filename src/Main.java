@@ -79,8 +79,18 @@ public class Main {
 //
 //            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
 //            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
-            runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
+          //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
 
+
+            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
+            for(int i=0;i<2;++i) {
+                flowsandParasms.add(new Triple(jarpath+"LIGO.n.50.0.dax", 1000 , 100));
+
+                runDax(jar,jarpath+"LIGO.n.50.0.dax",1000,100);
+
+            }
+
+            runMultipleFlows(jar,flowsandParasms);
 
             //
 //            runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100);
@@ -120,12 +130,7 @@ public class Main {
             //            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
 
 //
-//            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
-//            for(int i=0;i<5;++i) {
-//                flowsandParasms.add(new Triple(jarpath+"LIGO.n.100.0.dax", 1000 , 100));
-//            }
-//
-//            runMultipleFlows(jar,flowsandParasms);
+
 
 //            runLattice(5,21);
 //            runDax(false,"MONTAGE.n.100.0.dax",1,100);
@@ -164,12 +169,16 @@ public class Main {
     }
 
 
-    public static SolutionSpace execute(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined){
+    public static SolutionSpace execute(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type){
         SolutionSpace space = new SolutionSpace();
 
         Cluster cluster = new Cluster();
 
-        Scheduler sched = new paretoNoHomogen(graph,cluster,prune,method);
+        Scheduler sched;
+        if(type.equals("multiple"))
+            sched = new hhdsEnsemble(graph,cluster,prune,method);
+                else
+                    sched = new hhds(graph,cluster,prune,method);
 
         space = sched.schedule();
 
@@ -206,7 +215,7 @@ public class Main {
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);jjPrune
 //          SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxDist", mpinfo,"P_crowdingMaxDist", sbOut,combined);
-        SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"Hetero", sbOut,combined);
+        SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"Hetero", sbOut,combined, type);
 
 
         //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
@@ -594,9 +603,9 @@ public class Main {
         DAG graph = null;
         try {
             if(jar){
-                graph = parser.parseDax(file);
+                graph = parser.parseDax(file, 0L);
             }else {
-                graph = parser.parseDax(Main.class.getResource(file).getFile());
+                graph = parser.parseDax(Main.class.getResource(file).getFile(), 0L);
             }
 
         } catch (Exception e) {
@@ -657,10 +666,10 @@ public class Main {
 
                     PegasusDaxParser parser = new PegasusDaxParser(mt, md);
                     if (jar) {
-                        tmpGraph = parser.parseDax(file);
+                        tmpGraph = parser.parseDax(file, 0L);
 
                     } else {
-                        tmpGraph = parser.parseDax(Main.class.getResource(file).getFile());
+                        tmpGraph = parser.parseDax(Main.class.getResource(file).getFile(), 0L);
                     }
                 }
 
@@ -712,10 +721,10 @@ public class Main {
 
                 PegasusDaxParser parser = new PegasusDaxParser(mt, md);
                 if (jar) {
-                    tmpGraph = parser.parseDax(file);
+                    tmpGraph = parser.parseDax(file,0L);
 
                 } else {
-                    tmpGraph = parser.parseDax(Main.class.getResource(file).getFile());
+                    tmpGraph = parser.parseDax(Main.class.getResource(file).getFile(), 0L);
                 }
             }
 
@@ -764,7 +773,7 @@ public class Main {
 
         Cluster clusterPNP = new Cluster();
 
-        Scheduler schedPNP = new paretoNoHomogen(graph, clusterPNP,false,"");
+        Scheduler schedPNP = new hhds(graph, clusterPNP,false,"");
 
         SolutionSpace solutionsPNP = schedPNP.schedule();
 
@@ -778,7 +787,7 @@ public class Main {
             nextID = tg.getNextId();
             Plan knee = solutionsPNP.getKnee();
 
-            schedPNP = new paretoNoHomogen(tg, knee.cluster,false,"");
+            schedPNP = new hhds(tg, knee.cluster,false,"");
 
             solutionsPNP = schedPNP.schedule();
         }
@@ -792,7 +801,7 @@ public class Main {
 
         Cluster cluster = new Cluster();
 
-        Scheduler sched = new paretoNoHomogen(graph, cluster,true,"all");
+        Scheduler sched = new hhds(graph, cluster,true,"all");
 
         SolutionSpace solutions = sched.schedule();
 
@@ -805,7 +814,7 @@ public class Main {
             Plan knee = solutionsPNP.getKnee();
 
 
-            sched = new paretoNoHomogen(tg, knee.cluster,true,"all");
+            sched = new hhds(tg, knee.cluster,true,"all");
 
             solutions = sched.schedule();
 
@@ -989,10 +998,10 @@ public class Main {
 
                 PegasusDaxParser parser = new PegasusDaxParser(mt, md);
                 if (jar) {
-                    tmpGraph = parser.parseDax(file);
+                    tmpGraph = parser.parseDax(file, 0L);
 
                 } else {
-                    tmpGraph = parser.parseDax(Main.class.getResource(file).getFile());
+                    tmpGraph = parser.parseDax(Main.class.getResource(file).getFile(),0L);
                 }
             }
 
@@ -1034,7 +1043,12 @@ public class Main {
             ArrayList<DAG> graphs = new ArrayList<>();
 
             try {
+                int ensembleSize=flowsandParasms.size();
+                Long dagId=0L;
+                int did=0;
                 for(Triple<String,Integer,Integer> p: flowsandParasms) {
+                    dagId++;
+                    did++;
                     if(p.a.contains("lattice") || p.a.contains("Lattice")){
 
                         double z = 1.0;
@@ -1052,10 +1066,10 @@ public class Main {
 
                         PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
                         if (jar) {
-                            graphs.add(parser.parseDax(p.a));
+                            graphs.add(parser.parseDax(p.a, dagId));
 
                         } else {
-                            graphs.add(parser.parseDax(Main.class.getResource(p.a).getFile()));
+                            graphs.add(parser.parseDax(Main.class.getResource(p.a).getFile(), dagId));
                         }
                     }
                 }
@@ -1117,7 +1131,7 @@ public class Main {
 
         DAG graph = null;
         try {
-            graph = parser.parseDax(Main.class.getResource(filename).getFile());
+            graph = parser.parseDax(Main.class.getResource(filename).getFile(), 0L);
         } catch (Exception e) {
             e.printStackTrace();
         }

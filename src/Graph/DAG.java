@@ -13,6 +13,7 @@ import static utils.random.randomInRange;
  */
 public class DAG {
 
+    public Long dagId;
     public String name;
 
     public long sumdata_B;
@@ -39,6 +40,7 @@ public class DAG {
 
 
     public DAG(){
+        dagId = 0L;
         name="";
         operators = new HashMap<>();
         edges = new HashMap<>();
@@ -51,6 +53,19 @@ public class DAG {
         sumdata_B = 0;
     }
 
+    public DAG(Long id){
+        name="";
+        operators = new HashMap<>();
+        edges = new HashMap<>();
+        reverseEdges = new HashMap<>();
+        edgesMap = new HashMap<>();
+//        nameToFile = new HashMap<>();
+        nextId = 0L;
+        operatorsList = new ArrayList<>();
+//        filenameToFromOpId = new HashMap<>();
+        sumdata_B = 0;
+        dagId = id;
+    }
 
 
 
@@ -67,6 +82,9 @@ public class DAG {
 
         edgesMap.put(nextId,new HashMap<Long, Edge>());
 
+       if(op.dagID==-1L) {
+           op.setDAGId(dagId);
+       }
         return nextId++;
     }
 
@@ -148,6 +166,7 @@ public class DAG {
         for(Operator op:g.getOperators()){
             oldid = op.getId();
             Operator newop = new Operator(op.name,op.resourcesRequirements);
+            newop.setDAGId(g.dagId);
             newid = this.addOperator(newop);
             OldIdToNewId.put(oldid,newid);
         }

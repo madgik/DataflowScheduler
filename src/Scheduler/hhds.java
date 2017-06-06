@@ -11,7 +11,7 @@ import java.util.*;
  /**
  * Created by johnchronis on 2/19/17.
  */
-public class paretoNoHomogen implements Scheduler {
+public class hhds implements Scheduler {
 
     public SolutionSpace space;
     public Cluster cluster;
@@ -38,7 +38,7 @@ public class paretoNoHomogen implements Scheduler {
 
     private HashMap<Long, Integer> opLevel;
 
-    public paretoNoHomogen(DAG graph,Cluster cl,boolean prune,String PruneMethod){
+    public hhds(DAG graph, Cluster cl, boolean prune, String PruneMethod){
         this.pruneEnabled = prune;
         space = new SolutionSpace();
         this.graph = graph;
