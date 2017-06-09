@@ -12,10 +12,7 @@ import utils.*;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
@@ -72,7 +69,9 @@ public class Main {
             }else{
                 String mt = System.getProperty("mt");
                 String md = System.getProperty("md");
-                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md));
+
+                ArrayList<Plan> plans = new ArrayList<>();
+                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans);
             }
         }else{
 //            runDax(jar,jarpath+"Example.dax",1000,3000);
@@ -82,15 +81,162 @@ public class Main {
           //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
 
 
+            System.out.println("running single dataflows");
             ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
-            for(int i=0;i<2;++i) {
-                flowsandParasms.add(new Triple(jarpath+"LIGO.n.50.0.dax", 1000 , 100));
 
-                runDax(jar,jarpath+"LIGO.n.50.0.dax",1000,100);
+            ArrayList <Long> minTimeSingle = new ArrayList<>();
+            ArrayList <Double> minCostSingle = new ArrayList<>();
+
+            HashMap  <Long, Long> minMakespanEnsemble = new HashMap<>();//dagId, time
+            HashMap  <Long, Long> maxMakespanEnsemble = new HashMap<>();//dagId, time
+//            HashMap  <Long, Long> minStartTimeEnsemble = new HashMap<>();//dagId, time
+//            HashMap  <Long, Long> maxEndTimeEnsemble = new HashMap<>();//dagId, time
+            HashMap <Long, Double> minCostEnsemble = new HashMap<>();
+
+            Integer ensembleSize =2;
+
+            for(int i=0;i<ensembleSize;++i) {
+                flowsandParasms.add(new Triple(jarpath+"MONTAGE.n.25.0.dax", 1000 , 100));
+
+
+                ArrayList<Plan> hhdsPlans = new ArrayList<>();
+
+                runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100, hhdsPlans);
+
+                Long time=Long.MAX_VALUE;
+                Double money=Double.MAX_VALUE;
+
+                for(int j=0;j<hhdsPlans.size()-1;++j) {
+                    Plan p0;
+                    p0 = hhdsPlans.get(j);
+                    time =Math.min(time, p0.stats.runtime_MS);
+                    money = Math.min(money, p0.stats.money);
+                }
+                minTimeSingle.add(time);
+                minCostSingle.add(money);
+
 
             }
 
-            runMultipleFlows(jar,flowsandParasms);
+
+
+            System.out.println("running multiple dataflows");
+
+            ArrayList<Plan> ensemblePlans =new ArrayList<>();
+            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans);
+
+
+
+           // for(int i=0; i<ensembleSize; i++) {
+
+                Double minMoney = Double.MAX_VALUE;
+
+                for (int j = 0; j < ensemblePlans.size(); ++j) {
+
+               //     System.out.println("\n next ensemble plan");
+
+                    HashMap  <Long, Long> planMinStartDAG = new HashMap<>();//dagId, time
+                    HashMap  <Long, Long> planMinEndDAG = new HashMap<>();//dagId, time
+
+                    Long minStartTime = Long.MAX_VALUE;
+                    Long maxEndTime = Long.MIN_VALUE;
+
+
+
+                    Plan p0;
+                    p0 = ensemblePlans.get(j);
+                    ////TO ADDDDDDD
+
+
+                    for(Long opId : graph.operators.keySet()){//for( Long contId: p0.contAssignments.keySet()) {
+                        Long contId = p0.assignments.get(opId);
+
+                       Long dId = graph.operators.get(opId).dagID-1;
+
+                      //  System.out.println(" dag " + dId + "opid " + opId + " " +  p0.opIdtoStartEndProcessing_MS.get(opId).a + " " + p0.opIdtoStartEndProcessing_MS.get(opId).b);
+
+
+                        //  for(Long nextOpId: p0.contAssignments.get(contId)) {
+
+                        if(planMinStartDAG.isEmpty() || !planMinStartDAG.containsKey(dId)) {
+                                minStartTime = p0.opIdtoStartEndProcessing_MS.get(opId).a;//startTime
+                                maxEndTime = p0.opIdtoStartEndProcessing_MS.get(opId).b;//startTime
+
+                            planMinStartDAG.put(dId, minStartTime);
+                            planMinEndDAG.put(dId, maxEndTime);
+                            minCostEnsemble.put(dId, minMoney);
+
+                            }
+                            else {
+
+                                Long ts = planMinStartDAG.get(dId);
+                                Long te = planMinEndDAG.get(dId);
+                                Double c = minCostEnsemble.get(dId);
+
+                                //p0.opIdtoStartEndProcessing_MS.get(opId).b //finish time
+                                minStartTime = Math.min(ts, p0.opIdtoStartEndProcessing_MS.get(opId).a);//startTime
+                                maxEndTime = Math.max(te, p0.opIdtoStartEndProcessing_MS.get(opId).b);//startTime
+
+                            planMinStartDAG.put(dId, minStartTime);
+                            planMinEndDAG.put(dId, maxEndTime);
+                                minCostEnsemble.put(dId, minMoney);
+                           // System.out.println(" added " + dId + " " + maxEndTimeEnsemble.get(dId) + " " + maxEndTime);
+                               // minMoney = Math.min(c, p0.stats.money);//startTime
+
+
+                            }
+
+
+                      //  System.out.println(" added " + dId + " " + maxEndTimeEnsemble.get(dId) + " " + maxEndTime);
+
+                        }
+                       // time = takje the value of the start time for each is and the dagid//Math.min(time, p0.contAssignments.  .runtime_MS);
+                      //similarly  money = Math.min(money, p0.stats.money);
+
+//                        for(Long nextOpId: plan.contAssignments.get(contId)) {
+//                            if (plan.opIdtoStartEndProcessing_MS.get(nextOpId).a < succStartTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
+//                            }
+//                        }
+
+
+//                    for( Long dId: planMinStartDAG.keySet() )
+//                        if(!minMakespanEnsemble.containsKey(dId))
+//                            minMakespanEnsemble.put(dId, planMinEndDAG.get(dId) - planMinStartDAG.get(dId));
+//                    else
+//                        {
+//                            Long m = minMakespanEnsemble.get(dId);
+//                            minMakespanEnsemble.put(dId, Math.max(m, planMinEndDAG.get(dId) - planMinStartDAG.get(dId)));
+//                        }
+//
+//
+                    for(Long dgId: minMakespanEnsemble.keySet()) {
+                        Long makespanDag =  planMinEndDAG.get(dgId) - planMinStartDAG.get(dgId);
+//                        //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
+//                      //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
+                    }
+
+                            }
+
+
+           //     }
+
+//            ArrayList <Long> minTimeSingle = new ArrayList<>();
+//            ArrayList <Double> minCostSingle = new ArrayList<>();
+//
+//            HashMap  <Long, Long> minStartTimeEnsemble = new HashMap<>();//dagId, time
+//            HashMap  <Long, Long> maxEndTimeEnsemble = new HashMap<>();//dagId, time
+
+//                for(int i=0; i<ensembleSize; i++) {
+//                    System.out.println("dag " + i + " has min start " +minTimeSingle.get(i) + " and max end " + minTimeSingle.get(i) );
+//                    //System.out.println("in ensemble dag " + i + " has min start " + minStartTimeEnsemble.get(i) + " and max end " + maxEndTimeEnsemble.get(i));
+//                }
+//
+//            for(Long dgId: minMakespanEnsemble.keySet()) {
+//                //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
+//                System.out.println("in ensemble dag " + dgId + " has min start " + minMakespanEnsemble.get(dgId) + " and max end " + maxMakespanEnsemble.get(dgId));
+//            }
+          //  }
+
 
             //
 //            runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100);
@@ -193,7 +339,7 @@ public class Main {
         return space;
     }
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type)
+    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans)
     {
 
         StringBuilder sbOut = new StringBuilder();
@@ -203,7 +349,9 @@ public class Main {
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
+
         plotUtility plot = new plotUtility();
+
 
 //        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"Dominance", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
@@ -216,6 +364,8 @@ public class Main {
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);jjPrune
 //          SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxDist", mpinfo,"P_crowdingMaxDist", sbOut,combined);
         SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"Hetero", sbOut,combined, type);
+
+        hhdsPlans.addAll(paretoToCompare.results);
 
 
         //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
@@ -234,7 +384,7 @@ public class Main {
 
         String addToFilename = "_NPRUNE_";
 
-        boolean moheft = true;
+        boolean moheft = false;
 
 
         //        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
@@ -329,15 +479,17 @@ public class Main {
 
     try {
 
-        addImprovementsToLegend(solutionsM,paretoToCompare,legendInfo);
+        if(moheft) {
+            addImprovementsToLegend(solutionsM, paretoToCompare, legendInfo);
 //
-        addDistanceToLegend(solutionsM,paretoToCompare,legendInfo);
+            addDistanceToLegend(solutionsM, paretoToCompare, legendInfo);
 
-        distMtoC = computeDistance(solutionsM,combined).P2Sky;
-        legendInfo.add(new Pair<>("distMtoC",distMtoC));
+            distMtoC = computeDistance(solutionsM, combined).P2Sky;
+            legendInfo.add(new Pair<>("distMtoC", distMtoC));
 
-        distPtoC = computeDistance(paretoToCompare,combined).P2Sky;
-        legendInfo.add(new Pair<>("distPtoC",distPtoC));
+
+            distPtoC = computeDistance(paretoToCompare, combined).P2Sky;
+            legendInfo.add(new Pair<>("distPtoC", distPtoC));
 
 //        distCtoM = computeDistance(combined,solutionsM).P2Sky;
 //        legendInfo.add(new Pair<>("distCtoM",distCtoM));
@@ -345,35 +497,35 @@ public class Main {
 //        distCtoP = computeDistance(combined,paretoToCompare).P2Sky;
 //        legendInfo.add(new Pair<>("distCtoP",distCtoP));
 
-        JaccardMtoC = computeJaccard(solutionsM,combined);
-        legendInfo.add(new Pair<>("JaccMtoC",JaccardMtoC));
+            JaccardMtoC = computeJaccard(solutionsM, combined);
+            legendInfo.add(new Pair<>("JaccMtoC", JaccardMtoC));
 
-        JaccardPtoC = computeJaccard(paretoToCompare,combined);
-        legendInfo.add(new Pair<>("JaccPtoC",JaccardPtoC));
+            JaccardPtoC = computeJaccard(paretoToCompare, combined);
+            legendInfo.add(new Pair<>("JaccPtoC", JaccardPtoC));
 
-        sbOut.append("Jaccard from M to C " + JaccardMtoC).append("\n");
-        sbOut.append("Jaccard from P to C " + JaccardPtoC).append("\n");
+            sbOut.append("Jaccard from M to C " + JaccardMtoC).append("\n");
+            sbOut.append("Jaccard from P to C " + JaccardPtoC).append("\n");
 
-        sbOut.append("distance from M to C " + distMtoC).append("\n");
-        sbOut.append("distance from P to C " + distPtoC).append("\n");
+            sbOut.append("distance from M to C " + distMtoC).append("\n");
+            sbOut.append("distance from P to C " + distPtoC).append("\n");
 //        sbOut.append("distance from C to M " + distCtoM).append("\n");
 //        sbOut.append("distance from C to P " + distCtoP).append("\n");
 
 
-        legendInfo.add(new Pair<String, Double>("nodes", (double) graph.getOperators().size()));
-        legendInfo.add(new Pair<String, Double>("edges", (double) graph.sumEdges()));
+            legendInfo.add(new Pair<String, Double>("nodes", (double) graph.getOperators().size()));
+            legendInfo.add(new Pair<String, Double>("edges", (double) graph.sumEdges()));
 
-        //            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastestTime());
-        //            System.out.println((solutions.optimizationTime_MS/solutions.getFastestTime()));
-        double diffF = paretoToCompare.optimizationTime_MS/paretoToCompare.getFastestTime();
-        double diffS = paretoToCompare.optimizationTime_MS/paretoToCompare.getSlowest().stats.runtime_MS;
-        double meanDiff = paretoToCompare.optimizationTime_MS / ((paretoToCompare.getFastestTime()+paretoToCompare.getSlowest().stats.runtime_MS)/2);
+            //            System.out.println(solutions.optimizationTime_MS+" "+solutions.getFastestTime());
+            //            System.out.println((solutions.optimizationTime_MS/solutions.getFastestTime()));
+            double diffF = paretoToCompare.optimizationTime_MS / paretoToCompare.getFastestTime();
+            double diffS = paretoToCompare.optimizationTime_MS / paretoToCompare.getSlowest().stats.runtime_MS;
+            double meanDiff = paretoToCompare.optimizationTime_MS / ((paretoToCompare.getFastestTime() + paretoToCompare.getSlowest().stats.runtime_MS) / 2);
 
-        legendInfo.add(new Pair<String,Double>("OverHeadFastest", (double) (Math.round(diffF *10000)/100)));
-        legendInfo.add(new Pair<String,Double>("OverHeadSlowest", (double) (Math.round(diffS *10000)/100)));
-        legendInfo.add(new Pair<String,Double>("OverHeadAvg", (double) (Math.round(diffF *10000)/100)));
-        legendInfo.add(new Pair<String,Double>("Moheft-pareto (+) OptTime MS",  (double)(solutionsM.optimizationTime_MS - paretoToCompare.optimizationTime_MS)));
-
+            legendInfo.add(new Pair<String, Double>("OverHeadFastest", (double) (Math.round(diffF * 10000) / 100)));
+            legendInfo.add(new Pair<String, Double>("OverHeadSlowest", (double) (Math.round(diffS * 10000) / 100)));
+            legendInfo.add(new Pair<String, Double>("OverHeadAvg", (double) (Math.round(diffF * 10000) / 100)));
+            legendInfo.add(new Pair<String, Double>("Moheft-pareto (+) OptTime MS", (double) (solutionsM.optimizationTime_MS - paretoToCompare.optimizationTime_MS)));
+        }
 
 
     } catch (Exception e) {
@@ -594,7 +746,7 @@ public class Main {
         return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
     }
 
-    private static void runDax(boolean jar, String file, int mulTime, int mulData) {
+    private static void runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans) {
 
         System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
 
@@ -617,7 +769,8 @@ public class Main {
         }else{
             flowname = file;
         }
-        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname);
+
+        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans);
     }
 
     private static void runLattice(int d, int b) {
@@ -637,7 +790,8 @@ public class Main {
         DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0);
 
 
-        runDAG(graph,"d: "+d+" b: "+b,"Lattice");
+        ArrayList<Plan> plans = new ArrayList<>();
+        runDAG(graph,"d: "+d+" b: "+b,"Lattice", plans);
 
     }
 
@@ -692,7 +846,8 @@ public class Main {
 //            graph.addEnd(tmpGraph);
 //        }
 
-        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple");
+        ArrayList<Plan> plans = new ArrayList<>();
+        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
 
     }
 
@@ -1024,7 +1179,8 @@ public class Main {
         //            graph.addEnd(tmpGraph);
         //        }
 
-        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple");
+        ArrayList<Plan> plans = new ArrayList<>();
+        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
 
     }
 
@@ -1032,7 +1188,7 @@ public class Main {
 
 
 
-    private static void runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms){
+    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans){
 
         System.out.println("runinng multFLow");
         for(Triple<String,Integer,Integer> tr: flowsandParasms){
@@ -1077,37 +1233,31 @@ public class Main {
                 e.printStackTrace();
             }
 
-            //////////////////all start together
             for(DAG g:graphs){
                 graph.add(g);
             }
-    //
-    //        ////////////////connect randomly
-    //        for(DAG g:graphs){
-    //            graph.addRandomPoint(g);
-    //        }
 
 
-            ///////////////connect at half point
-//            for(DAG g:graphs){
-//                graph.addHalfPoint(g);
-//            }
-            /////////////add end
-//            for(DAG g:graphs){
-//                graph.addEnd(g);
-//            }
 
 
-            //////////conenctPoisson
+            runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
 
-//            for(DAG g:graphs){
-//                graph.addPoisson(g);
-//            }
+//            ArrayList <Long> minTime = new ArrayList<>();
+//        ArrayList <Double> minCost = new ArrayList<>();
+//
+//            Long time=Long.MAX_VALUE;
+//            Double money=Double.MAX_VALUE;
+//
+//        for(int i=0;i<plans.size()-1;++i) {
+//            Plan p0;
+//            p0 = plans.get(i);
+//            time =Math.min(time, p0.stats.runtime_MS);
+//            money = Math.min(money, p0.stats.money);
+//        }
+//            minTime.add(time);
+//        minCost.add(money);
 
-            /////////////////////
-
-            runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple");
-
+        return graph;
     }
 
     private static void runTree(int leafs,int height) {
@@ -1122,7 +1272,8 @@ public class Main {
             leafs, height, 1.0, 1.0,
             avgTimePerLevel, initialDataSize, dataReductionPerLevel, randomness, seed);
 
-        runDAG(graph," leafs: "+leafs+" height: "+height,"tree");
+        ArrayList<Plan> plans = new ArrayList<>();
+        runDAG(graph," leafs: "+leafs+" height: "+height,"tree", plans);
 
     }
 
@@ -1181,7 +1332,8 @@ public class Main {
             e.printStackTrace();
         }
 
-        runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,filename);
+        ArrayList<Plan> plans = new ArrayList<>();
+        runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,filename, plans);
 
     }
 
