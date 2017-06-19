@@ -210,10 +210,11 @@ public class Main {
 //                        }
 //
 //
-                    for(Long dgId: minMakespanEnsemble.keySet()) {
+                    for(Long dgId: planMinEndDAG.keySet()) {
                         Long makespanDag =  planMinEndDAG.get(dgId) - planMinStartDAG.get(dgId);
-//                        //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
-//                      //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
+                        System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  planMinStartDAG.get(dgId) + " ends " + planMinEndDAG.get(dgId));
+                        //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
+                      //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
                     }
 
                             }
