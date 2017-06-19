@@ -25,6 +25,7 @@ public class DAG {
     public HashMap<Long, HashMap<Long,Edge>> edgesMap;
     private HashMap<Long,ArrayList<Edge>> reverseEdges;
 
+
     public Long getNextId() {
         return nextId;
     }
@@ -34,6 +35,8 @@ public class DAG {
     }
 
     private Long nextId;
+
+    public DAGmerged superDAG;
 
 //    public  HashMap<String,Data> nameToFile;
 //    public  HashMap<String,Long> filenameToFromOpId;
@@ -51,6 +54,7 @@ public class DAG {
         operatorsList = new ArrayList<>();
 //        filenameToFromOpId = new HashMap<>();
         sumdata_B = 0;
+        superDAG = new DAGmerged();
     }
 
     public DAG(Long id){
@@ -65,6 +69,8 @@ public class DAG {
 //        filenameToFromOpId = new HashMap<>();
         sumdata_B = 0;
         dagId = id;
+        superDAG = new DAGmerged();
+
     }
 
 
@@ -146,7 +152,7 @@ public class DAG {
                 dataSum_B += edge.data.size_B;
             }
         }
-        Double com = (2*dataSum_B) / RuntimeConstants.distributed_storage_speed_B_MS;
+        Double comm = (2*dataSum_B) / RuntimeConstants.distributed_storage_speed_B_MS;
 
         long comp=0;
 
@@ -155,7 +161,7 @@ public class DAG {
         }
 
 
-        Double ccr = com/comp;
+        Double ccr = comm/comp;
         return ccr;
     }
 

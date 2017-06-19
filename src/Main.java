@@ -18,6 +18,7 @@ import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
 
 
+import Graph.DAGmerged;
 
 public class Main {
 
@@ -96,7 +97,7 @@ public class Main {
             Integer ensembleSize =2;
 
             for(int i=0;i<ensembleSize;++i) {
-                flowsandParasms.add(new Triple(jarpath+"MONTAGE.n.25.0.dax", 1000 , 100));
+                flowsandParasms.add(new Triple(jarpath+"MONTAGE.n."+(i+1)*25+".0.dax", 1000 , 100));
 
 
                 ArrayList<Plan> hhdsPlans = new ArrayList<>();
@@ -1196,6 +1197,7 @@ public class Main {
         }
 
             DAG graph = new DAG();
+           // DAGmerged graphMerged = new DAGmerged();
             ArrayList<DAG> graphs = new ArrayList<>();
 
             try {
@@ -1235,8 +1237,9 @@ public class Main {
 
             for(DAG g:graphs){
                 graph.add(g);
+                graph.superDAG.addSubDAG(g);
+                //graphMerged.addSubDAG(g);
             }
-
 
 
 

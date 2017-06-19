@@ -1347,12 +1347,38 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-        Collections.sort(opsSorted, dagIdComparator);
+     //   Collections.sort(opsSorted, dagIdComparator);
 
-//        System.out.println("sorted ops");
-//        for(Long op: opsSorted)
-//            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
-////
+
+        Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
+            @Override
+            public int compare(Long op1, Long op2) {
+                Long did1 = graph.getOperator(op1).dagID;
+                Long did2 = graph.getOperator(op2).dagID;
+
+//                Double d1= sum_rank.get(op1)/(double)graph.superDAG.getSubDAG(did1).getOperators().size();
+//                Double d2= sum_rank.get(op2)/(double)graph.superDAG.getSubDAG(did2).getOperators().size();
+
+                Double d1= (double)graph.superDAG.getSubDAG(did1).getOperators().size();
+                Double d2= (double)graph.superDAG.getSubDAG(did2).getOperators().size();
+
+                if (d1 < d2)
+                    return -1;
+                else if (d1 > d2)
+                    return 1;
+                else
+                    return 0;
+            }
+        };
+
+        if(graph.superDAG.merged==true)
+        Collections.sort(opsSorted, SSComparator);
+
+
+        System.out.println("sorted ops");
+        for(Long op: opsSorted)
+            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
+//
 //        Comparator<Operator> slackComparator = new Comparator<Operator>() {
 //            @Override
 //            public int compare(Operator op1, Operator op2) {
