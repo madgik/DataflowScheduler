@@ -2,8 +2,6 @@ import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
 import JsonOptiqueParse.JsonOptiqueParser;
 import Lattice.LatticeGenerator;
-import Scheduler.Cluster;
-import Scheduler.Scheduler;
 import Scheduler.*;
 import Simulator.SimEnginge;
 import Tree.TreeGraphGenerator;
@@ -12,13 +10,13 @@ import utils.*;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
-
-
-import Graph.DAGmerged;
 
 public class Main {
 
@@ -94,14 +92,14 @@ public class Main {
 //            HashMap  <Long, Long> maxEndTimeEnsemble = new HashMap<>();//dagId, time
             HashMap <Long, Double> minCostEnsemble = new HashMap<>();
 
-            Integer ensembleSize =3;
+            Integer ensembleSize =4;
 
             for(int i=1;i<=ensembleSize;++i) {
 
                 String appName = null;
-                Integer randomSize = random.randomInRange(1,0);
-                Integer sizesMontage[] ={25, 50, 100};
-                Integer sizesLigo[] ={50, 100, 200};
+                Integer randomSize = random.randomInRange(2,0);
+                Integer sizesMontage[] ={25, 25, 25};
+                Integer sizesLigo[] ={50, 50, 50};
                 Integer size = 50;
                 if(i%2==1) {
                     appName = "MONTAGE";
@@ -345,9 +343,9 @@ public class Main {
 
         sbOut.append(space.toString());
 
-        mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+      //  mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
 
-        plotUtility plot = new plotUtility();
+       // plotUtility plot = new plotUtility();
 
         combined.addAll(space);
 
@@ -365,7 +363,7 @@ public class Main {
 
         SolutionSpace combined = new SolutionSpace();
 
-        plotUtility plot = new plotUtility();
+       // plotUtility plot = new plotUtility();
 
 
 //        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"Dominance", sbOut,combined);
@@ -573,7 +571,7 @@ public class Main {
 
     }
 
-    plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
+    //plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
 
     //        if(validate){
     //            System.out.println("Running sims");
@@ -915,7 +913,7 @@ public class Main {
 
         sbOut.append("Running "+type+" "+paremetersToPrint+ " Pareto, Moheft").append("\n");
 
-        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+      //  MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
 
 
@@ -966,7 +964,7 @@ public class Main {
 
 
 
-        mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
+//        mpinfo.add("paretoNP("+solutionsPNP.size()+")"+(solutionsPNP.optimizationTime_MS)+" "+solutionsPNP.getScoreElastic(), solutionsPNP.results);
 
 
         Cluster cluster = new Cluster();
@@ -992,7 +990,7 @@ public class Main {
 
         sbOut.append(solutions.toString());
 
-        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
+//        mpinfo.add("paretoPALL("+solutions.size()+")"+(solutions.optimizationTime_MS)+" "+solutions.getScoreElastic(), solutions.results);
 
 
         System.out.println("paretoDone");
@@ -1013,7 +1011,7 @@ public class Main {
 
         sbOut.append(solutionsM.toString());
 
-        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
+//        mpinfo.add("moheft "+(solutionsM.optimizationTime_MS)+" "+solutionsM.getScoreElastic(), solutionsM.results);
 
         plotUtility plot = new plotUtility();
 
@@ -1124,10 +1122,10 @@ public class Main {
 
         }
 
-        plot.plotMultipleWithLine(combined, legendInfo ,mpinfo, filesname,
-            pathPlot,
-            savePlot,
-            showPlot);
+//        plot.plotMultipleWithLine(combined, legendInfo ,mpinfo, filesname,
+//            pathPlot,
+//            savePlot,
+//            showPlot);
 
         if(validate){
             System.out.println("Running sims");
@@ -1304,7 +1302,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+     //   MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
 
         Cluster cluster;
@@ -1318,16 +1316,16 @@ public class Main {
         }
 
 
-        mpinfo.add("HEFT "+(solutions.optimizationTime_MS), solutions.results);
+     //   mpinfo.add("HEFT "+(solutions.optimizationTime_MS), solutions.results);
 
 
 
-        plotUtility plot = new plotUtility();
+//        plotUtility plot = new plotUtility();
 
-        plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
-            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),
-            pathPlot,
-            savePlot);
+      //  plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
+//            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),
+//            pathPlot,
+//            savePlot);
 
         System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
         System.out.println("mulTime "+mulTime + " mulData " + mulData + "  sumData GB " + (graph.sumdata_B / 1073741824));
