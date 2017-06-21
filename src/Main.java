@@ -94,15 +94,28 @@ public class Main {
 //            HashMap  <Long, Long> maxEndTimeEnsemble = new HashMap<>();//dagId, time
             HashMap <Long, Double> minCostEnsemble = new HashMap<>();
 
-            Integer ensembleSize =2;
+            Integer ensembleSize =3;
 
-            for(int i=0;i<ensembleSize;++i) {
-                flowsandParasms.add(new Triple(jarpath+"MONTAGE.n."+(i+1)*25+".0.dax", 1000 , 100));
+            for(int i=1;i<=ensembleSize;++i) {
 
+                String appName = null;
+                Integer randomSize = random.randomInRange(1,0);
+                Integer sizesMontage[] ={25, 50, 100};
+                Integer sizesLigo[] ={50, 100, 200};
+                Integer size = 50;
+                if(i%2==1) {
+                    appName = "MONTAGE";
+                    size = sizesMontage[randomSize];
+                }
+                else {
+                    appName = "LIGO";
+                    size = sizesLigo[randomSize];
+                }
+                flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
 
                 ArrayList<Plan> hhdsPlans = new ArrayList<>();
 
-                runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100, hhdsPlans);
+                runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
 
                 Long time=Long.MAX_VALUE;
                 Double money=Double.MAX_VALUE;

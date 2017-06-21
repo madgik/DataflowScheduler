@@ -667,7 +667,7 @@ public class hhdsEnsemble implements Scheduler {
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
 
-            //   System.out.println("\nscheduling "+nextOpID + " "+readyOps.toString());
+//               System.out.println("scheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
             for (Plan plan : plans) {
