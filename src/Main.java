@@ -8,6 +8,7 @@ import Tree.TreeGraphGenerator;
 import utils.*;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -94,9 +95,15 @@ public class Main {
 
             Integer ensembleSize =4;
 
+
+            String pathOutput = "./multipleFlows/";
+            PrintWriter output = null;
+            try {
+                output = new PrintWriter(pathOutput + "Ensemble" );
+
             for(int i=1;i<=ensembleSize;++i) {
 
-                String appName = null;
+                String appName = "Example";
                 Integer randomSize = random.randomInRange(2,0);
                 Integer sizesMontage[] ={25, 25, 25};
                 Integer sizesLigo[] ={50, 50, 50};
@@ -111,9 +118,11 @@ public class Main {
                 }
                 flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
 
+//                flowsandParasms.add(new Triple(jarpath + appName +".dax", 1 , 1));
+
                 ArrayList<Plan> hhdsPlans = new ArrayList<>();
 
-                runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
+               runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
 
                 Long time=Long.MAX_VALUE;
                 Double money=Double.MAX_VALUE;
@@ -139,11 +148,15 @@ public class Main {
 
 
 
+            System.out.println("Money ExecutionTime Utilization containersUSed MakespanPerDAG StartTimePerDAG FinishTimePerDAG " );
            // for(int i=0; i<ensembleSize; i++) {
 
                 Double minMoney = Double.MAX_VALUE;
 
+
+
                 for (int j = 0; j < ensemblePlans.size(); ++j) {
+
 
                //     System.out.println("\n next ensemble plan");
 
@@ -221,14 +234,43 @@ public class Main {
 //                        }
 //
 //
+//                    for(Long dgId: planMinEndDAG.keySet()) {
+//                        Long makespanDag =  planMinEndDAG.get(dgId) - planMinStartDAG.get(dgId);
+//                        System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  planMinStartDAG.get(dgId) + " ends " + planMinEndDAG.get(dgId));
+//                        //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
+//                      //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
+//                    }
+
+
+                    System.out.print(p0.stats.money + " " + p0.stats.runtime_MS + " " + p0.stats.contUtilization +" " + p0.stats.containersUsed);
+
                     for(Long dgId: planMinEndDAG.keySet()) {
                         Long makespanDag =  planMinEndDAG.get(dgId) - planMinStartDAG.get(dgId);
-                        System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  planMinStartDAG.get(dgId) + " ends " + planMinEndDAG.get(dgId));
+                        System.out.print(" dag" + dgId  + " " + makespanDag + " " + planMinStartDAG.get(dgId) + " " + planMinEndDAG.get(dgId));
                         //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
-                      //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
+                        //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
                     }
+                    System.out.println();
+
+
+                        output.print(p0.stats.money + " " + p0.stats.runtime_MS + " " + p0.stats.contUtilization +" " + p0.stats.containersUsed);
+                    for(Long dgId: planMinEndDAG.keySet()) {
+                        Long makespanDag =  planMinEndDAG.get(dgId) - planMinStartDAG.get(dgId);
+                        output.print(" dag" + dgId  + " " + makespanDag + " " + planMinStartDAG.get(dgId) + " " + planMinEndDAG.get(dgId));
+                    }
+                    output.println();
 
                             }
+
+
+
+
+
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                output.close();
 
 
            //     }
@@ -381,6 +423,19 @@ public class Main {
         hhdsPlans.addAll(paretoToCompare.results);
 
 
+        String pathOutput = "./multipleFlows/";
+        PrintWriter output = null;
+        try {
+            output = new PrintWriter(pathOutput + type + "." +paremetersToPrint);
+            for(Plan p0: hhdsPlans)
+                output.println(p0.stats.money + " " + p0.stats.runtime_MS + " " + p0.stats.contUtilization +" " + p0.stats.containersUsed +" ");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        output.close();
+
+//        for(Plan p0: hhdsPlans)
+//            System.out.println(p0.stats.money + " " + p0.stats.runtime_MS + " " + p0.stats.contUtilization +" " + p0.stats.containersUsed +" ");
         //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
 //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
 
