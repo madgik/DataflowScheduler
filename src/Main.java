@@ -105,7 +105,7 @@ public class Main {
 
                 String appName = "Example";
                 Integer randomSize = random.randomInRange(2,0);
-                Integer sizesMontage[] ={25, 25, 25};
+                Integer sizesMontage[] ={100,100,100};
                 Integer sizesLigo[] ={50, 50, 50};
                 Integer size = 50;
                 if(i%2==1) {
