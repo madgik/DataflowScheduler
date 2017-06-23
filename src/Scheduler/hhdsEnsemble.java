@@ -1365,10 +1365,10 @@ public class hhdsEnsemble implements Scheduler {
         Collections.sort(opsSorted, SSComparator);
 
 
-//        System.out.println("sorted ops");
-//        for(Long op: opsSorted)
-//            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
-//
+        System.out.println("sorted ops");
+        for(Long op: opsSorted)
+            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
+
 //        Comparator<Operator> slackComparator = new Comparator<Operator>() {
 //            @Override
 //            public int compare(Operator op1, Operator op2) {
