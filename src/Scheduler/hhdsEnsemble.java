@@ -1347,7 +1347,7 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-     //   Collections.sort(opsSorted, dagIdComparator);
+//        Collections.sort(opsSorted, dagIdComparator);
 
 
         Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
@@ -1371,8 +1371,8 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-        if(graph.superDAG.merged==true)
-        Collections.sort(opsSorted, SSComparator);
+//        if(graph.superDAG.merged==true)
+//        Collections.sort(opsSorted, SSComparator);
 
 
         System.out.println("sorted ops");

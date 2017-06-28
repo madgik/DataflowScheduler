@@ -1,9 +1,6 @@
 package Scheduler;
 
-import org.apache.commons.collections.ArrayStack;
-import utils.Check;
 import utils.Pair;
-import utils.plotUtility;
 
 import java.util.*;
 
@@ -875,7 +872,6 @@ public class SolutionSpace implements Iterable<Plan> {
     public HashSet<Plan> crowdingMaxMoney(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret){
 
         addExtremes(donotchange,ret);
-
         ArrayList<Plan> skylinePlans = new ArrayList<>();
         skylinePlans.addAll(donotchange);
 

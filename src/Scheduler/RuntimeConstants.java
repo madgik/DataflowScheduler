@@ -1,7 +1,5 @@
 package Scheduler;
 
-import java.util.EnumMap;
-
 /**
  * Created by johnchronis on 2/19/17.
  */
@@ -11,7 +9,7 @@ public class RuntimeConstants {
      * Quantum size (in seconds)
      * Default: 1 hour
      */
-    public static long quantum_MS = 3600 * 1000;
+    public static long quantum_MS = 3600000;
 
     /**
      * Network speed (in MB/sec)

@@ -96,19 +96,19 @@ public class Main {
 
             for(int i=1;i<=ensembleSize;++i) {
 
-                String appName = null;
+                String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2,0);
                 Integer sizesMontage[] ={25, 25, 25};
                 Integer sizesLigo[] ={50, 50, 50};
-                Integer size = 50;
-                if(i%2==1) {
-                    appName = "MONTAGE";
-                    size = sizesMontage[randomSize];
-                }
-                else {
-                    appName = "LIGO";
-                    size = sizesLigo[randomSize];
-                }
+                Integer size = 25;
+//                if(i%2==1) {
+//                    appName = "MONTAGE";
+//                    size = sizesMontage[randomSize];
+//                }
+//                else {
+//                    appName = "LIGO";
+//                    size = sizesLigo[randomSize];
+//                }
                 flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
 
                 ArrayList<Plan> hhdsPlans = new ArrayList<>();
