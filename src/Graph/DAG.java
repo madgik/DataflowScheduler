@@ -175,11 +175,13 @@ public class DAG {
             newop.setDAGId(g.dagId);
             newid = this.addOperator(newop);
             OldIdToNewId.put(oldid,newid);
+           // System.out.println("added op " +oldid + " as " + newid);
         }
 
         for(ArrayList<Edge> ae: g.edges.values()){
             for(Edge e:ae){
 
+         //       System.out.println("added edge " +e.from + " " + e.to + " as" + OldIdToNewId.get(e.from) + " to " + OldIdToNewId.get(e.to));
                 this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
             }
         }
