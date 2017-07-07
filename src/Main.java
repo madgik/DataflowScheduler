@@ -137,190 +137,15 @@ public class Main {
             ArrayList<Plan> ensemblePlans =new ArrayList<>();
             DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans);
 
-
-
-           // for(int i=0; i<ensembleSize; i++) {
-
-                Double minMoney = Double.MAX_VALUE;
-
-                for (int j = 0; j < ensemblePlans.size(); ++j) {
-
-               //     System.out.println("\n next ensemble plan");
-
-                    HashMap  <Long, Long> planMinStartDAG = new HashMap<>();//dagId, time
-                    HashMap  <Long, Long> planMinEndDAG = new HashMap<>();//dagId, time
-
-                    Long minStartTime = Long.MAX_VALUE;
-                    Long maxEndTime = Long.MIN_VALUE;
-
-
-
-                    Plan p0;
-                    p0 = ensemblePlans.get(j);
-                    ////TO ADDDDDDD
-
-
-                    for(Long opId : graph.operators.keySet()){//for( Long contId: p0.contAssignments.keySet()) {
-                        Long contId = p0.assignments.get(opId);
-
-                       Long dId = graph.operators.get(opId).dagID-1;
-
-                      //  System.out.println(" dag " + dId + "opid " + opId + " " +  p0.opIdtoStartEndProcessing_MS.get(opId).a + " " + p0.opIdtoStartEndProcessing_MS.get(opId).b);
-
-
-                        //  for(Long nextOpId: p0.contAssignments.get(contId)) {
-
-                        if(planMinStartDAG.isEmpty() || !planMinStartDAG.containsKey(dId)) {
-                                minStartTime = p0.opIdtoStartEndProcessing_MS.get(opId).a;//startTime
-                                maxEndTime = p0.opIdtoStartEndProcessing_MS.get(opId).b;//startTime
-
-                            planMinStartDAG.put(dId, minStartTime);
-                            planMinEndDAG.put(dId, maxEndTime);
-                            minCostEnsemble.put(dId, minMoney);
-
-                            }
-                            else {
-
-                                Long ts = planMinStartDAG.get(dId);
-                                Long te = planMinEndDAG.get(dId);
-                                Double c = minCostEnsemble.get(dId);
-
-                                //p0.opIdtoStartEndProcessing_MS.get(opId).b //finish time
-                                minStartTime = Math.min(ts, p0.opIdtoStartEndProcessing_MS.get(opId).a);//startTime
-                                maxEndTime = Math.max(te, p0.opIdtoStartEndProcessing_MS.get(opId).b);//startTime
-
-                            planMinStartDAG.put(dId, minStartTime);
-                            planMinEndDAG.put(dId, maxEndTime);
-                                minCostEnsemble.put(dId, minMoney);
-                           // System.out.println(" added " + dId + " " + maxEndTimeEnsemble.get(dId) + " " + maxEndTime);
-                               // minMoney = Math.min(c, p0.stats.money);//startTime
-
-
-                            }
-
-
-                      //  System.out.println(" added " + dId + " " + maxEndTimeEnsemble.get(dId) + " " + maxEndTime);
-
-                        }
-                       // time = takje the value of the start time for each is and the dagid//Math.min(time, p0.contAssignments.  .runtime_MS);
-                      //similarly  money = Math.min(money, p0.stats.money);
-
-//                        for(Long nextOpId: plan.contAssignments.get(contId)) {
-//                            if (plan.opIdtoStartEndProcessing_MS.get(nextOpId).a < succStartTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
-//                            }
-//                        }
-
-
-//                    for( Long dId: planMinStartDAG.keySet() )
-//                        if(!minMakespanEnsemble.containsKey(dId))
-//                            minMakespanEnsemble.put(dId, planMinEndDAG.get(dId) - planMinStartDAG.get(dId));
-//                    else
-//                        {
-//                            Long m = minMakespanEnsemble.get(dId);
-//                            minMakespanEnsemble.put(dId, Math.max(m, planMinEndDAG.get(dId) - planMinStartDAG.get(dId)));
-//                        }
+//            for (int j = 0; j < ensemblePlans.size(); ++j) {
 //
-//
-                    for(Long dgId: planMinEndDAG.keySet()) {
-                        Long makespanDag =  planMinEndDAG.get(dgId) - planMinStartDAG.get(dgId);
-                        System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  planMinStartDAG.get(dgId) + " ends " + planMinEndDAG.get(dgId));
-                        //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
-                      //  System.out.println("in ensemble dag " + dgId + " makespan " + makespanDag + "from " +planMinStartDAG.get(dgId) );
-                    }
-
-                            }
-
-
-           //     }
-
-//            ArrayList <Long> minTimeSingle = new ArrayList<>();
-//            ArrayList <Double> minCostSingle = new ArrayList<>();
-//
-//            HashMap  <Long, Long> minStartTimeEnsemble = new HashMap<>();//dagId, time
-//            HashMap  <Long, Long> maxEndTimeEnsemble = new HashMap<>();//dagId, time
-
-//                for(int i=0; i<ensembleSize; i++) {
-//                    System.out.println("dag " + i + " has min start " +minTimeSingle.get(i) + " and max end " + minTimeSingle.get(i) );
-//                    //System.out.println("in ensemble dag " + i + " has min start " + minStartTimeEnsemble.get(i) + " and max end " + maxEndTimeEnsemble.get(i));
-//                }
-//
-//            for(Long dgId: minMakespanEnsemble.keySet()) {
-//                //System.out.println("dag " + dgId + " has min start " +minTimeSingle.get(dgId) + " and max end " + minTimeSingle.get(i) );
-//                System.out.println("in ensemble dag " + dgId + " has min start " + minMakespanEnsemble.get(dgId) + " and max end " + maxMakespanEnsemble.get(dgId));
+//                Plan p=ensemblePlans.get(j);
+//                System.out.print("plan " + j + ": ");
+//                System.out.printf("%.1f\n", p.stats.subdagMeanMakespan);
+//                    for(Long dgId: p.stats.subdagFinishTime.keySet())
+//                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
 //            }
-          //  }
 
-
-            //
-//            runDax(jar,jarpath+"MONTAGE.n.25.0.dax",1000,100);
-
-//            runDax(jar,jarpath+"Example.dax",10000,3000);
-//
-//            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
-//
-
-
-
-//            runDax(jar,jarpath+"LIGO.n.100.0.dax",1,1);
-
-//            runDax(jar,jarpath+"LIGO.n.100.0.dax",500,500);
-
-//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1,1);
-
-//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",1000,300);
-//
-//            runLattice(11,3);
-//
-//            runLattice(5,21);
-//
-//            runLattice(9,4);
-//
-//            runLattice(7,7);
-
-
-
-            //
-//            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,300);
-//            runDax(jar,jarpath+"LIGO.n.200.0.dax",100,300);
-//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,10);
-//            runDax(jar,jarpath+"GENOME.n.100.0.dax",100,10);
-//
-
-            //            runEnseble(jar,jarpath+"MONTAGE.n.100.0.dax",1000 , 1000,5);
-
-//
-
-
-//            runLattice(5,21);
-//            runDax(false,"MONTAGE.n.100.0.dax",1,100);
-//
-//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",500,300);
-
-//            runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",1000,100);
-
-//            runOneMultipleHALF(jar,jarpath+"LIGO.50.0.n.dax",1000,100);
-
-            //            runDax(jar,jarpath+"MONTAGE.n.300.0.dax",1000,100);
-
-
-//            runDax(jar,jarpath+"LIGO.n.100.0.dax",1000,100);
-
-//            runLattice(4,10);
-////
-//            runLattice(11,3);
-//
-//            runLattice(5,21);
-//
-//            runLattice(9,4);
-//
-//            runLattice(7,7);
-
-
-//            runLattice(11,3); //6 vs 32 solutions alla kaliteres
-//            runLattice(9,4); // poli kaliteroi + grigoroi
-//            runLattice(7,7); //better
-//            runLattice(5,21); // kalitero emeis
-//            runLattice(3,498); //poli pio grigoroi kalitero gonato alla sta pio grigora mas kerdizei, genika kaliteroi emeis
 
 
         }
@@ -362,95 +187,15 @@ public class Main {
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
-
-       // plotUtility plot = new plotUtility();
-
-
-//        SolutionSpace paretoToCompare = execute(graph,true,"valkanas", mpinfo,"Dominance", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"valkanas1and2", mpinfo,"P_valkanas1and2", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"scoreDist+maxMoney", mpinfo," scoreDist+maxMoney",sbOut,combined);
-
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowding", mpinfo, "Crowding Distance", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMoney", mpinfo,"P_crowdingMoney",sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingRuntime", mpinfo,"P_crowdingRuntime", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxMoney", mpinfo,"P_crowdingMaxMoney", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist2", mpinfo,"P_crowdingScoreDist2", sbOut,combined);jjPrune
-//          SolutionSpace paretoToCompare = execute(graph,true,"crowdingMaxDist", mpinfo,"P_crowdingMaxDist", sbOut,combined);
         SolutionSpace paretoToCompare = execute(graph,true,"jjPrune", mpinfo,"Hetero", sbOut,combined, type);
 
         hhdsPlans.addAll(paretoToCompare.results);
 
 
-        //        SolutionSpace paretoToCompare = execute(graph,true,"crowdingDistanceScoreNormalizedMin", mpinfo,"P_crowdingScoreDistMIN", sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdingScoreDist", mpinfo,"P_crowdingScoreDist", sbOut,combined);
-
-//        SolutionSpace paretoToCompare = execute(graph,true,"newall", mpinfo,"NewAll",sbOut,combined);
-//        SolutionSpace paretoToCompare = execute(graph,true,"newall2", mpinfo,"NewAll_Money",sbOut,combined);
-
-//        SolutionSpace paretoToCompare = execute(graph,true,"crowdandScore", mpinfo,"P_crowdAndScore", sbOut,combined);
-
-//        SolutionSpace paretoToCompare = execute(graph,false,"", mpinfo,"P_NoPrune", sbOut,combined);
-
-//        executeHS(graph,true,"jjPrune", mpinfo,"Homogeneous Smallest", sbOut,combined);
-//        executeHL(graph,true,"jjPrune", mpinfo,"Homogeneous Largest", sbOut,combined);
-
 
         String addToFilename = "_NPRUNE_";
 
         boolean moheft = false;
-
-
-        //        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
-//            @Override public int compare(Plan o1, Plan o2) {
-//                return Double.compare(o1.stats.money,o2.stats.money);
-//            }
-//        });
-
-//        int i=1;
-//        double d = 0.0;
-//        for(;i<paretoToCompare.size()-1;++i){
-//            Plan p0 = paretoToCompare.results.get(i-1);
-//            Plan p1 = paretoToCompare.results.get(i);
-//            Plan p2 = paretoToCompare.results.get(i+1);
-////            System.out.println(paretoToCompare.getDer(p0,p1,p2) );
-//            d+=paretoToCompare.getDer(p0,p1,p2);
-//        }
-//        String a;i=1;
-//        double davvg = d/(paretoToCompare.size()-2);
-//        for(;i<paretoToCompare.size()-1;++i){
-//            Plan p0 = paretoToCompare.results.get(i-1);
-//            Plan p1 = paretoToCompare.results.get(i);
-//            Plan p2 = paretoToCompare.results.get(i+1);
-//            if(paretoToCompare.getDer(p0,p1,p2)>davvg){
-//                a = "KNEE";
-//            }else{
-//                a="";
-//            }
-//            System.out.println(paretoToCompare.getDer(p0,p1,p2) + "  "+i+"  " + a);
-//        }
-
-//        double c=0.0;
-//        System.out.println("#############");
-//        for(i=0;i<paretoToCompare.size()-1;++i){
-////            System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1)));
-//            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
-//        }
-//        double avg = (c/(paretoToCompare.size()-2));
-//        System.out.println("%%% "+(c/(paretoToCompare.size()-2)));
-//        for(i=0;i<paretoToCompare.size()-1;++i){
-//            double dist = paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
-//            if(dist>avg) {
-//                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
-//                    paretoToCompare.results.get(i + 1)) +" "+ (i+1) + " KNEE");
-//            }else{
-//                System.out.println(paretoToCompare.costPerTime(paretoToCompare.results.get(i),
-//                    paretoToCompare.results.get(i + 1))  +" "+ (i+1) );
-//            }
-//            c+=paretoToCompare.costPerTime(paretoToCompare.results.get(i),paretoToCompare.results.get(i+1));
-//        }
-
-
-//        combined.addAll(paretoToCompare);
 
 
         System.out.println("paretoDone");

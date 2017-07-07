@@ -64,21 +64,21 @@ public class hhds implements Scheduler {
 
         skylinePlans.clear();
 
-        if (heteroStartEnabled) {
-
-            ArrayList<containerType> cTypes = new ArrayList<>();
-            cTypes.clear();
-            cTypes.add(containerType.A);
-            cTypes.add(containerType.H);
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-
-            cTypes.clear();
-            cTypes.add(containerType.C);
-            cTypes.add(containerType.G);
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-
-        }
+//        if (heteroStartEnabled) {
+//
+//            ArrayList<containerType> cTypes = new ArrayList<>();
+//            cTypes.clear();
+//            cTypes.add(containerType.A);
+//            cTypes.add(containerType.H);
+//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+//
+//            cTypes.clear();
+//            cTypes.add(containerType.C);
+//            cTypes.add(containerType.G);
+//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+//
+//        }
 
         if (!heteroStartEnabled){
 
@@ -230,61 +230,41 @@ public class hhds implements Scheduler {
         skylinePlans.addAll(skylinePlans_INC.results);
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
-//        System.out.println("//////////ALL///////");
-//        skylinePlans.sort(true);
-//        skylinePlans.print();
 
 
         paretoPlans.addAll(skylinePlans.results);
 
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
-
-
-//        for(Plan p:paretoPlans){
-//            HashSet<containerType> temp = new HashSet<>();
-//            if(p.cluster.countTypes.size()>1){
-//                    System.out.println("found a good one");
-//            }
+//        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
 //
+//        mpinfo.add("pareto",paretoPlans.results);
+//
+//        long homoEnd = System.currentTimeMillis();
+//        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+//
+//        skylinePlans.clear();
+//
+//        for(Plan pp: paretoPlans.results) {
+//            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+//
+//                pp.vmUpgrading = "increasing";
+//                skylinePlans.add(pp);
+//
+//                Plan newpp = new Plan(pp);
+//                newpp.vmUpgrading="decreasing";
+//                skylinePlans.add(newpp);
+//            } else {
+//                skylinePlans.add(pp);
+//            }
 //        }
-//        paretoPlans.addAll(ComputeOnePerNumberofVmsSkyline(skylinePlans));
-
-//        int size = computeSkyline(skylinePlans).size();
-//        int size2 = ComputeOnePerNumberofVmsSkyline(skylinePlans).size();
-
-
-//        System.out.println("//////////PARETO///////");
-//        paretoPlans.print();
-//        paretoPlans.plot("pareto");
-        mpinfo.add("pareto",paretoPlans.results);
-
-        long homoEnd = System.currentTimeMillis();
-        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
-
-        skylinePlans.clear();
-
-        for(Plan pp: paretoPlans.results) {
-            if (pp.vmUpgrading.equals("increasing/decreasing")) {
-
-                pp.vmUpgrading = "increasing";
-                skylinePlans.add(pp);
-
-                Plan newpp = new Plan(pp);
-                newpp.vmUpgrading="decreasing";
-                skylinePlans.add(newpp);
-            } else {
-                skylinePlans.add(pp);
-            }
-        }
-
-        paretoPlans.clear();
-
-
-        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
-
-        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
-
-        paretoPlans.addAll(skylinePlans);
+//
+//        paretoPlans.clear();
+//
+//
+//        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+//
+//        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+//
+//        paretoPlans.addAll(skylinePlans);
 
         space.addAll(paretoPlans);
 
@@ -304,9 +284,10 @@ public class hhds implements Scheduler {
 //        mp.add("afterMigrate", space.results);
 //        plotMultiple(mp,"migration");
 
-    //    space.addAll(computeSkyline(paretoPlans));
-//moh
+  //      space.addAll(computeSkyline(paretoPlans));
 
+
+//        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
@@ -314,7 +295,7 @@ public class hhds implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+
         return space;
 
     }

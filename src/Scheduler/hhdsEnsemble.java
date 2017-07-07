@@ -71,21 +71,21 @@ public class hhdsEnsemble implements Scheduler {
 
         skylinePlans.clear();
 
-        if (heteroStartEnabled) {
-
-            ArrayList<containerType> cTypes = new ArrayList<>();
-            cTypes.clear();
-            cTypes.add(containerType.A);
-            cTypes.add(containerType.H);
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-
-            cTypes.clear();
-            cTypes.add(containerType.C);
-            cTypes.add(containerType.G);
-            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-
-        }
+//        if (heteroStartEnabled) {
+//
+//            ArrayList<containerType> cTypes = new ArrayList<>();
+//            cTypes.clear();
+//            cTypes.add(containerType.A);
+//            cTypes.add(containerType.H);
+//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+//
+//            cTypes.clear();
+//            cTypes.add(containerType.C);
+//            cTypes.add(containerType.G);
+//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+//
+//        }
 
         if (!heteroStartEnabled){
 
@@ -120,138 +120,63 @@ public class hhdsEnsemble implements Scheduler {
 
                             skylinePlans_INCDEC
                                     .addAll(this.createAssignments("increasing/decreasing", cTypes));
-                            //                    plotPlans("inc,dec",skylinePlans);
-                            //                    System.out.println("s3 "+skylinePlans.size());
+
                         }
 
-                    ////////////////////
-
-
-                    /////////////////////////
                 }
 
             }
         }
 
-//        ArrayList<containerType> cTypes = new ArrayList<>();
-//        cTypes.add(containerType.C);
-//        cTypes.add(containerType.G);
-//        skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-//
-//        cTypes.clear();
-//        cTypes.add(containerType.G);
-//        cTypes.add(containerType.E);
-//        skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-
-
-
-
-//        System.out.println("//////////DEC///////");
-//        skylinePlans_DEC.print();
-////        skylinePlans_DEC.plot("DEC");
-//        mpinfo.add("DEC",skylinePlans_DEC.results);
-//
-//        System.out.println("//////////INC///////");
-//        skylinePlans_INC.print();
-////        skylinePlans_INC.plot("INC");
-//        mpinfo.add("INC",skylinePlans_INC.results);
-//
-//        System.out.println("//////////INCDEC///////");
-//        skylinePlans_INCDEC.print();
-////        skylinePlans_INCDEC.plot("INCDEC");
-//        mpinfo.add("INCDEC",skylinePlans_INCDEC.results);
-
-
-
         skylinePlans.addAll(skylinePlans_DEC.results);
         skylinePlans.addAll(skylinePlans_INC.results);
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
-//        System.out.println("//////////ALL///////");
-//        skylinePlans.sort(true);
-//        skylinePlans.print();
-
 
         paretoPlans.addAll(skylinePlans.results);
-
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
-
-
-//        for(Plan p:paretoPlans){
-//            HashSet<containerType> temp = new HashSet<>();
-//            if(p.cluster.countTypes.size()>1){
-//                    System.out.println("found a good one");
-//            }
 //
+//        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
+//
+//        mpinfo.add("pareto",paretoPlans.results);
+//
+//        long homoEnd = System.currentTimeMillis();
+//        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+//
+//        skylinePlans.clear();
+//
+//        for(Plan pp: paretoPlans.results) {
+//            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+//
+//                pp.vmUpgrading = "increasing";
+//                skylinePlans.add(pp);
+//
+//                Plan newpp = new Plan(pp);
+//                newpp.vmUpgrading="decreasing";
+//                skylinePlans.add(newpp);
+//            } else {
+//                skylinePlans.add(pp);
+//            }
 //        }
-//        paretoPlans.addAll(ComputeOnePerNumberofVmsSkyline(skylinePlans));
-
-//        int size = computeSkyline(skylinePlans).size();
-//        int size2 = ComputeOnePerNumberofVmsSkyline(skylinePlans).size();
+//
+//        paretoPlans.clear();
 
 
-//        System.out.println("//////////PARETO///////");
-//        paretoPlans.print();
-//        paretoPlans.plot("pareto");
-        mpinfo.add("pareto",paretoPlans.results);
+//        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
-        long homoEnd = System.currentTimeMillis();
-        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+//        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
 
-        skylinePlans.clear();
-
-        for(Plan pp: paretoPlans.results) {
-            if (pp.vmUpgrading.equals("increasing/decreasing")) {
-
-                pp.vmUpgrading = "increasing";
-                skylinePlans.add(pp);
-
-                Plan newpp = new Plan(pp);
-                newpp.vmUpgrading="decreasing";
-                skylinePlans.add(newpp);
-            } else {
-                skylinePlans.add(pp);
-            }
-        }
-
-        paretoPlans.clear();
-
-
-        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
-
-        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
-
-        paretoPlans.addAll(skylinePlans);
+//        paretoPlans.addAll(skylinePlans);
 
         space.addAll(paretoPlans);
 
-//        SolutionSpace beforeMigrate = new SolutionSpace();
-//        beforeMigrate.addAll(computeSkyline(paretoPlans));
-
-
-        //space.addAll(beforeMigrate);
-//        for(Plan p:beforeMigrate){
-//            space.addAll(migrateCriticalOpsToConts(p));
-//        }
-
-
-//
-//        MultiplePlotInfo mp = new MultiplePlotInfo();
-//        mp.add("befMigrate", beforeMigrate.results);
-//        mp.add("afterMigrate", space.results);
-//        plotMultiple(mp,"migration");
-
-        //    space.addAll(computeSkyline(paretoPlans));
-//moh
-
-
+        //        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+
         return space;
 
     }
@@ -264,64 +189,7 @@ public class hhdsEnsemble implements Scheduler {
         opSlack.clear();
         opSortedBySlack.clear();
 
-
-//        for(Long opId: opsSortedReversed()) {//topOrder.iteratorReverse()) //ranking reversed
-//            Double opSlackTime = Double.MAX_VALUE;
-//            if (graph.getChildren(opId).isEmpty()) //if exit node
-//                opSlackTime = (double) plan.stats.runtime_MS - plan.cluster.getContainer(plan.assignments.get(opId)).UsedUpTo_MS;
-//            for (Edge outEdge : graph.getChildren(opId)) {//successors at the dag
-//                Long opChildId = outEdge.to;
-//                if(!opSlack.containsKey(opChildId)){
-//                    System.out.println("Problem");
-//                }
-//                Double childSlack = opSlack.get(opChildId);
-//
-//                Double opSpareTime = (double) plan.opIdtoStartEndProcessing_MS
-//                    .get(opChildId).a - plan.opIdtoStartEndProcessing_MS.get(opId).b;//assumption: output data and communication cost computed in runtime
-//                opSlackTime = Math.min(childSlack + opSpareTime, opSlackTime);
-//            }
-//            long opContID = plan.assignments.get(opId);//consider successor at the container. If last op at container the returned bit (succStart) is -1
-//            long contEndTime_MS = plan.cluster.getContainer(opContID).UsedUpTo_MS;
-//            long opEndTime_MS = plan.opIdtoStartEndProcessing_MS.get(opId).b;
-//            if(contEndTime_MS>opEndTime_MS) {
-//                long succStart = Long.MAX_VALUE;
-//                boolean succExists = false;
-//                for (Long opopId : plan.opIdtoStartEndProcessing_MS.keySet()) {
-//                    Pair<Long, Long> pair = plan.opIdtoStartEndProcessing_MS.get(opopId);
-//                    Long contcontId = plan.assignments.get(opopId);
-//                    long opopStartTime = plan.opIdtoStartEndProcessing_MS.get(opopId).a;
-//
-//                    if (contcontId == opContID && opopStartTime > opEndTime_MS) {
-//                        succStart = Math.min(succStart, opopStartTime);
-//                        succExists = true;
-//                    }
-//
-//                }
-//                if (succExists){//(contEndTime_MS > opEndTime_MS) {//   System.out.println("succ at container starts at " + succStart + " while " + plan.activeAssignments.get(opIDtoAssignment.get(op.getopID())).end_SEC);
-//                    opSlackTime = Math.min(opSlackTime, succStart - opEndTime_MS);
-//                }
-//            }
-//            opSlack.put(opId, opSlackTime);
-//
-//            double slackPerCont = opSlackTime;
-//            int opsPerCont = 1;
-//            if(contOps.containsKey(opContID))
-//            {
-//                slackPerCont+= contSlack.get(opContID);
-//                opsPerCont = contOps.get(opContID)+1;
-//            }
-//
-//            contSlack.put(opContID, slackPerCont);
-//            contOps.put(opContID, opsPerCont);
-//
-//        }
-
-        // HashMap<Long, Long> opSlack = new HashMap<>();
-
-        // ArrayList<Long> opSortedBySlack = new ArrayList<>();
-
         computeSlackOps(plan, opSlack, opSortedBySlack);
-
 
         for(Long opId: opsSortedReversed()) {
             double slackPerCont = opSlack.get(opId);
@@ -361,8 +229,6 @@ public class hhdsEnsemble implements Scheduler {
         //look at each plan and upgrade one by one the LARGE containers
 
         HashMap<Long, Long> opSlack = new HashMap<>();
-//        final HashMap<Long, Double> contSlack = new HashMap<>();
-//        final HashMap<Long, Integer> contOps = new HashMap<>();
 
         SolutionSpace skylinePlansNew = new SolutionSpace();
         //the set of plans from the newly modified plans (plans with upgraded/degraded vm types) that belong to the current pareto
@@ -411,11 +277,6 @@ public class hhdsEnsemble implements Scheduler {
                 Comparator<Long> contSlackComparator = new Comparator<Long>() {
                     @Override
                     public int compare(Long vm1, Long vm2) {
-//                        System.out.println(vm1);
-//                        System.out.println(vm2);
-//                        System.out.println(contSlack);
-//                        System.out.println(contSlack.get(vm1));
-//                        System.out.println(contSlack.get(vm2));
                         double s1;
                         double s2;
                         if(!contSlack.containsKey(vm1)){
@@ -493,12 +354,6 @@ public class hhdsEnsemble implements Scheduler {
                         break; //no more containers for this plan are going to be modified. it breaks
                     }
                     skylinePlansNew.add(newPlan);
-//
-//                     System.out.println("OLDPLAN ");
-//                    plan.printInfo();
-//                    System.out.println("NEWPLAN");
-//                     newPlan.printInfo();
-//
                 }
 
             }
@@ -515,19 +370,7 @@ public class hhdsEnsemble implements Scheduler {
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
-//            plansInner.keepK(pruneSkylineSize);
-
-//            result.addAll(computeNewSkyline(plansInner, skylinePlansNew));
-
             result.addAll(plansInner);
-
-
-
-//            plansInner.clear();
-
-//            plansInner.addAll(skylinePlansNew);
-//
-//            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize);
 
             skylinePlansNew.clear();
         }
@@ -682,17 +525,6 @@ public class hhdsEnsemble implements Scheduler {
             }
             plans.clear();
 
-//            for(Plan p:allCandidates){
-//                p.printInfo();
-//            }
-
-//            if(prevPrune+3 == opsAssigned){
-//                plans = computeSkyline(allCandidates);
-//                prevPrune=opsAssigned+3;
-//            }else{
-//                plans = new ArrayList<>(allCandidates);
-//            }
-//            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
             plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
@@ -713,8 +545,6 @@ public class hhdsEnsemble implements Scheduler {
             Plan newPlan = new Plan(plan);
             newPlan.assignOperator(opId, contId,backfilling);
             planEstimations.add(newPlan);
-
-//            newPlan.printAssignments();
         }
         if(plan.cluster.contUsed.size()<maxContainers){  //add a nwe container of contType and assign the op to that
             for(containerType contType: contTypes) {//uncomment to add every ctype
@@ -723,12 +553,9 @@ public class hhdsEnsemble implements Scheduler {
                 newPlan.assignOperator(opId, newContId, backfilling);
                 planEstimations.add(newPlan);
 
-//                newPlan.printAssignments();
             }
         }
 
-
-        //return planEstimations;
     }
 
     public Plan onlyOneContainer() {
@@ -807,28 +634,16 @@ public class hhdsEnsemble implements Scheduler {
 
 
     public void findDominanceRelations(ArrayList<Plan> plans, HashMap<Plan, ArrayList <Plan>> dominatedSet, HashMap<Plan, ArrayList <Plan>> dominanceSet, ArrayList <Plan> skyline) {
-        //dominatedSet: set of plans dominated by the key plan
-//      //dominanceSet: set of skyline plans the key plan is dominated by
-//        System.out.println("sorted plans");
         for(int cur = 0; cur<plans.size(); cur++) {
             Plan curPlan = plans.get(cur);
-
-//            System.out.println(" " + curPlan.stats.runtime_MS + " " + curPlan.stats.money);
 
             //finding dominatedSet
             for(int next=cur+1;next<plans.size(); next++)
             {
                 Plan nextPlan = plans.get(next);
                 if(nextPlan.stats.runtime_MS > curPlan.stats.runtime_MS && nextPlan.stats.money < curPlan.stats.money) {
-
-//                    ArrayList <Plan> dset=new ArrayList<>();
-//                    dset.add(nextPlan);
-
-
-                    //   if(dominatedSet.containsKey(curPlan))
                     dominatedSet.get(curPlan).add(nextPlan);
-                    //  else
-                    //     dominatedSet.put(curPlan, dset);
+
 
 
                 }
@@ -842,14 +657,8 @@ public class hhdsEnsemble implements Scheduler {
 
                 Plan previousPlan = plans.get(previous);
                 if(previousPlan.stats.runtime_MS <= curPlan.stats.runtime_MS && previousPlan.stats.money <= curPlan.stats.money) {
-                    //  if(skyline.contains(previousPlan))
-                    //  dominanceSet.get(curPlan).add(previousPlan);
-
-                    //   if(dominanceSet.containsKey(curPlan))
                     if(skyline.contains(previousPlan))
                         dominanceSet.get(curPlan).add(previousPlan);
-                    //  else
-                    //     dominanceSet.put(curPlan, dset);
                 }
                 else
                     break;
@@ -883,18 +692,11 @@ public class hhdsEnsemble implements Scheduler {
 
                 }
 
-//                dominanceScore.put(plans.get(curPlan), domScore);
-
-                //   System.out.println("plan " + curPlan + "domscore " + domScore );
             }
             dominanceScore.put(skyline.get(curPlan), domScore);//  dominanceScore.put(plans.get(curPlan), domScore);
 
         }
 
-//        for(Plan sp: skyline)
-//            System.out.println(dominanceScore.get(sp));
-
-        // System.out.println(dominanceScore.values());
         return dominanceScore;
 
     }
@@ -932,25 +734,12 @@ public class hhdsEnsemble implements Scheduler {
                 }
         }
 
-
-
-        //   sortPlansByDerQuanta(skyline.results);
-
-
-
-
         findDominanceRelations(plans.results, dominatedSet,  dominanceSet, skyline.results);
 
         HashMap<Plan, Double> domScore  = computeDominanceScore(plans.results, dominatedSet,  dominanceSet, skyline.results);
 
         SolutionSpace skylinePruned = new SolutionSpace();
-//        for(int i=0; i<Math.min(skyline.size(), 20);i++)
-//        {
-//            skylinePruned.add(skyline.results.get(i));
-//        }
-//
-//        return pruneSkylineByDominanceScore(skyline, domScore);
-//        return pruneSkylineByCrowdDist(skyline);
+
         return skyline;
     }
 
@@ -1189,21 +978,6 @@ public class hhdsEnsemble implements Scheduler {
 
         }
 
-//        for(Integer opop:opLevelList.keySet()){
-//            System.out.print(opop+ ": ");
-//            for(Long opopop:opLevelList.get(opop)){
-//                System.out.print(opopop+", ");
-//            }
-//            System.out.println("");
-//        }
-//
-//        for(Long opop:graph.operators.keySet()){
-//            System.out.print(opop+ ": ");
-//            for(Edge e:graph.getParents(opop)){
-//                System.out.print(e.from+", ");
-//            }
-//            System.out.println("");
-//        }
 
         Double crPathLength=0.0;
         for (Long opId : topOrder.iteratorReverse()) {
@@ -1297,10 +1071,6 @@ public class hhdsEnsemble implements Scheduler {
                     return 0;
             }
         };
-//        Collections.sort(opsSorted, rankComparator);
-
-
-
 
         Comparator<Long> sumrankComparator = new Comparator<Long>() {
             @Override
@@ -1347,17 +1117,11 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-//        Collections.sort(opsSorted, dagIdComparator);
-
-
         Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
             @Override
             public int compare(Long op1, Long op2) {
                 Long did1 = graph.getOperator(op1).dagID;
                 Long did2 = graph.getOperator(op2).dagID;
-
-//                Double d1= sum_rank.get(op1)/(double)graph.superDAG.getSubDAG(did1).getOperators().size();
-//                Double d2= sum_rank.get(op2)/(double)graph.superDAG.getSubDAG(did2).getOperators().size();
 
                 Double d1= (double)graph.superDAG.getSubDAG(did1).getOperators().size();
                 Double d2= (double)graph.superDAG.getSubDAG(did2).getOperators().size();
@@ -1371,33 +1135,9 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-//        if(graph.superDAG.merged==true)
-//        Collections.sort(opsSorted, SSComparator);
-
-
         System.out.println("sorted ops");
         for(Long op: opsSorted)
             System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
-//
-//        Comparator<Operator> slackComparator = new Comparator<Operator>() {
-//            @Override
-//            public int compare(Operator op1, Operator op2) {
-//                double r1 = slacktime.get(op1);
-//                double r2 = slacktime.get(op2);
-//                if (r1 < r2)//TODO: add precision error
-//                    return -1;
-//                else if (r1 > r2)
-//                    return 1;
-//                else
-//                    return 0;
-//            }
-//        };
-//        // Collections.sort(opsBySlack, slackComparator);
-//
-//
-
-
-
 
 
 
@@ -1408,12 +1148,6 @@ public class hhdsEnsemble implements Scheduler {
 
         HashMap <Long, Long> opLST = new HashMap<>();
 
-//        System.out.println("\nfor plan makespan " + plan.stats.runtime_MS );
-//        for(Long opId: opsSortedReversed())
-//        System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
-
-//        System.out.println("lst");
-//        plan.printAssignments();
         for(Long opId: opsSortedReversed()) {
             Long lst = Long.MAX_VALUE;
 
@@ -1429,10 +1163,8 @@ public class hhdsEnsemble implements Scheduler {
                     succStartTime = plan.opIdtoStartEndProcessing_MS.get(nextOpId).a;
 
                     templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
-
                     succId = nextOpId;
                 }
-
             }
 
             if(succId!=null)
@@ -1451,18 +1183,10 @@ public class hhdsEnsemble implements Scheduler {
 
                     templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
 
-//                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + succId + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId) + " dt before succ: " + plan.opIdToBeforeDTDuration_MS.get(succId) + " starting at " + succStartTime);
-
 //TODO: add somewhere +1 for data transfer? It starts at the next interval every time...
                     lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId,succId)  - plan.opIdToProcessingTime_MS.get(opId), lst);
-                    //lst = Math.min(succStartTime - plan.opIdToAfterDTDuration_MS.get(opId) - plan.opIdToProcessingTime_MS.get(opId), lst);
                 }
             }
-
-
-
-
-//            System.out.println(opId + " lst " + lst);
 
             opLST.put(opId, lst);
         }
@@ -1474,10 +1198,6 @@ public class hhdsEnsemble implements Scheduler {
     public HashMap<Long, Long> computeLST(Plan plan, Long opToAssignId) {
 
         HashMap <Long, Long> opLST = new HashMap<>();
-
-//        System.out.println("\nfor plan makespan " + plan.stats.runtime_MS );
-//        for(Long opId: opsSortedReversed())
-//            System.out.println("op " + opId + " starts " + plan.opIdtoStartEndProcessing_MS.get(opId).a + " finishes " + plan.opIdtoStartEndProcessing_MS.get(opId).b + " at vm " + plan.assignments.get(opId));
 
         for(Long opId: opsSortedReversed()) {
 

@@ -168,28 +168,6 @@ public class Plan  {
 
         }
 
-
-        //        timeNow_MS += depStart_MS;
-//
-//        startProcessingTime_MS = timeNow_MS;             ////operator runtime starts now
-
-        ////////////DATA TRANSFER TIMES//////////////////
-
-//        long networkDelay_MS = 0;
-//        for (Edge link : graph.getParents(opId)) {
-//            long fromId = link.from;
-//            long fromContId = assignments.get(fromId);
-//            if (fromContId != contId) {
-//
-//                long dtTime_MS =
-//                    (long) (Math.ceil(link.data.size_B / RuntimeConstants.network_speed_B_MS));
-//
-//                networkDelay_MS += dtTime_MS;
-//            }
-//        }
-//        timeNow_MS += networkDelay_MS;
-//        startContTime_MS = timeNow_MS;         //cont runtime starts now
-
         ///////////////BRING DATA TO OPERATOR MACHINE//////////////////
 
 
@@ -219,11 +197,6 @@ public class Plan  {
 
         contOpDuration_MS = beforeDTDuration_MS + opProcessingDuration_MS + afterDTDuration_MS;
 
-//        if(graph.getParents(opId).size()>0){
-//        earliestStartTime_MS = dependenciesEnd_MS ;}//+ 1;}
-//        else{
-//            earliestStartTime_MS = dependenciesEnd_MS;
-//        }
 
         earliestStartTime_MS = dependenciesEnd_MS;
 

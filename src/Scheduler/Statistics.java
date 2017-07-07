@@ -14,6 +14,11 @@ public class Statistics {
     public long containersUsed;
     public double contUtilization;
 
+    public HashMap  <Long, Long> subdagStartTime = new HashMap<>();//dagId, time
+    public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
+    public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
+    public Double subdagMeanMakespan;//dagId, time
+
     public Statistics(Plan plan){
         runtime_MS = 0;
         quanta = 0;
@@ -75,6 +80,7 @@ public class Statistics {
 
             for(Long opId: plan.assignments.keySet()){
                 if(plan.assignments.get(opId) == c.id){
+                  //  System.out.println(plan.opIdtoStartEndProcessing_MS.get(opId).a);
                     dtTime += plan.opIdToBeforeDTDuration_MS.get(opId) + plan.opIdToAfterDTDuration_MS.get(opId);
                     proTime += plan.opIdToProcessingTime_MS.get(opId);
                 }
@@ -140,6 +146,78 @@ public class Statistics {
 
 
         contUtilization = AvgUtil;
+
+
+
+      //  for the case of ensemble
+
+        if(plan.graph.superDAG.merged) {//add a constraint to compute them only when all dags have been scheduled. not for partial plans
+
+
+
+//////////////////
+
+       //     System.out.println("\n\nStatistics");
+
+            for(Long opId: plan.assignments.keySet()){//   for(Long opId : plan.graph.operators.keySet()){//for( Long contId: p0.contAssignments.keySet()) {
+
+                Long dId = plan.graph.operators.get(opId).dagID-1;
+
+
+                Long minStartTime = Long.MAX_VALUE;
+                Long maxEndTime = Long.MIN_VALUE;
+
+                if(subdagStartTime.isEmpty() || !subdagStartTime.containsKey(dId)) {
+                //    System.out.println(plan.opIdtoStartEndProcessing_MS.get(opId).a);
+                    minStartTime = plan.opIdtoStartEndProcessing_MS.get(opId).a;//startTime
+                    maxEndTime = plan.opIdtoStartEndProcessing_MS.get(opId).b;//startTime
+
+                    subdagStartTime.put(dId, minStartTime);
+                    subdagFinishTime.put(dId, maxEndTime);
+                 //   minCostEnsemble.put(dId, minMoney);
+
+                }
+                else {
+
+                    Long ts = subdagStartTime.get(dId);
+                    Long te = subdagFinishTime.get(dId);
+                  //  Double c = minCostEnsemble.get(dId);
+
+                    //p0.opIdtoStartEndProcessing_MS.get(opId).b //finish time
+                    minStartTime = Math.min(ts, plan.opIdtoStartEndProcessing_MS.get(opId).a);//startTime
+                    maxEndTime = Math.max(te, plan.opIdtoStartEndProcessing_MS.get(opId).b);//startTime
+
+                    subdagStartTime.put(dId, minStartTime);
+                    subdagFinishTime.put(dId, maxEndTime);
+               //     minCostEnsemble.put(dId, minMoney);
+
+
+                }
+
+
+                //  System.out.println(" added " + dId + " " + maxEndTimeEnsemble.get(dId) + " " + maxEndTime);
+
+            }
+
+
+            Long meanMakespan = 0L;
+            for(Long dgId: subdagFinishTime.keySet()) {
+                subdagMakespan.put(dgId, subdagFinishTime.get(dgId) - subdagStartTime.get(dgId));
+                meanMakespan += subdagFinishTime.get(dgId) - subdagStartTime.get(dgId);
+            }
+
+            if(subdagFinishTime.size()>0)
+            subdagMeanMakespan = meanMakespan/(double)subdagFinishTime.size();
+//            {
+
+               // System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  subdagStartTime.get(dgId) + " ends " + subdagFinishTime.get(dgId));
+
+//            }
+
+
+        }
+////////////////////
+
     }
 
 
