@@ -241,7 +241,7 @@ public class Statistics {
                     double moneyFrag = 0.0;
                     if(subdagMoneyFragment.containsValue(dgId))
                         moneyFrag += subdagMoneyFragment.get(dgId);
-                    moneyFrag+= contCost * 0.25;// timeUsedPerDag.get(dgId)/(contQuanta*RuntimeConstants.quantum_MS);
+                    moneyFrag+= contCost * timeUsedPerDag.get(dgId)/(contQuanta*RuntimeConstants.quantum_MS);
                     subdagMoneyFragment.put(dgId, moneyFrag);
                 }
 
