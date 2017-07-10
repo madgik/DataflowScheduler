@@ -137,14 +137,14 @@ public class Main {
             ArrayList<Plan> ensemblePlans =new ArrayList<>();
             DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans);
 
-//            for (int j = 0; j < ensemblePlans.size(); ++j) {
-//
-//                Plan p=ensemblePlans.get(j);
-//                System.out.print("plan " + j + ": ");
-//                System.out.printf("%.1f\n", p.stats.subdagMeanMakespan);
+            for (int j = 0; j < ensemblePlans.size(); ++j) {
+
+                Plan p=ensemblePlans.get(j);
+                System.out.print("plan " + j + ": ");
+                System.out.printf("%d %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
 //                    for(Long dgId: p.stats.subdagFinishTime.keySet())
 //                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-//            }
+            }
 
 
 

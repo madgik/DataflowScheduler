@@ -10,7 +10,8 @@ public class Statistics {
 
     public long runtime_MS;
     public int quanta;
-    public double money;
+    public double money;//assumption: a container is active for consecutive quanta. if not needed for a time quantum, it is switched off. then if it is required for a new quantum, a new container is switched on.
+    // in that way a VM is leased only for the quanta used and elastic provisioning is dynamic throughout
     public long containersUsed;
     public double contUtilization;
 
@@ -18,6 +19,8 @@ public class Statistics {
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan;//dagId, time
+    public Double subdagMeanMoneyFragment;//dagId, time
+    public HashMap <Long, Double> subdagMoneyFragment = new HashMap<>();//dagId, time
 
     public Statistics(Plan plan){
         runtime_MS = 0;
@@ -213,6 +216,45 @@ public class Statistics {
                // System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  subdagStartTime.get(dgId) + " ends " + subdagFinishTime.get(dgId));
 
 //            }
+
+
+
+            //cost fragmentation per subdag
+            for(Container c:plan.cluster.containersList){
+
+                HashMap <Long, Long> timeUsedPerDag = new HashMap<>();
+
+                for(Slot s: c.opsschedule) {
+                    Long dId = plan.graph.operators.get(s.opId).dagID;
+                    Long tused= plan.opIdToBeforeDTDuration_MS.get(s.opId) + plan.opIdtoStartEndProcessing_MS.get(s.opId).b + plan.opIdToAfterDTDuration_MS.get(s.opId);
+
+                    if(timeUsedPerDag.containsValue(dId))
+                    tused += timeUsedPerDag.get(dId) + tused; //+ ( s.end_MS - s.start_MS);
+                    timeUsedPerDag.put(dId, tused);
+                }
+
+                int contQuanta = (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS);
+                double contCost =contQuanta*c.contType.container_price;
+
+
+                for(Long dgId: timeUsedPerDag.keySet()) {
+                    double moneyFrag = 0.0;
+                    if(subdagMoneyFragment.containsValue(dgId))
+                        moneyFrag += subdagMoneyFragment.get(dgId);
+                    moneyFrag+= contCost * 0.25;// timeUsedPerDag.get(dgId)/(contQuanta*RuntimeConstants.quantum_MS);
+                    subdagMoneyFragment.put(dgId, moneyFrag);
+                }
+
+
+            }
+
+
+            Double sumCostSubdag =0.0;
+            for(Long dgId: subdagMoneyFragment.keySet())
+                sumCostSubdag += subdagMoneyFragment.get(dgId);
+
+            subdagMeanMoneyFragment = sumCostSubdag/(double) subdagMoneyFragment.size();
+            /////////////////////////
 
 
         }
