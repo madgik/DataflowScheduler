@@ -113,7 +113,10 @@ public class Main {
 
                 ArrayList<Plan> hhdsPlans = new ArrayList<>();
 
-                runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
+
+                DAG subdag = runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
+
+                System.out.println("crpathlength " + subdag.computeCrPathLength());
 
                 Long time=Long.MAX_VALUE;
                 Double money=Double.MAX_VALUE;
@@ -141,7 +144,7 @@ public class Main {
 
                 Plan p=ensemblePlans.get(j);
                 System.out.print("plan " + j + ": ");
-                System.out.printf("%d %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
+                System.out.printf("%d %.1f %.10f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
 //                    for(Long dgId: p.stats.subdagFinishTime.keySet())
 //                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
             }
@@ -504,7 +507,7 @@ public class Main {
         return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
     }
 
-    private static void runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans) {
+    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans) {
 
         System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
 
@@ -529,6 +532,8 @@ public class Main {
         }
 
         runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans);
+
+        return graph;
     }
 
     private static void runLattice(int d, int b) {

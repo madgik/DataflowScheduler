@@ -152,72 +152,47 @@ public class Statistics {
 
 
 
-      //  for the case of ensemble
-
+        //  for the case of ensemble
         if(plan.graph.superDAG.merged) {//add a constraint to compute them only when all dags have been scheduled. not for partial plans
-
-
-
-//////////////////
-
-       //     System.out.println("\n\nStatistics");
 
             for(Long opId: plan.assignments.keySet()){//   for(Long opId : plan.graph.operators.keySet()){//for( Long contId: p0.contAssignments.keySet()) {
 
-                Long dId = plan.graph.operators.get(opId).dagID-1;
-
+                Long dId = plan.graph.operators.get(opId).dagID;
 
                 Long minStartTime = Long.MAX_VALUE;
                 Long maxEndTime = Long.MIN_VALUE;
 
                 if(subdagStartTime.isEmpty() || !subdagStartTime.containsKey(dId)) {
-                //    System.out.println(plan.opIdtoStartEndProcessing_MS.get(opId).a);
                     minStartTime = plan.opIdtoStartEndProcessing_MS.get(opId).a;//startTime
                     maxEndTime = plan.opIdtoStartEndProcessing_MS.get(opId).b;//startTime
 
                     subdagStartTime.put(dId, minStartTime);
                     subdagFinishTime.put(dId, maxEndTime);
-                 //   minCostEnsemble.put(dId, minMoney);
 
                 }
                 else {
-
                     Long ts = subdagStartTime.get(dId);
                     Long te = subdagFinishTime.get(dId);
-                  //  Double c = minCostEnsemble.get(dId);
-
-                    //p0.opIdtoStartEndProcessing_MS.get(opId).b //finish time
                     minStartTime = Math.min(ts, plan.opIdtoStartEndProcessing_MS.get(opId).a);//startTime
                     maxEndTime = Math.max(te, plan.opIdtoStartEndProcessing_MS.get(opId).b);//startTime
 
                     subdagStartTime.put(dId, minStartTime);
                     subdagFinishTime.put(dId, maxEndTime);
-               //     minCostEnsemble.put(dId, minMoney);
-
-
                 }
 
-
-                //  System.out.println(" added " + dId + " " + maxEndTimeEnsemble.get(dId) + " " + maxEndTime);
 
             }
 
 
-            Long meanMakespan = 0L;
+            double meanMakespan = 0L;
             for(Long dgId: subdagFinishTime.keySet()) {
                 subdagMakespan.put(dgId, subdagFinishTime.get(dgId) - subdagStartTime.get(dgId));
-                meanMakespan += subdagFinishTime.get(dgId) - subdagStartTime.get(dgId);
+                meanMakespan += (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength();
             }
 
             if(subdagFinishTime.size()>0)
             subdagMeanMakespan = meanMakespan/(double)subdagFinishTime.size();
-//            {
-
-               // System.out.println("dag " + dgId + " makespan "  + makespanDag + " starts " +  subdagStartTime.get(dgId) + " ends " + subdagFinishTime.get(dgId));
-
-//            }
-
-
+            Double sumCostSubdag =0.0;
 
             //cost fragmentation per subdag
             for(Container c:plan.cluster.containersList){
@@ -229,7 +204,7 @@ public class Statistics {
                     Long tused= plan.opIdToBeforeDTDuration_MS.get(s.opId) + plan.opIdtoStartEndProcessing_MS.get(s.opId).b + plan.opIdToAfterDTDuration_MS.get(s.opId);
 
                     if(timeUsedPerDag.containsValue(dId))
-                    tused += timeUsedPerDag.get(dId) + tused; //+ ( s.end_MS - s.start_MS);
+                    tused += timeUsedPerDag.get(dId); //+ ( s.end_MS - s.start_MS);
                     timeUsedPerDag.put(dId, tused);
                 }
 
@@ -238,23 +213,26 @@ public class Statistics {
 
 
                 for(Long dgId: timeUsedPerDag.keySet()) {
-                    double moneyFrag = 0.0;
-                    if(subdagMoneyFragment.containsValue(dgId))
+
+                    double moneyFrag = contCost * timeUsedPerDag.get(dgId)/(contQuanta*RuntimeConstants.quantum_MS);
+                    if(subdagMoneyFragment.containsKey(dgId)) {
+                       // System.out.println("done");
                         moneyFrag += subdagMoneyFragment.get(dgId);
-                    moneyFrag+= contCost * timeUsedPerDag.get(dgId)/(contQuanta*RuntimeConstants.quantum_MS);
+                    }
+
                     subdagMoneyFragment.put(dgId, moneyFrag);
+
                 }
 
 
             }
 
-
-            Double sumCostSubdag =0.0;
-            for(Long dgId: subdagMoneyFragment.keySet())
+            for(Long dgId: subdagMoneyFragment.keySet()) {
                 sumCostSubdag += subdagMoneyFragment.get(dgId);
+            }
 
             subdagMeanMoneyFragment = sumCostSubdag/(double) subdagMoneyFragment.size();
-            /////////////////////////
+
 
 
         }

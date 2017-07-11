@@ -17,6 +17,7 @@ public class hhds implements Scheduler {
     public Cluster cluster;
     public DAG graph;
 
+    public double minCrPathLength;
 
     public LinkedList<Long> opsSorted ;
 
@@ -1269,6 +1270,8 @@ double s2;
 //            System.out.println("");
 //        }
 
+
+
         Double crPathLength=0.0;
         for (Long opId : topOrder.iteratorReverse()) {
             double maxRankChild=0.0;
@@ -1309,6 +1312,7 @@ double s2;
             Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
             sum_rank.put(opId, opRank);
             crPathLength =Math.max(crPathLength, opRank);
+
         }
 
         for (Long op : topOrder.iterator()) {

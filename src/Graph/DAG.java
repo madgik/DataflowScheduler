@@ -1,6 +1,8 @@
 package Graph;
 
 import Scheduler.RuntimeConstants;
+import Scheduler.TopologicalSorting;
+import Scheduler.containerType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +39,8 @@ public class DAG {
     private Long nextId;
 
     public DAGmerged superDAG;
+
+  //  public Double crPathLength;
 
 //    public  HashMap<String,Data> nameToFile;
 //    public  HashMap<String,Long> filenameToFromOpId;
@@ -306,6 +310,32 @@ public class DAG {
         return this;
     }
 
+
+    public double computeCrPathLength() {
+
+
+        double crPathLength = 0.0;
+
+
+        TopologicalSorting topOrder = new TopologicalSorting(this);
+
+        HashMap<Long, Double> rank = new HashMap<>();
+
+        for (Long opId : topOrder.iterator()) {
+            double maxRankParent=0.0;
+            for (Edge inLink: this.getParents(opId))
+                maxRankParent = Math.max(maxRankParent, rank.get(inLink.from));
+            double w = this.getOperator(opId).getRunTime_MS()/containerType.getLargest().container_CPU;
+            Double opRank=w+maxRankParent;
+            rank.put(opId, opRank);
+
+            crPathLength =Math.max(crPathLength, opRank);
+        }
+
+    //    this.crPathLength = crPathLength;
+
+        return crPathLength;
+    }
     //    public void addFile(Data data){
 //        nameToFile.put(data.name,data);
 //    }
