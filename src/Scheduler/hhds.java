@@ -1375,6 +1375,23 @@ double s2;
             public int compare(Long op1, Long op2) {
                 double r1 = sum_rank.get(op1);
                 double r2 = sum_rank.get(op2);
+                if (r1 > r2)//TODO: add precision error
+                    return -1;
+                else if (r1 < r2)
+                    return 1;
+                else
+                    return 0;
+            }
+        };
+//       Collections.sort(opsSorted, sumrankComparator);
+
+
+
+        Comparator<Long> sumrankComparatorOpposite = new Comparator<Long>() {
+            @Override
+            public int compare(Long op1, Long op2) {
+                double r1 = sum_rank.get(op1);
+                double r2 = sum_rank.get(op2);
                 if (r1 < r2)//TODO: add precision error
                     return -1;
                 else if (r1 > r2)
@@ -1383,7 +1400,7 @@ double s2;
                     return 0;
             }
         };
-        Collections.sort(opsSorted, sumrankComparator);
+        Collections.sort(opsSorted, sumrankComparatorOpposite);
 
         Comparator<Long> levelRankComparator = new Comparator<Long>() {
             @Override
@@ -1400,10 +1417,10 @@ double s2;
         };
          Collections.sort(opsSorted, levelRankComparator);  //should it be the same as 297????
 
-//        System.out.println("sorting");
-//        for(Long op: opsSorted)
-//            System.out.println(op);
-////
+        System.out.println("sorting");
+        for(Long op: opsSorted)
+            System.out.println(op + " " + opLevel.get(op) + " " + sum_rank.get(op));
+//
 //        Comparator<Operator> slackComparator = new Comparator<Operator>() {
 //            @Override
 //            public int compare(Operator op1, Operator op2) {

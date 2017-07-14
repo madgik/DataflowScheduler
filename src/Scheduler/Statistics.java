@@ -19,6 +19,8 @@ public class Statistics {
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan;//dagId, time
+    public Double subdagMaxMakespan=0.0;//dagId, time
+    public Double subdagMinMakespan = Double.MAX_VALUE;//dagId, time
     public Double subdagMeanMoneyFragment;//dagId, time
     public HashMap <Long, Double> subdagMoneyFragment = new HashMap<>();//dagId, time
 
@@ -187,11 +189,18 @@ public class Statistics {
             double meanMakespan = 0L;
             for(Long dgId: subdagFinishTime.keySet()) {
                 subdagMakespan.put(dgId, subdagFinishTime.get(dgId) - subdagStartTime.get(dgId));
-                meanMakespan += (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength();
+                meanMakespan += (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType);
+
+                subdagMaxMakespan = Math.max(subdagMaxMakespan, (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType));
+                subdagMinMakespan = Math.min(subdagMinMakespan, (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType));
+
+                //   System.out.println(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType));
             }
 
-            if(subdagFinishTime.size()>0)
-            subdagMeanMakespan = meanMakespan/(double)subdagFinishTime.size();
+            if(subdagFinishTime.size()>0) {
+                subdagMeanMakespan = meanMakespan / (double) subdagFinishTime.size();
+            }
+
             Double sumCostSubdag =0.0;
 
             //cost fragmentation per subdag

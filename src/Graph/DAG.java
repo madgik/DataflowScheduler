@@ -311,7 +311,7 @@ public class DAG {
     }
 
 
-    public double computeCrPathLength() {
+    public double computeCrPathLength(containerType contType) {
 
 
         double crPathLength = 0.0;
@@ -325,7 +325,7 @@ public class DAG {
             double maxRankParent=0.0;
             for (Edge inLink: this.getParents(opId))
                 maxRankParent = Math.max(maxRankParent, rank.get(inLink.from));
-            double w = this.getOperator(opId).getRunTime_MS()/containerType.getLargest().container_CPU;
+            double w = this.getOperator(opId).getRunTime_MS()/contType.container_CPU;
             Double opRank=w+maxRankParent;
             rank.put(opId, opRank);
 

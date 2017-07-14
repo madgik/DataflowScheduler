@@ -68,8 +68,8 @@ public class paretoHomogenSmall implements Scheduler {
 
             ArrayList<containerType> cTypes = new ArrayList<>();
             cTypes.clear();
-            cTypes.add(containerType.A);
-            cTypes.add(containerType.H);
+            cTypes.add(containerType.getLargest());
+            cTypes.add(containerType.getSmallest());
             skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
             skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
 

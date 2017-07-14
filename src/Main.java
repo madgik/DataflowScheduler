@@ -24,7 +24,7 @@ public class Main {
     static Boolean showPlot = true;
     static String pathPlot;
     static String pathOut;
-    static Boolean showOutput = true;
+    static Boolean showOutput = false;
     static Boolean saveOutput = true;
     static Boolean validate = false;
     static boolean jar = false;
@@ -32,8 +32,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./paperExps/pruning/";
-        pathOut = "./paperExps/pruning/";
+        pathPlot = "./ensembles/";
+        pathOut = "./ensembles/";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -47,6 +47,17 @@ public class Main {
             jar = true;
             jarpath = "/home/vaggelis/jc/";
         }
+
+
+
+
+
+
+
+
+
+
+
 
         String flow = System.getProperty("flow");
         if( flow != null){
@@ -86,13 +97,37 @@ public class Main {
             ArrayList <Long> minTimeSingle = new ArrayList<>();
             ArrayList <Double> minCostSingle = new ArrayList<>();
 
-            HashMap  <Long, Long> minMakespanEnsemble = new HashMap<>();//dagId, time
-            HashMap  <Long, Long> maxMakespanEnsemble = new HashMap<>();//dagId, time
-//            HashMap  <Long, Long> minStartTimeEnsemble = new HashMap<>();//dagId, time
-//            HashMap  <Long, Long> maxEndTimeEnsemble = new HashMap<>();//dagId, time
-            HashMap <Long, Double> minCostEnsemble = new HashMap<>();
-
             Integer ensembleSize =4;
+
+
+
+
+
+
+
+
+
+
+
+
+            PrintWriter outEnsemble = null;
+            try {
+
+                String fileName =
+                        "ensemble" + ensembleSize; //+
+                            //    (new java.util.Date()).toString().replace(" ","_");
+
+                outEnsemble = new PrintWriter(pathOut + fileName + ".txt");
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            //   out.println(sbOut.toString());
+
+
+
+
+
 
             for(int i=1;i<=ensembleSize;++i) {
 
@@ -100,7 +135,7 @@ public class Main {
                 Integer randomSize = random.randomInRange(2,0);
                 Integer sizesMontage[] ={25, 25, 25};
                 Integer sizesLigo[] ={50, 50, 50};
-                Integer size = 25;
+                Integer size = 100;
 //                if(i%2==1) {
 //                    appName = "MONTAGE";
 //                    size = sizesMontage[randomSize];
@@ -109,14 +144,23 @@ public class Main {
 //                    appName = "LIGO";
 //                    size = sizesLigo[randomSize];
 //                }
+
                 flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
 
                 ArrayList<Plan> hhdsPlans = new ArrayList<>();
 
+                PrintWriter outSingle = null;
+                try {
+                    String fileName =
+                            "single" +i;
+                    outSingle = new PrintWriter(pathOut + fileName + ".txt");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
 
                 DAG subdag = runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
 
-                System.out.println("crpathlength " + subdag.computeCrPathLength());
+              //  System.out.println("crpathlength " + subdag.computeCrPathLength(containerType.getLargest()));
 
                 Long time=Long.MAX_VALUE;
                 Double money=Double.MAX_VALUE;
@@ -126,13 +170,14 @@ public class Main {
                     p0 = hhdsPlans.get(j);
                     time =Math.min(time, p0.stats.runtime_MS);
                     money = Math.min(money, p0.stats.money);
+
+                    outSingle.println(p0.stats.money + "\t" + p0.stats.runtime_MS + "\t" + p0.stats.runtime_MS/p0.graph.computeCrPathLength(p0.cluster.containersList.get(0).contType));
                 }
+                outSingle.close();
                 minTimeSingle.add(time);
                 minCostSingle.add(money);
 
-
             }
-
 
 
             System.out.println("running multiple dataflows");
@@ -144,14 +189,23 @@ public class Main {
 
                 Plan p=ensemblePlans.get(j);
                 System.out.print("plan " + j + ": ");
-                System.out.printf("%d %.1f %.10f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
-//                    for(Long dgId: p.stats.subdagFinishTime.keySet())
-//                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+                System.out.printf("%d %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
+
+                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan);
+                    for(Long dgId: p.stats.subdagFinishTime.keySet())
+                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
             }
 
 
 
+            outEnsemble.close();
+
+
+
         }
+
+
+
         //TODO: Run the simulation to validate the results for the space of solutions
     }
 
@@ -179,6 +233,7 @@ public class Main {
 
         return space;
     }
+
 
     public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans)
     {

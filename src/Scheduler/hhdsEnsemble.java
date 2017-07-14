@@ -1077,9 +1077,9 @@ public class hhdsEnsemble implements Scheduler {
             public int compare(Long op1, Long op2) {
                 double r1 = sum_rank.get(op1);
                 double r2 = sum_rank.get(op2);
-                if (r1 < r2)//TODO: add precision error
+                if (r1 > r2)//TODO: add precision error
                     return -1;
-                else if (r1 > r2)
+                else if (r1 < r2)
                     return 1;
                 else
                     return 0;
@@ -1117,6 +1117,8 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
+        Collections.sort(opsSorted, dagIdComparator);
+
         Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
             @Override
             public int compare(Long op1, Long op2) {
@@ -1134,6 +1136,10 @@ public class hhdsEnsemble implements Scheduler {
                     return 0;
             }
         };
+
+//
+//                if(graph.superDAG.merged==true)
+//                        Collections.sort(opsSorted, SSComparator);
 
         System.out.println("sorted ops");
         for(Long op: opsSorted)
