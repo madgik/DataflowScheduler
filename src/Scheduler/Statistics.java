@@ -19,6 +19,9 @@ public class Statistics {
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan;//dagId, time
+
+    public Double unfairness = 0.0;//dagId, time
+
     public Double subdagMaxMakespan=0.0;//dagId, time
     public Double subdagMinMakespan = Double.MAX_VALUE;//dagId, time
     public Double subdagMeanMoneyFragment;//dagId, time
@@ -200,6 +203,12 @@ public class Statistics {
             if(subdagFinishTime.size()>0) {
                 subdagMeanMakespan = meanMakespan / (double) subdagFinishTime.size();
             }
+
+
+            for(Long dgId: subdagMakespan.keySet())
+            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType) - subdagMeanMakespan);
+
+
 
             Double sumCostSubdag =0.0;
 
