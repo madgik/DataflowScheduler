@@ -32,8 +32,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./ensembles/";
-        pathOut = "./ensembles/";
+        pathPlot = "./ensembles/MixedEnsemble4Varied/commonEntry/";
+        pathOut = "./ensembles/MixedEnsemble4Varied/commonEntry/";
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -97,7 +97,7 @@ public class Main {
             ArrayList <Long> minTimeSingle = new ArrayList<>();
             ArrayList <Double> minCostSingle = new ArrayList<>();
 
-            Integer ensembleSize =5;
+            Integer ensembleSize =4;
 
 
 
@@ -133,17 +133,17 @@ public class Main {
 
                 String appName = "LIGO";
                 Integer randomSize = random.randomInRange(2,0);
-                Integer sizesMontage[] ={25, 25, 25};
-                Integer sizesLigo[] ={50, 50, 50};
-                Integer size = 50;
-//                if(i%2==1) {
-//                    appName = "MONTAGE";
-//                    size = sizesMontage[randomSize];
-//                }
-//                else {
-//                    appName = "LIGO";
-//                    size = sizesLigo[randomSize];
-//                }
+                Integer sizesMontage[] ={50, 50, 50};
+                Integer sizesLigo[] ={100, 100, 100};
+                Integer size = 100;
+                if(i%2==1) {
+                    appName = "MONTAGE";
+                    size = sizesMontage[randomSize];
+                }
+                else {
+                    appName = "LIGO";
+                    size = sizesLigo[randomSize];
+                }
 
                 flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
 

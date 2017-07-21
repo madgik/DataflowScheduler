@@ -25,7 +25,7 @@ public class hhdsEnsemble implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 30;
+    public int pruneSkylineSize = 10;
 
 
 
@@ -1117,7 +1117,7 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-    //    Collections.sort(opsSorted, dagIdComparator);
+       // Collections.sort(opsSorted, dagIdComparator);
 
         Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
             @Override
