@@ -1072,6 +1072,8 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
+    //    Collections.sort(opsSorted, rankComparator);
+
         Comparator<Long> sumrankComparator = new Comparator<Long>() {
             @Override
             public int compare(Long op1, Long op2) {

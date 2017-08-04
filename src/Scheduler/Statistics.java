@@ -15,6 +15,8 @@ public class Statistics {
     public long containersUsed;
     public double contUtilization;
 
+    public int meanContainersUsed;
+
     public HashMap  <Long, Long> subdagStartTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
@@ -28,6 +30,9 @@ public class Statistics {
     public HashMap <Long, Double> subdagMoneyFragment = new HashMap<>();//dagId, time
 
     public Statistics(Plan plan){
+
+        meanContainersUsed=0;
+
         runtime_MS = 0;
         quanta = 0;
         money = 0;
@@ -54,6 +59,12 @@ public class Statistics {
             money+=localQuanta*c.contType.container_price;
         }
         containersUsed = plan.cluster.contUsed.size();
+
+
+       int makespanQuanta = (int)Math.ceil(runtime_MS/(double)RuntimeConstants.quantum_MS);
+        meanContainersUsed = (int) Math.ceil(quanta/(double)(makespanQuanta));
+
+     //   System.out.println("quanta " + quanta + " " + makespanQuanta + " " + meanContainersUsed);
 
 
 
@@ -269,6 +280,8 @@ public class Statistics {
         this.money = s.money;
         this.containersUsed = s.containersUsed;
         this.contUtilization = s.contUtilization;
+
+        this.meanContainersUsed = s.meanContainersUsed;
     }
 
 }

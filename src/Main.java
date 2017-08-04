@@ -32,8 +32,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./ensembles/MixedEnsemble4Varied/commonEntry/";
-        pathOut = "./ensembles/MixedEnsemble4Varied/commonEntry/";
+        pathPlot = "./ensembles/LigoEnsemble4MixedSizes/sizeBased/";//sizeBased
+        pathOut = "./ensembles/LigoEnsemble4MixedSizes/sizeBased/";//userPref
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -47,16 +47,6 @@ public class Main {
             jar = true;
             jarpath = "/home/vaggelis/jc/";
         }
-
-
-
-
-
-
-
-
-
-
 
 
         String flow = System.getProperty("flow");
@@ -94,8 +84,8 @@ public class Main {
             System.out.println("running single dataflows");
             ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
 
-            ArrayList <Long> minTimeSingle = new ArrayList<>();
-            ArrayList <Double> minCostSingle = new ArrayList<>();
+//            ArrayList <Long> minTimeSingle = new ArrayList<>();
+//            ArrayList <Double> minCostSingle = new ArrayList<>();
 
             Integer ensembleSize =4;
 
@@ -131,13 +121,13 @@ public class Main {
 
             for(int i=1;i<=ensembleSize;++i) {
 
-                String appName = "LIGO";
+                String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2,0);
-                Integer sizesMontage[] ={50, 50, 50};
-                Integer sizesLigo[] ={100, 100, 100};
+                Integer sizesMontage[] ={50, 50, 50};//{100, 100, 100};//
+                Integer sizesLigo[] ={100, 100, 100};//{50, 50, 50};//
                 Integer size = 100;
                 if(i%2==1) {
-                    appName = "MONTAGE";
+                    appName = "LIGO";//"MONTAGE";
                     size = sizesMontage[randomSize];
                 }
                 else {
@@ -158,24 +148,24 @@ public class Main {
                     e.printStackTrace();
                 }
 
-                DAG subdag = runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
-
-              //  System.out.println("crpathlength " + subdag.computeCrPathLength(containerType.getLargest()));
-
-                Long time=Long.MAX_VALUE;
-                Double money=Double.MAX_VALUE;
-
-                for(int j=0;j<hhdsPlans.size()-1;++j) {
-                    Plan p0;
-                    p0 = hhdsPlans.get(j);
-                    time =Math.min(time, p0.stats.runtime_MS);
-                    money = Math.min(money, p0.stats.money);
-
-                    outSingle.println(p0.stats.money + "\t" + p0.stats.runtime_MS + "\t" + p0.stats.runtime_MS/p0.graph.computeCrPathLength(p0.cluster.containersList.get(0).contType));
-                }
-                outSingle.close();
-                minTimeSingle.add(time);
-                minCostSingle.add(money);
+//                DAG subdag = runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
+//
+//              //  System.out.println("crpathlength " + subdag.computeCrPathLength(containerType.getLargest()));
+//
+//                Long time=Long.MAX_VALUE;
+//                Double money=Double.MAX_VALUE;
+//
+//                for(int j=0;j<hhdsPlans.size()-1;++j) {
+//                    Plan p0;
+//                    p0 = hhdsPlans.get(j);
+//                    time =Math.min(time, p0.stats.runtime_MS);
+//                    money = Math.min(money, p0.stats.money);
+//
+//                    outSingle.println(p0.stats.money + "\t" + p0.stats.runtime_MS + "\t" + p0.stats.runtime_MS/p0.graph.computeCrPathLength(p0.cluster.containersList.get(0).contType));
+//                }
+//                outSingle.close();
+//                minTimeSingle.add(time);
+//                minCostSingle.add(money);
 
             }
 

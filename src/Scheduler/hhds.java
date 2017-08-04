@@ -17,12 +17,11 @@ public class hhds implements Scheduler {
     public Cluster cluster;
     public DAG graph;
 
-    public double minCrPathLength;
 
     public LinkedList<Long> opsSorted ;
 
-    public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 10;
+    public int homoPlanstoKeep = 1000000;//80;
+    public int pruneSkylineSize = 30;
 
 
 
@@ -231,41 +230,61 @@ public class hhds implements Scheduler {
         skylinePlans.addAll(skylinePlans_INC.results);
         skylinePlans.addAll(skylinePlans_INCDEC.results);
 
+//        System.out.println("//////////ALL///////");
+//        skylinePlans.sort(true);
+//        skylinePlans.print();
 
 
         paretoPlans.addAll(skylinePlans.results);
 
-//        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
-//
-//        mpinfo.add("pareto",paretoPlans.results);
-//
-//        long homoEnd = System.currentTimeMillis();
-//        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
-//
-//        skylinePlans.clear();
-//
-//        for(Plan pp: paretoPlans.results) {
-//            if (pp.vmUpgrading.equals("increasing/decreasing")) {
-//
-//                pp.vmUpgrading = "increasing";
-//                skylinePlans.add(pp);
-//
-//                Plan newpp = new Plan(pp);
-//                newpp.vmUpgrading="decreasing";
-//                skylinePlans.add(newpp);
-//            } else {
-//                skylinePlans.add(pp);
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
+
+
+//        for(Plan p:paretoPlans){
+//            HashSet<containerType> temp = new HashSet<>();
+//            if(p.cluster.countTypes.size()>1){
+//                    System.out.println("found a good one");
 //            }
+//
 //        }
-//
-//        paretoPlans.clear();
-//
-//
-//        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
-//
-//        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
-//
-//        paretoPlans.addAll(skylinePlans);
+//        paretoPlans.addAll(ComputeOnePerNumberofVmsSkyline(skylinePlans));
+
+//        int size = computeSkyline(skylinePlans).size();
+//        int size2 = ComputeOnePerNumberofVmsSkyline(skylinePlans).size();
+
+
+//        System.out.println("//////////PARETO///////");
+//        paretoPlans.print();
+//        paretoPlans.plot("pareto");
+        mpinfo.add("pareto",paretoPlans.results);
+
+        long homoEnd = System.currentTimeMillis();
+        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+
+        skylinePlans.clear();
+
+        for(Plan pp: paretoPlans.results) {
+            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+
+                pp.vmUpgrading = "increasing";
+                skylinePlans.add(pp);
+
+                Plan newpp = new Plan(pp);
+                newpp.vmUpgrading="decreasing";
+                skylinePlans.add(newpp);
+            } else {
+                skylinePlans.add(pp);
+            }
+        }
+
+        paretoPlans.clear();
+
+
+        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+
+        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+
+        paretoPlans.addAll(skylinePlans);
 
         space.addAll(paretoPlans);
 
@@ -285,10 +304,9 @@ public class hhds implements Scheduler {
 //        mp.add("afterMigrate", space.results);
 //        plotMultiple(mp,"migration");
 
-  //      space.addAll(computeSkyline(paretoPlans));
+    //    space.addAll(computeSkyline(paretoPlans));
+//moh
 
-
-//        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
@@ -296,7 +314,7 @@ public class hhds implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
         return space;
 
     }
@@ -1383,7 +1401,7 @@ double s2;
                     return 0;
             }
         };
-//       Collections.sort(opsSorted, sumrankComparator);
+       Collections.sort(opsSorted, sumrankComparator);//critical ops have higher priority
 
 
 
@@ -1400,7 +1418,7 @@ double s2;
                     return 0;
             }
         };
-        Collections.sort(opsSorted, sumrankComparatorOpposite);
+      //  Collections.sort(opsSorted, sumrankComparatorOpposite);//first non critical ops
 
         Comparator<Long> levelRankComparator = new Comparator<Long>() {
             @Override
@@ -1417,7 +1435,7 @@ double s2;
         };
          Collections.sort(opsSorted, levelRankComparator);  //should it be the same as 297????
 
-        System.out.println("sorting");
+        System.out.println("sorting HHDS");
         for(Long op: opsSorted)
             System.out.println(op + " " + opLevel.get(op) + " " + sum_rank.get(op));
 //
