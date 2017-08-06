@@ -32,8 +32,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./ensembles/LigoEnsemble4MixedSizes/sizeBased/";//sizeBased
-        pathOut = "./ensembles/LigoEnsemble4MixedSizes/sizeBased/";//userPref
+        pathPlot = "./expsforBigData/persec/";//sizeBased
+        pathOut = "./expsforBigData/persec/";//userPref
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -56,142 +56,29 @@ public class Main {
                 String b = System.getProperty("b");
                 runLattice(Integer.parseInt(d),Integer.parseInt(b));
             }else if(flow.contains("runMul")) {
-                runOneMultipleEND(jar,jarpath+"MONTAGE.n.25.0.dax",100,400);
-
-
-                runOneMultipleEND(jar,jarpath+"Example",10000,3000);
-
-                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,400);
-
-                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
-
-//                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
+//                runOneMultipleEND(jar,jarpath+"MONTAGE.n.25.0.dax",100,400);
+//
+//
+//                runOneMultipleEND(jar,jarpath+"Example",10000,3000);
+//
+//                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,400);
+//
+//                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
+//
+////                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
             }else{
-                String mt = System.getProperty("mt");
-                String md = System.getProperty("md");
-
-                ArrayList<Plan> plans = new ArrayList<>();
-                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans);
+//                String mt = System.getProperty("mt");
+//                String md = System.getProperty("md");
+//
+//                ArrayList<Plan> plans = new ArrayList<>();
+//                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans);
             }
         }else{
-//            runDax(jar,jarpath+"Example.dax",1000,3000);
-//
-//            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
-//            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
-          //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
-
-
-            System.out.println("running single dataflows");
-            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
-
-//            ArrayList <Long> minTimeSingle = new ArrayList<>();
-//            ArrayList <Double> minCostSingle = new ArrayList<>();
-
-            Integer ensembleSize =4;
-
-
-
-
-
-
-
-
-
-
-
-
-            PrintWriter outEnsemble = null;
-            try {
-
-                String fileName =
-                        "ensemble" + ensembleSize; //+
-                            //    (new java.util.Date()).toString().replace(" ","_");
-
-                outEnsemble = new PrintWriter(pathOut + fileName + ".txt");
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            //   out.println(sbOut.toString());
-
-
-
-
-
-
-            for(int i=1;i<=ensembleSize;++i) {
-
-                String appName = "MONTAGE";
-                Integer randomSize = random.randomInRange(2,0);
-                Integer sizesMontage[] ={50, 50, 50};//{100, 100, 100};//
-                Integer sizesLigo[] ={100, 100, 100};//{50, 50, 50};//
-                Integer size = 100;
-                if(i%2==1) {
-                    appName = "LIGO";//"MONTAGE";
-                    size = sizesMontage[randomSize];
-                }
-                else {
-                    appName = "LIGO";
-                    size = sizesLigo[randomSize];
-                }
-
-                flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
-
-                ArrayList<Plan> hhdsPlans = new ArrayList<>();
-
-                PrintWriter outSingle = null;
-                try {
-                    String fileName =
-                            "single" +i;
-                    outSingle = new PrintWriter(pathOut + fileName + ".txt");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-//                DAG subdag = runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
-//
-//              //  System.out.println("crpathlength " + subdag.computeCrPathLength(containerType.getLargest()));
-//
-//                Long time=Long.MAX_VALUE;
-//                Double money=Double.MAX_VALUE;
-//
-//                for(int j=0;j<hhdsPlans.size()-1;++j) {
-//                    Plan p0;
-//                    p0 = hhdsPlans.get(j);
-//                    time =Math.min(time, p0.stats.runtime_MS);
-//                    money = Math.min(money, p0.stats.money);
-//
-//                    outSingle.println(p0.stats.money + "\t" + p0.stats.runtime_MS + "\t" + p0.stats.runtime_MS/p0.graph.computeCrPathLength(p0.cluster.containersList.get(0).contType));
-//                }
-//                outSingle.close();
-//                minTimeSingle.add(time);
-//                minCostSingle.add(money);
-
-            }
-
-
-            System.out.println("running multiple dataflows");
-
-            ArrayList<Plan> ensemblePlans =new ArrayList<>();
-            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans);
-
-            for (int j = 0; j < ensemblePlans.size(); ++j) {
-
-                Plan p=ensemblePlans.get(j);
-                System.out.print("plan " + j + ": ");
-                System.out.printf("%d %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
-
-                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan + "\t" + p.stats.unfairness);
-                    for(Long dgId: p.stats.subdagFinishTime.keySet())
-                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-            }
-
-
-
-            outEnsemble.close();
-
-
-
+            ArrayList<Plan> plan = new ArrayList<Plan>();
+//            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100, plan);
+            runLattice(5,21);
+//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,100, plan);
+//            runLattice(11,3);
         }
 
 
@@ -239,12 +126,9 @@ public class Main {
 
         hhdsPlans.addAll(paretoToCompare.results);
 
-
-
         String addToFilename = "_NPRUNE_";
 
-        boolean moheft = false;
-
+        boolean moheft = true;
 
         System.out.println("paretoDone");
 
@@ -364,16 +248,16 @@ public class Main {
 
     }
 
-    //plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
-
-    //        if(validate){
-    //            System.out.println("Running sims");
-    //            SimEnginge simeng = new SimEnginge();
-    //            for (Plan p:solutions){
-    //                simeng.execute(p);
-    //            }
-    //
-    //        }
+//    plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
+//
+//            if(validate){
+//                System.out.println("Running sims");
+//                SimEnginge simeng = new SimEnginge();
+//                for (Plan p:solutions){
+//                    simeng.execute(p);
+//                }
+//
+//            }
 
 
 
@@ -935,8 +819,6 @@ public class Main {
 
     }
 
-
-
     private static void runOneMultipleHALF(boolean jar,String file, int mt, int md){
         DAG graph = new DAG();
         DAG tmpGraph = null;
@@ -991,10 +873,6 @@ public class Main {
         runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
 
     }
-
-
-
-
 
     private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans){
 
