@@ -32,13 +32,14 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./expsforBigData/persec/";//sizeBased
-        pathOut = "./expsforBigData/persec/";//userPref
+        pathPlot = "./expsforBigData/perhour2/";//sizeBased
+        pathOut = "./expsforBigData/perhour2/";//userPref
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
         if(savePlot){System.out.println("saving plots to "+ pathPlot);}
         if(saveOutput){System.out.println("saving output to "+ pathOut);}
+
         if (System.getProperty("user.name").equals("gsmyris")) {
             jar = true;
             jarpath = "/home/gsmyris/jc/";
@@ -47,7 +48,6 @@ public class Main {
             jar = true;
             jarpath = "/home/vaggelis/jc/";
         }
-
 
         String flow = System.getProperty("flow");
         if( flow != null){
@@ -75,15 +75,11 @@ public class Main {
             }
         }else{
             ArrayList<Plan> plan = new ArrayList<Plan>();
-//            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100, plan);
-//            runLattice(5,21);
-//            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,100, plan);
-//            runLattice(11,3);
+            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100, plan);
+            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,100, plan);
+            runLattice(5,21);
+            runLattice(11,3);
         }
-
-
-
-        //TODO: Run the simulation to validate the results for the space of solutions
     }
 
 
