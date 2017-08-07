@@ -32,8 +32,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        pathPlot = "./expsforBigData/perhour2/";//sizeBased
-        pathOut = "./expsforBigData/perhour2/";//userPref
+        pathPlot = "./expsforBigData/persec3/";//sizeBased
+        pathOut = "./expsforBigData/persec3/";//userPref
 
         //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -74,6 +74,7 @@ public class Main {
 //                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans);
             }
         }else{
+            RuntimeConstants.quantum_MS = 1000;
             ArrayList<Plan> plan = new ArrayList<Plan>();
             runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100, plan);
             runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,100, plan);
