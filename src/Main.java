@@ -76,7 +76,7 @@ public class Main {
         }else{
             ArrayList<Plan> plan = new ArrayList<Plan>();
 //            runDax(jar,jarpath+"LIGO.n.100.0.dax",100,100, plan);
-            runLattice(5,21);
+//            runLattice(5,21);
 //            runDax(jar,jarpath+"MONTAGE.n.100.0.dax",100,100, plan);
 //            runLattice(11,3);
         }
