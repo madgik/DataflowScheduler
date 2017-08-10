@@ -33,7 +33,7 @@ public class LatticeGenerator {
         RandomParameters
             params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
-        DAG graph =  createLatticeGraph(3,498, params, seed);
+        DAG graph =  createLatticeGraph(3,498, params, seed, RuntimeConstants.quantum_MS);
 
         graph.printEdges();
         System.out.println(graph.sumdata_B/1073741824);
@@ -42,7 +42,8 @@ public class LatticeGenerator {
 
 
 
-    public static DAG createLatticeGraph(int depth, int breadth, RandomParameters params, long seed) {
+    public static DAG createLatticeGraph(int depth,
+        int breadth, RandomParameters params, long seed, long quantumSizeForGeneration) {
 
        HashMap<Long,Long> opIdToOutDataSize = new HashMap<Long,Long>();
 
@@ -73,14 +74,14 @@ public class LatticeGenerator {
             // up
             for (int j = 0; j < Math.pow(breadth, i); j++) {
                 opNum++;
-                Operator op = createADDOperator("op" + opNum, 1, params, rand,opIdToOutDataSize,graph);
+                Operator op = createADDOperator("op" + opNum, 1, params, rand,opIdToOutDataSize,graph, quantumSizeForGeneration);
                 upOperators.add(op.getId());
             }
 
             // down
             for (int j = 0; j < Math.pow(breadth, i); j++) {
                 opNum++;
-                Operator op = createADDOperator("op" + opNum, breadth, params, rand,opIdToOutDataSize,graph);
+                Operator op = createADDOperator("op" + opNum, breadth, params, rand,opIdToOutDataSize,graph, quantumSizeForGeneration);
                 downOperators.add(op.getId());
             }
 
@@ -90,7 +91,7 @@ public class LatticeGenerator {
 
         for (int j = 0; j < Math.pow(breadth, (depth / 2)); j++) {
             opNum++;
-            Operator op = createADDOperator("op" + opNum, 1, params, rand,opIdToOutDataSize,graph);
+            Operator op = createADDOperator("op" + opNum, 1, params, rand,opIdToOutDataSize,graph, quantumSizeForGeneration);
             middleOperators.add(op.getId());
         }
 
@@ -176,13 +177,16 @@ public class LatticeGenerator {
         String id,
         int fanOut,
         RandomParameters params,
-        Random rand,HashMap<Long,Long> opIdToOutDataSize,DAG graph) {
+        Random rand,
+        HashMap<Long,Long> opIdToOutDataSize,
+        DAG graph,
+        long quantumSizeForGeneration) {
 
         double runTimeValue = params.runTime[params.runTimeDist.next()];
         double cpuUtilizationValue = params.cpuUtil[params.cpuUtilDist.next()];
         double memoryValue = params.memory[params.memoryDist.next()];
 
-        long runtime_MS = (long) (runTimeValue * RuntimeConstants.quantum_MS);
+        long runtime_MS = (long) (runTimeValue * quantumSizeForGeneration);
 
         runtime_MS*=25;
 
@@ -196,7 +200,7 @@ public class LatticeGenerator {
         double quantums = params.dataout[params.dataoutDist.next()];
         double bytesPerQuantum =
             RuntimeConstants.distributed_storage_speed_B_MS
-                * RuntimeConstants.quantum_MS;
+                * quantumSizeForGeneration;
 
 
         graph.addOperator(op);

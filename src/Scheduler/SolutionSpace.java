@@ -322,8 +322,8 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.clear();
                 this.results.addAll(retset);
             }
-            else if (method.equals("jjPrune")) {
-                jjPrune(skyline, k , retset);
+            else if (method.equals("Knee")) {
+                Knee(skyline, k , retset);
                 this.results.clear();
                 this.results.addAll(retset);
             }
@@ -345,7 +345,7 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.addAll(retset);
             }
             else{
-                System.out.println("houston we have a problem");
+                System.out.println("houston we have a problem: "+ method);
             }
         }
     }
@@ -915,7 +915,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-    public HashSet<Plan> jjPrune(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret){
+    public HashSet<Plan> Knee(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret){
 
         addExtremes(donotchange,ret);
         

@@ -5,11 +5,14 @@ package Scheduler;
  */
 public class RuntimeConstants {
 
+    public static long OneHour_MS = 3600000;
+    public static long OneSec_MS = 1000;
+
     /**
      * Quantum size (in seconds)
      * Default: 1 hour
      */
-    public static long quantum_MS = 3600000;
+    public static long quantum_MS = OneHour_MS;
 
     /**
      * Network speed (in MB/sec)

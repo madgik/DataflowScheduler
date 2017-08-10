@@ -23,7 +23,7 @@ public class Moheft implements Scheduler {
 
 
 
-    protected int skylinePlansToKeep = 30;//10//20
+    protected int skylinePlansToKeep;// = 30;//10//20
     protected int skylinePruningOption = 20;
 
     public int maxContainers = 10000000;
@@ -33,13 +33,14 @@ public class Moheft implements Scheduler {
     private HashMap<Long, Integer> opLevel = new HashMap<>(); //opid->level
 
 
-    public Moheft(DAG graph,Cluster cl){
+    public Moheft(DAG graph,Cluster cl,int pruning_k) {
 //        skylinePlans = new ArrayList<>();
 //        paretoPlans = new ArrayList<>();
         space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
         this.opsSorted = new LinkedList<>();
+        skylinePlansToKeep = pruning_k;
     }
 
 

@@ -20,10 +20,8 @@ public class hhds implements Scheduler {
 
     public LinkedList<Long> opsSorted ;
 
-    public int homoPlanstoKeep = 1000000;//80;
-    public int pruneSkylineSize = 30;
-
-
+    public int homoPlanstoKeep = 80;
+    public int pruneSkylineSize; //= 30;
 
     public int maxContainers = 10000000;
 
@@ -38,7 +36,7 @@ public class hhds implements Scheduler {
 
     private HashMap<Long, Integer> opLevel;
 
-    public hhds(DAG graph, Cluster cl, boolean prune, String PruneMethod){
+    public hhds(DAG graph, Cluster cl, boolean prune, String PruneMethod, int pruning_k){
         this.pruneEnabled = prune;
         space = new SolutionSpace();
         this.graph = graph;
@@ -46,6 +44,7 @@ public class hhds implements Scheduler {
         this.opsSorted = new LinkedList<>();
         opLevel = new HashMap<>();
         this.PruneMethod = PruneMethod;
+        pruneSkylineSize = pruning_k;
     }
 
     @Override
@@ -1402,7 +1401,7 @@ double s2;
             }
         };
        Collections.sort(opsSorted, sumrankComparator);//critical ops have higher priority
-
+       //auto einai to sosto ranking
 
 
         Comparator<Long> sumrankComparatorOpposite = new Comparator<Long>() {
