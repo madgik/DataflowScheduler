@@ -63,26 +63,9 @@ public class hhds implements Scheduler {
 
         skylinePlans.clear();
 
-//        if (heteroStartEnabled) {
-//
-//            ArrayList<containerType> cTypes = new ArrayList<>();
-//            cTypes.clear();
-//            cTypes.add(containerType.A);
-//            cTypes.add(containerType.H);
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//
-//            cTypes.clear();
-//            cTypes.add(containerType.C);
-//            cTypes.add(containerType.G);
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//
-//        }
-
         if (!heteroStartEnabled){
 
         for (containerType cType : containerType.values()) {
-
 
             if (maxContainers == 1) {
                 skylinePlans.add(onlyOneContainer());
@@ -186,75 +169,19 @@ public class hhds implements Scheduler {
                         //                    System.out.println("s3 "+skylinePlans.size());
                     }
                 }
-                ////////////////////
-
-
-                /////////////////////////
             }
 
         }
     }
 
-//        ArrayList<containerType> cTypes = new ArrayList<>();
-//        cTypes.add(containerType.C);
-//        cTypes.add(containerType.G);
-//        skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-//
-//        cTypes.clear();
-//        cTypes.add(containerType.G);
-//        cTypes.add(containerType.E);
-//        skylinePlans.addAll(this.createAssignments("increasing/decreasing",cTypes));
-
-
-
-
-//        System.out.println("//////////DEC///////");
-//        skylinePlans_DEC.print();
-////        skylinePlans_DEC.plot("DEC");
-//        mpinfo.add("DEC",skylinePlans_DEC.results);
-//
-//        System.out.println("//////////INC///////");
-//        skylinePlans_INC.print();
-////        skylinePlans_INC.plot("INC");
-//        mpinfo.add("INC",skylinePlans_INC.results);
-//
-//        System.out.println("//////////INCDEC///////");
-//        skylinePlans_INCDEC.print();
-////        skylinePlans_INCDEC.plot("INCDEC");
-//        mpinfo.add("INCDEC",skylinePlans_INCDEC.results);
-
-
-
         skylinePlans.addAll(skylinePlans_DEC.results);
         skylinePlans.addAll(skylinePlans_INC.results);
         skylinePlans.addAll(skylinePlans_INCDEC.results);
-
-//        System.out.println("//////////ALL///////");
-//        skylinePlans.sort(true);
-//        skylinePlans.print();
-
 
         paretoPlans.addAll(skylinePlans.results);
 
         paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
 
-
-//        for(Plan p:paretoPlans){
-//            HashSet<containerType> temp = new HashSet<>();
-//            if(p.cluster.countTypes.size()>1){
-//                    System.out.println("found a good one");
-//            }
-//
-//        }
-//        paretoPlans.addAll(ComputeOnePerNumberofVmsSkyline(skylinePlans));
-
-//        int size = computeSkyline(skylinePlans).size();
-//        int size2 = ComputeOnePerNumberofVmsSkyline(skylinePlans).size();
-
-
-//        System.out.println("//////////PARETO///////");
-//        paretoPlans.print();
-//        paretoPlans.plot("pareto");
         mpinfo.add("pareto",paretoPlans.results);
 
         long homoEnd = System.currentTimeMillis();
@@ -278,34 +205,17 @@ public class hhds implements Scheduler {
 
         paretoPlans.clear();
 
+//        if (false) {
+          paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
-        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+          System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
 
-        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+          paretoPlans.addAll(skylinePlans);
 
-        paretoPlans.addAll(skylinePlans);
-
-        space.addAll(paretoPlans);
-
-//        SolutionSpace beforeMigrate = new SolutionSpace();
-//        beforeMigrate.addAll(computeSkyline(paretoPlans));
-
-
-        //space.addAll(beforeMigrate);
-//        for(Plan p:beforeMigrate){
-//            space.addAll(migrateCriticalOpsToConts(p));
+          space.addAll(paretoPlans);
+//        } else {
+//          space.addAll(skylinePlans);
 //        }
-
-
-//
-//        MultiplePlotInfo mp = new MultiplePlotInfo();
-//        mp.add("befMigrate", beforeMigrate.results);
-//        mp.add("afterMigrate", space.results);
-//        plotMultiple(mp,"migration");
-
-    //    space.addAll(computeSkyline(paretoPlans));
-//moh
-
 
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);

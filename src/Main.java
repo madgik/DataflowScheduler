@@ -33,7 +33,7 @@ public class Main {
   public static void main(String[] args) {
 
 //    pathPlot = "./expsforBigData/persec44/";//sizeBased
-    pathOut = "./expsforBigData/latice_per_sec/";//userPref
+    pathOut = "./expsforBigData/hh4/";//userPref
 
     //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
@@ -63,236 +63,94 @@ public class Main {
     ArrayList<Plan> plans = new ArrayList<Plan>();
     int pruning_k = 30;
 
-    // per sec
-    String perSecDir = createDir(pathToSave,"persec");
-    RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      pruning_k,
-      createDir(perSecDir, "LIGO"),
-      "hh",
-      "moheft",
-      plans);
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      pruning_k,
-      createDir(perSecDir, "MONTAGE"),
-      "hh",
-      "moheft",
-      plans);
-    runLattice(
-      11,
-      3,
-      "Knee",
-      pruning_k,
-      RuntimeConstants.OneHour_MS,
-      createDir(perSecDir, "LATTICE11_3"),
-      "hh",
-      "moheft",
-      plans);
-//    runLattice(
-//      5,
-//      21,
-//      "Knee",
-//      pruning_k,
-//      RuntimeConstants.OneHour_MS,
-//      createDir(perSecDir, "LATTICE5_21"),
-//      "hh",
-//      "moheft",
-//      plans);
+    if (false) {
+      // per sec
+      String perSecDir = createDir(pathToSave, "persec");
+      RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", pruning_k,
+        createDir(perSecDir, "LIGO"), "hh", "moheft", plans);
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", pruning_k,
+        createDir(perSecDir, "MONTAGE"), "hh", "moheft", plans);
+      runLattice(11, 3, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
+        createDir(perSecDir, "LATTICE11_3"), "hh", "moheft", plans);
+      //    runLattice(
+      //      5,
+      //      21,
+      //      "Knee",
+      //      pruning_k,
+      //      RuntimeConstants.OneHour_MS,
+      //      createDir(perSecDir, "LATTICE5_21"),
+      //      "hh",
+      //      "moheft",
+      //      plans);
 
 
-    //// per hour
-    String perHourDir = createDir(pathToSave,"perhour");
+      //// per hour
+      String perHourDir = createDir(pathToSave, "perhour");
+      RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", pruning_k,
+        createDir(perHourDir, "LIGO"), "hh", "moheft", plans);
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", pruning_k,
+        createDir(perHourDir, "MONTAGE"), "hh", "moheft", plans);
+
+      runLattice(11, 3, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
+        createDir(perHourDir, "LATTICE11_3"), "hh", "moheft", plans);
+
+      runLattice(5, 21, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
+        createDir(perHourDir, "LATTICE5_21"), "hh", "moheft", plans);
+      //// pruning
+      ////per K
+      String perK = createDir(pathToSave, "perK");
+      String perKk10 = createDir(perK, "k10");
+      String perKk20 = createDir(perK, "k20");
+      String perKk30 = createDir(perK, "k30");
+
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 10,
+        createDir(perKk10, "LIGO"), "hh", "", plans);
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 20,
+        createDir(perKk20, "LIGO"), "hh", "", plans);
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 30,
+        createDir(perKk30, "LIGO"), "hh", "", plans);
+
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 10,
+        createDir(perKk10, "MONTAGE"), "hh", "", plans);
+
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 20,
+        createDir(perKk20, "MONTAGE"), "hh", "", plans);
+
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 30,
+        createDir(perKk30, "MONTAGE"), "hh", "", plans);
+
+      //// pruning method comp
+      String perpruning = createDir(pathToSave, "perpruning");
+      String perpruningMONTAGE = createDir(perpruning, "MONTAGE");
+      String perpruningLIGO = createDir(perpruning, "LIGO");
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 30,
+        perpruningMONTAGE, "der", "", plans);
+
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "crowding", 30,
+        perpruningMONTAGE, "crowd", "", plans);
+
+      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "valkanas", 30,
+        perpruningMONTAGE, "dom", "", plans);
+
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 30,
+        perpruningLIGO, "der", "",plans);
+
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "crowding", 30,
+        perpruningLIGO, "crowd", "", plans);
+
+      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "valkanas", 30,
+        perpruningLIGO, "dom", "", plans);
+    }
+
+    String hhExampleDir = createDir(pathToSave, "hhExample");
     RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      pruning_k,
-      createDir(perHourDir, "LIGO"),
-      "hh",
-      "moheft",
-      plans);
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      pruning_k,
-      createDir(perHourDir, "MONTAGE"),
-      "hh",
-      "moheft",
-      plans);
+    runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 300, "Knee", pruning_k,
+      createDir(hhExampleDir, "LIGO"), "twoHetero", "", plans);
+    runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 1000, 300, "Knee", pruning_k,
+      createDir(hhExampleDir, "MONTAGE"), "twoHetero", "", plans);
 
-    runLattice(
-      11,
-      3,
-      "Knee",
-      pruning_k,
-      RuntimeConstants.OneHour_MS,
-      createDir(perHourDir, "LATTICE11_3"),
-      "hh",
-      "moheft",
-      plans);
-
-    runLattice(
-      5,
-      21,
-      "Knee",
-      pruning_k,
-      RuntimeConstants.OneHour_MS,
-      createDir(perHourDir, "LATTICE5_21"),
-      "hh",
-      "moheft",
-      plans);
-    //// pruning
-    ////per K
-    String perK = createDir(pathToSave,"perK");
-    String perKk10 = createDir(perK,"k10");
-    String perKk20 = createDir(perK,"k20");
-    String perKk30 = createDir(perK,"k30");
-
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      10,
-      createDir(perKk10, "LIGO"),
-      "hh",
-      "",
-      plans);
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      20,
-      createDir(perKk20, "LIGO"),
-      "hh",
-      "",
-      plans);
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      30,
-      createDir(perKk30, "LIGO"),
-      "hh",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      10,
-      createDir(perKk10, "MONTAGE"),
-      "hh",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      20,
-       createDir(perKk20, "MONTAGE"),
-      "hh",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      30,
-      createDir(perKk30, "MONTAGE"),
-      "hh",
-      "",
-      plans);
-
-    //// pruning method comp
-    String perpruning = createDir(pathToSave,"perpruning");
-    String perpruningMONTAGE = createDir(perpruning, "MONTAGE");
-    String perpruningLIGO = createDir(perpruning, "LIGO");
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      30,
-       perpruningMONTAGE,
-      "der",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "crowding",
-      30,
-      perpruningMONTAGE,
-      "crowd",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "MONTAGE.n.100.0.dax",
-      100,
-      100,
-      "valkanas",
-      30,
-      perpruningMONTAGE,
-      "dom",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "Knee",
-      30,
-      perpruningLIGO,
-      "der",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "crowding",
-      30,
-      perpruningLIGO,
-      "crowd",
-      "",
-      plans);
-
-    runDax(runningAtServer,
-      resourcePath + "LIGO.n.100.0.dax",
-      100,
-      100,
-      "valkanas",
-      30,
-      perpruningLIGO,
-      "dom",
-      "",
-      plans);
 
     //TODO(chronis) homo vs hetero
 
