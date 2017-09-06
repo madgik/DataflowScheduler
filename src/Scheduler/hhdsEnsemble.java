@@ -574,6 +574,21 @@ public class hhdsEnsemble implements Scheduler {
         return plan;
     }
 
+//    public long nextOperator(HashSet<Long> readyOps) {
+//
+//        long minRankOpID = 0;
+//        Integer minRank = Integer.MAX_VALUE;
+//        for (Long opId : readyOps) {
+//            Integer opRank = opsSorted.indexOf(opId);
+//            if (opRank < minRank) {
+//                minRankOpID = opId;
+//                minRank = opRank;
+//            }
+//        }
+//
+//        return minRankOpID;
+//    }
+
     public long nextOperator(HashSet<Long> readyOps) {
 
         long minRankOpID = 0;
@@ -588,6 +603,7 @@ public class hhdsEnsemble implements Scheduler {
 
         return minRankOpID;
     }
+
 
     public SolutionSpace ComputeOnePerNumberofVmsSkyline(SolutionSpace plans){
         SolutionSpace skyline = new SolutionSpace();
@@ -947,6 +963,9 @@ public class hhdsEnsemble implements Scheduler {
         final LinkedList<Long> opsBySlack = new LinkedList<>();
 ///   private HashMap<Long, Double> opSlack = new HashMap<>();
 
+
+
+
         final TopologicalSorting topOrder = new TopologicalSorting(graph);
 
         HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
@@ -1094,7 +1113,7 @@ public class hhdsEnsemble implements Scheduler {
             public int compare(Long op1, Long op2) {
                 double r1 = opLevel.get(op1);
                 double r2 = opLevel.get(op2);
-                if (r1 < r2)//TODO: add precision error
+                if (r1 < r2 )//TODO: add precision error
                     return -1;
                 else if (r1 > r2)
                     return 1;
@@ -1119,29 +1138,258 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
-       // Collections.sort(opsSorted, dagIdComparator);
 
-        Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
+        Collections.sort(opsSorted, dagIdComparator);
+
+
+
+        System.out.println("starts");
+//
+
+        class opRankFields {
+            long op;
+            double sumrank;
+            int level;
+            long dagId;
+
+
+            //constructor
+            public opRankFields(long id, double opSumRank, int oplevel, long opDagId) {
+                op = id;
+                sumrank = opSumRank;
+                level = oplevel;
+                dagId = opDagId;
+            }
+        }
+
+
+        ArrayList<opRankFields> opRanking = new ArrayList();
+
+        for( long idOp: topOrder.iterator()) {//
+       //     for(Operator op: graph.getOperators()) {
+
+         //   long idOp = op.getId();
+            Long dagOp = graph.getOperator(idOp).dagID;
+            int levelOp = opLevel.get(idOp);
+            double sumRankOp = sum_rank.get(idOp);//crPathLength-
+
+
+          //  opRankFields opC = new opRankFields(idOp, sumRankOp, levelOp, dagOp);
+            opRanking.add(new opRankFields(idOp, sumRankOp, levelOp, dagOp));
+
+
+         //   opRankFields opC= opRanking.get(opRanking.size()-1);
+
+           // System.out.println(opC.op + " " + opC.dagId);
+
+        }
+
+
+
+        Comparator<opRankFields> rowComparator = new Comparator<opRankFields>() {//dagsize, task slack
+            @Override
+            public int compare(opRankFields op1, opRankFields op2) {
+                if(Long.compare(op1.dagId,op2.dagId)==0) {
+                    if (Integer.compare(op1.level, op2.level)==0)//TODO: add precision error
+                    return Double.compare(op1.sumrank, op2.sumrank);
+                     else
+                        return Integer.compare(op1.level, op2.level);
+                }
+                else
+                    return Double.compare(op1.sumrank, op2.sumrank);
+            }
+        };
+
+
+        for(opRankFields opField: opRanking)
+             System.out.println(opField.op  + " " +  opField.dagId  + " " +  opField.level  + " " + opField.sumrank);
+        System.out.println("finishes");
+//
+//            opsSubdag.add(op.getId());
+//
+//
+        Comparator<Long> subdagComparator = new Comparator<Long>() {
             @Override
             public int compare(Long op1, Long op2) {
-                Long did1 = graph.getOperator(op1).dagID;
-                Long did2 = graph.getOperator(op2).dagID;
-
-                Double d1= (double)graph.superDAG.getSubDAG(did1).getOperators().size();
-                Double d2= (double)graph.superDAG.getSubDAG(did2).getOperators().size();
-
-                if (d1 < d2)
+                Integer r1 = opsSorted.indexOf(op1);
+                Integer r2 = opsSorted.indexOf(op2);
+                if (r1 < r2)
                     return -1;
-                else if (d1 > d2)
+                else if (r1 > r2)
                     return 1;
                 else
                     return 0;
             }
         };
 
+
+        LinkedList<Long> opsToSchedule = new LinkedList<>();
+
+        HashMap <Long, LinkedList<Long>> subdagOpsList = new HashMap<>();
+        HashMap <Long, Long> subdagNext = new HashMap<>();
+        HashMap <Long, Iterator<Long>> iteratorPerSubdag = new HashMap<>();
+//
+//        for( DAG subdag: graph.superDAG.subDAGList.values())
+//        {
+//
+//            System.out.println("subdagid " + subdag.dagId);
+//            Long subdagId= subdag.dagId;
+//
+//
+//            //how did i change the op ids for each subdag so that they differ between different ones? check and use the proper ones
+//            for(Operator opnext: subdag.getOperators())
+//                System.out.println("for " +opnext.getId());
+//
+//            LinkedList<Long> opsSubdag = new LinkedList();
+//            for( Operator op: subdag.getOperators())
+//            opsSubdag.add(op.getId());
+//
+//            Collections.sort(opsSubdag, subdagComparator);
+//
+//            subdagOpsList.put(subdagId, opsSubdag);
+//
+//
+//            System.out.println("\n\nfor subdag \n" + subdagId);
+//
+//            for(long opnext: opsSubdag)
+//                System.out.println("it should be " +opnext);
+//            LinkedList<Long> newsubdag=subdagOpsList.get(subdagId);
+//            for(long opnext: newsubdag)
+//                System.out.println(opnext);
+//            System.out.println("\n");
+//
+//
+//            iteratorPerSubdag.put(subdagId, opsSubdag.iterator());
+//            Long opc=iteratorPerSubdag.get(subdagId).next();
+//            subdagNext.put(subdagId, opc);
+//
+//            opsSubdag.clear();
+//        }
+
+
+
+        for( DAG subdag: graph.superDAG.subDAGList.values()) {
+
+            LinkedList<Long> opsSubdag = new LinkedList();
+
+            System.out.println("subdagid " + subdag.dagId);
+            Long subdagId = subdag.dagId;
+
+
+            //how did i change the op ids for each subdag so that they differ between different ones? check and use the proper ones
+            for (Long opnext : graph.superDAG.subdagToDagOpIds.get(subdag.dagId).keySet())//subdag.getOperators())
+                System.out.println("for " + opnext + ": " + graph.superDAG.subdagToDagOpIds.get(subdag.dagId).get(opnext));
+
+
+
+            for( Operator op: subdag.getOperators())
+                opsSubdag.add(graph.superDAG.subdagToDagOpIds.get(subdag.dagId).get(op.getId()));//op.getId());
+
+            Collections.sort(opsSubdag, subdagComparator);
+
+            subdagOpsList.put(subdagId, opsSubdag);
+
+
+            System.out.println("\n\nfor subdag \n" + subdagId);
+
+           // for(long opnext: opsSubdag)
+             //   System.out.println("it should be " +opnext);
+            LinkedList<Long> newsubdag=subdagOpsList.get(subdagId);
+            for(long opnext: newsubdag)
+                System.out.println(opnext);
+            System.out.println("\n");
+
+
+            iteratorPerSubdag.put(subdagId, subdagOpsList.get(subdagId).iterator());
+            Long opc=iteratorPerSubdag.get(subdagId).next();
+            subdagNext.put(subdagId, opc);
+
+           // opsSubdag.clear();
+        }
+
+        int opsAdded=0;
+
+
+        System.out.println("initially subdagNext \n");
+        for(long opnext: subdagNext.values())
+            System.out.println(opnext);
+        System.out.println("\n");
+
+
+        while(opsToSchedule.size() < graph.getOperators().size())
+        {
+            double maxSumrank = 0.0;
+            long nextToAdd = -1L;
+            for(long opnext: subdagNext.values())
+            {
+                if(sum_rank.get(opnext)>maxSumrank)
+                {
+                    nextToAdd = opnext;
+                    maxSumrank = sum_rank.get(opnext);
+
+                }
+            }
+
+            opsToSchedule.addLast(nextToAdd);
+            long dagToUse = graph.getOperator(nextToAdd).dagID;//or directly from row structure
+
+
+
+            System.out.println(opsAdded+". adds " + opsToSchedule.getLast()+ " " + nextToAdd + " of "+ dagToUse);
+
+           // long nextOpSubdag =  iteratorPerSubdag.get(dagToUse).next();//if(indexNext== subdagOpsList.get(dagToUse).size())
+                if(!iteratorPerSubdag.get(dagToUse).hasNext())
+                    subdagNext.remove(dagToUse);
+                else {
+                    subdagNext.put(dagToUse, iteratorPerSubdag.get(dagToUse).next());
+                    //int indexNext = subdagOpsList.get(dagToUse).indexOf(nextToAdd);
+            }
+
+
+            opsAdded++;
+            System.out.println("subdagNext have");
+            for(long op: subdagNext.values())
+                System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
+
+        }
+//
+
+        System.out.println("\n\n opstoschedule");
+
+        for(Long op: opsToSchedule)
+            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
+
+        //graph.superDAG.getSubDAG(i);
+
+       // Collections.sort(opsSorted, dagIdSlackComparator);
+
+//        Comparator<Long> SSComparator = new Comparator<Long>() {//dagsize, task slack
+//            @Override
+//            public int compare(Long op1, Long op2) {
+//                Long did1 = graph.getOperator(op1).dagID;
+//                Long did2 = graph.getOperator(op2).dagID;
+//
+//                Double d1= (double)graph.superDAG.getSubDAG(did1).getOperators().size();
+//                Double d2= (double)graph.superDAG.getSubDAG(did2).getOperators().size();
+//
+//                if (d1 < d2)
+//                    return -1;
+//                else if (d1 > d2)
+//                    return 1;
+//                else
+//                    return 0;
+//            }
+//        };
+
 //
 //                if(graph.superDAG.merged==true)
-//                        Collections.sort(opsSorted, SSComparator);
+ //                       Collections.sort(opsSorted, SSComparator);
+
+
+
+
+
+//        Collections.sort(opsSorted, LastComparator);
 
         System.out.println("sorted ops");
         for(Long op: opsSorted)

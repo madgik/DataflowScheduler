@@ -1,23 +1,21 @@
 import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
-import JsonOptiqueParse.JsonOptiqueParser;
 import Lattice.LatticeGenerator;
 import Scheduler.*;
-import Simulator.SimEnginge;
-import Tree.TreeGraphGenerator;
-import utils.*;
+import utils.Pair;
+import utils.RandomParameters;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static utils.Jaccard.computeJaccard;
 import static utils.SolutionSpaceUtils.computeDistance;
 
-public class Main {
+public class MainHHDS {
 
   static Boolean savePlot = true;
   static Boolean showPlot = true;
@@ -63,109 +61,109 @@ public class Main {
     ArrayList<Plan> plans = new ArrayList<Plan>();
     int pruning_k = 30;
 
-    if (false) {
-      // per sec
-      String perSecDir = createDir(pathToSave, "persec");
-      RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", pruning_k,
-        createDir(perSecDir, "LIGO"), "hh", "moheft", plans);
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", pruning_k,
-        createDir(perSecDir, "MONTAGE"), "hh", "moheft", plans);
-      runLattice(11, 3, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
-        createDir(perSecDir, "LATTICE11_3"), "hh", "moheft", plans);
-      //    runLattice(
-      //      5,
-      //      21,
-      //      "Knee",
-      //      pruning_k,
-      //      RuntimeConstants.OneHour_MS,
-      //      createDir(perSecDir, "LATTICE5_21"),
-      //      "hh",
-      //      "moheft",
-      //      plans);
-
-
-      //// per hour
-      String perHourDir = createDir(pathToSave, "perhour");
-      RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", pruning_k,
-        createDir(perHourDir, "LIGO"), "hh", "moheft", plans);
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", pruning_k,
-        createDir(perHourDir, "MONTAGE"), "hh", "moheft", plans);
-
-      runLattice(11, 3, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
-        createDir(perHourDir, "LATTICE11_3"), "hh", "moheft", plans);
-
-      runLattice(5, 21, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
-        createDir(perHourDir, "LATTICE5_21"), "hh", "moheft", plans);
-      //// pruning
-      ////per K
-      String perK = createDir(pathToSave, "perK");
-      String perKk10 = createDir(perK, "k10");
-      String perKk20 = createDir(perK, "k20");
-      String perKk30 = createDir(perK, "k30");
-
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 10,
-        createDir(perKk10, "LIGO"), "hh", "", plans);
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 20,
-        createDir(perKk20, "LIGO"), "hh", "", plans);
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 30,
-        createDir(perKk30, "LIGO"), "hh", "", plans);
-
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 10,
-        createDir(perKk10, "MONTAGE"), "hh", "", plans);
-
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 20,
-        createDir(perKk20, "MONTAGE"), "hh", "", plans);
-
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 30,
-        createDir(perKk30, "MONTAGE"), "hh", "", plans);
-
-      //// pruning method comp
-      String perpruning = createDir(pathToSave, "perpruning");
-      String perpruningMONTAGE = createDir(perpruning, "MONTAGE");
-      String perpruningLIGO = createDir(perpruning, "LIGO");
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 30,
-        perpruningMONTAGE, "der", "", plans);
-
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "crowding", 30,
-        perpruningMONTAGE, "crowd", "", plans);
-
-      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "valkanas", 30,
-        perpruningMONTAGE, "dom", "", plans);
-
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 30,
-        perpruningLIGO, "der", "",plans);
-
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "crowding", 30,
-        perpruningLIGO, "crowd", "", plans);
-
-      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "valkanas", 30,
-        perpruningLIGO, "dom", "", plans);
-    }
+//    if (false) {
+//      // per sec
+//      String perSecDir = createDir(pathToSave, "persec");
+//      RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", pruning_k,
+//        createDir(perSecDir, "LIGO"), "hh", "moheft", plans);
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", pruning_k,
+//        createDir(perSecDir, "MONTAGE"), "hh", "moheft", plans);
+//      runLattice(11, 3, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
+//        createDir(perSecDir, "LATTICE11_3"), "hh", "moheft", plans);
+//      //    runLattice(
+//      //      5,
+//      //      21,
+//      //      "Knee",
+//      //      pruning_k,
+//      //      RuntimeConstants.OneHour_MS,
+//      //      createDir(perSecDir, "LATTICE5_21"),
+//      //      "hh",
+//      //      "moheft",
+//      //      plans);
+//
+//
+//      //// per hour
+//      String perHourDir = createDir(pathToSave, "perhour");
+//      RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", pruning_k,
+//        createDir(perHourDir, "LIGO"), "hh", "moheft", plans);
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", pruning_k,
+//        createDir(perHourDir, "MONTAGE"), "hh", "moheft", plans);
+//
+//      runLattice(11, 3, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
+//        createDir(perHourDir, "LATTICE11_3"), "hh", "moheft", plans);
+//
+//      runLattice(5, 21, "Knee", pruning_k, RuntimeConstants.OneHour_MS,
+//        createDir(perHourDir, "LATTICE5_21"), "hh", "moheft", plans);
+//      //// pruning
+//      ////per K
+//      String perK = createDir(pathToSave, "perK");
+//      String perKk10 = createDir(perK, "k10");
+//      String perKk20 = createDir(perK, "k20");
+//      String perKk30 = createDir(perK, "k30");
+//
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 10,
+//        createDir(perKk10, "LIGO"), "hh", "", plans);
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 20,
+//        createDir(perKk20, "LIGO"), "hh", "", plans);
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 30,
+//        createDir(perKk30, "LIGO"), "hh", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 10,
+//        createDir(perKk10, "MONTAGE"), "hh", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 20,
+//        createDir(perKk20, "MONTAGE"), "hh", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 30,
+//        createDir(perKk30, "MONTAGE"), "hh", "", plans);
+//
+//      //// pruning method comp
+//      String perpruning = createDir(pathToSave, "perpruning");
+//      String perpruningMONTAGE = createDir(perpruning, "MONTAGE");
+//      String perpruningLIGO = createDir(perpruning, "LIGO");
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "Knee", 30,
+//        perpruningMONTAGE, "der", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "crowding", 30,
+//        perpruningMONTAGE, "crowd", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 100, 100, "valkanas", 30,
+//        perpruningMONTAGE, "dom", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "Knee", 30,
+//        perpruningLIGO, "der", "",plans);
+//
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "crowding", 30,
+//        perpruningLIGO, "crowd", "", plans);
+//
+//      runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 100, "valkanas", 30,
+//        perpruningLIGO, "dom", "", plans);
+//    }
 
     String hhExampleDir = createDir(pathToSave, "hhExample");
     RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
     runDax(runningAtServer, resourcePath + "LIGO.n.100.0.dax", 100, 300, "Knee", pruning_k,
-      createDir(hhExampleDir, "LIGO"), "twoHetero", "", plans);
+            createDir(hhExampleDir, "LIGO"), "twoHetero", "", plans);
     runDax(runningAtServer, resourcePath + "MONTAGE.n.100.0.dax", 1000, 300, "Knee", pruning_k,
-      createDir(hhExampleDir, "MONTAGE"), "twoHetero", "", plans);
+            createDir(hhExampleDir, "MONTAGE"), "twoHetero", "", plans);
 
 
     //TODO(chronis) homo vs hetero
 
-    }
+  }
 
   public static void runDAG(
-    DAG graph,
-    String paremetersToPrint,
-    String flowname,
-    String pruning_method,
-    int pruning_k,
-    String filepathForPlot,
-    String filenameForHHDSPlot,
-    String filenameForMOHEFTPlot,
-    ArrayList<Plan> plans) {
+          DAG graph,
+          String paremetersToPrint,
+          String flowname,
+          String pruning_method,
+          int pruning_k,
+          String filepathForPlot,
+          String filenameForHHDSPlot,
+          String filenameForMOHEFTPlot,
+          ArrayList<Plan> plans) {
 
     StringBuilder sbOut = new StringBuilder();
 
@@ -203,13 +201,13 @@ public class Main {
     /////////////////////////////////////////////
 
     sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges())
-      .append("\n");
+            .append("\n");
     sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
     sbOut
-      .append("pareto " + flowname + " time(sec) -> " + HHDSSchedules.optimizationTime_MS / 1000)
-      .append("\n");
+            .append("pareto " + flowname + " time(sec) -> " + HHDSSchedules.optimizationTime_MS / 1000)
+            .append("\n");
     sbOut.append("moheft " + flowname + " time(sec) -> " + MOHEFTSchedules.optimizationTime_MS / 1000)
-      .append("\n");
+            .append("\n");
 
     //    combined.computeSkyline(false);
 
@@ -259,18 +257,18 @@ public class Main {
         //            System.out.println((solutions.optimizationTime_MS/solutions.getFastestTime()));
         double diffF = HHDSSchedules.optimizationTime_MS / HHDSSchedules.getFastestTime();
         double diffS =
-          HHDSSchedules.optimizationTime_MS / HHDSSchedules.getSlowest().stats.runtime_MS;
+                HHDSSchedules.optimizationTime_MS / HHDSSchedules.getSlowest().stats.runtime_MS;
         double meanDiff = HHDSSchedules.optimizationTime_MS / (
-          (HHDSSchedules.getFastestTime() + HHDSSchedules.getSlowest().stats.runtime_MS) / 2);
+                (HHDSSchedules.getFastestTime() + HHDSSchedules.getSlowest().stats.runtime_MS) / 2);
 
         legendInfo.add(
-          new Pair<String, Double>("OverHeadFastest", (double) (Math.round(diffF * 10000) / 100)));
+                new Pair<String, Double>("OverHeadFastest", (double) (Math.round(diffF * 10000) / 100)));
         legendInfo.add(
-          new Pair<String, Double>("OverHeadSlowest", (double) (Math.round(diffS * 10000) / 100)));
+                new Pair<String, Double>("OverHeadSlowest", (double) (Math.round(diffS * 10000) / 100)));
         legendInfo
-          .add(new Pair<String, Double>("OverHeadAvg", (double) (Math.round(diffF * 10000) / 100)));
+                .add(new Pair<String, Double>("OverHeadAvg", (double) (Math.round(diffF * 10000) / 100)));
         legendInfo.add(new Pair<String, Double>("Moheft-pareto (+) OptTime MS",
-          (double) (MOHEFTSchedules.optimizationTime_MS - HHDSSchedules.optimizationTime_MS)));
+                (double) (MOHEFTSchedules.optimizationTime_MS - HHDSSchedules.optimizationTime_MS)));
       }
 
 
@@ -281,9 +279,9 @@ public class Main {
     double ccr = graph.computeCCR();
 
     String filename =
-      flowname + "___" + paremetersToPrint.replace(" ", "_") + "_sumDataGB_" + (
-        graph.sumdata_B / 1073741824) + "__" + (new java.util.Date()).toString()
-        .replace(" ", "_");
+            flowname + "___" + paremetersToPrint.replace(" ", "_") + "_sumDataGB_" + (
+                    graph.sumdata_B / 1073741824) + "__" + (new java.util.Date()).toString()
+                    .replace(" ", "_");
 
 
     legendInfo.add(new Pair<String, Double>("data/comp (ccr)", ccr));
@@ -312,8 +310,8 @@ public class Main {
       }
       for (Plan plan : HHDSSchedules){
         out.println(plan.stats.runtime_MS + " " +
-                    plan.stats.money + " "+
-                    plan.stats.meanContainersUsed);
+                plan.stats.money + " "+
+                plan.stats.meanContainersUsed);
       }
       out.close();
 
@@ -328,8 +326,8 @@ public class Main {
       }
       for (Plan plan : MOHEFTSchedules){
         out.println(plan.stats.runtime_MS + " " +
-          plan.stats.money + " "+
-          plan.stats.meanContainersUsed);
+                plan.stats.money + " "+
+                plan.stats.meanContainersUsed);
       }
       out.close();
     }
@@ -388,19 +386,19 @@ public class Main {
 
   // Locate .dax file and run it
   private static DAG runDax(
-    boolean jar,
-    String file,
-    int mulTime,
-    int mulData,
-    String pruning,
-    int pruning_k,
-    String filepathForPlot,
-    String filenameForHHDSPlot,
-    String filenameForMOHEFTPlot,
-    ArrayList<Plan> plans) {
+          boolean jar,
+          String file,
+          int mulTime,
+          int mulData,
+          String pruning,
+          int pruning_k,
+          String filepathForPlot,
+          String filenameForHHDSPlot,
+          String filenameForMOHEFTPlot,
+          ArrayList<Plan> plans) {
 
     System.out.println("Running " + file + " mt " + mulTime + " md: " + mulData + " quantumSize: "
-      + RuntimeConstants.quantum_MS + " Pareto, Moheft,"+" saving at: "+filepathForPlot);
+            + RuntimeConstants.quantum_MS + " Pareto, Moheft,"+" saving at: "+filepathForPlot);
 
     PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
 
@@ -409,7 +407,7 @@ public class Main {
       if (jar) {
         graph = parser.parseDax(file, 0L);
       } else {
-        graph = parser.parseDax(Main.class.getResource(file).getFile(), 0L);
+        graph = parser.parseDax(MainHHDS.class.getResource(file).getFile(), 0L);
       }
 
     } catch (Exception e) {
@@ -425,29 +423,29 @@ public class Main {
     String messageToPrint = "mulT: " + mulTime + " mulD: " + mulData;
 
     runDAG(graph,
-           messageToPrint,
-           dataflow,
-           pruning,
-           pruning_k,
-           filepathForPlot,
-           filenameForHHDSPlot,
-           filenameForMOHEFTPlot,
-           plans);
+            messageToPrint,
+            dataflow,
+            pruning,
+            pruning_k,
+            filepathForPlot,
+            filenameForHHDSPlot,
+            filenameForMOHEFTPlot,
+            plans);
 
     return graph;
   }
 
   // Generate lattice and execute it
   private static void runLattice(
-    int d,
-    int b,
-    String pruning_method,
-    int pruning_k,
-    long quantumSizeForGeneration,
-    String pathForResults,
-    String filenameForHHDSPlot,
-    String filenameForMOHEFTPlot,
-    ArrayList<Plan> plans) {
+          int d,
+          int b,
+          String pruning_method,
+          int pruning_k,
+          long quantumSizeForGeneration,
+          String pathForResults,
+          String filenameForHHDSPlot,
+          String filenameForMOHEFTPlot,
+          ArrayList<Plan> plans) {
 
     System.out.println("Running Lattice d " + d + " b: " + b + " Pareto, Moheft");
 
@@ -465,7 +463,7 @@ public class Main {
     String messageToPrint = "d: " + d + " b: " + b;
 
     runDAG(graph, messageToPrint, "Lattice", pruning_method,
-           pruning_k, pathForResults, filenameForHHDSPlot, filenameForMOHEFTPlot, plans);
+            pruning_k, pathForResults, filenameForHHDSPlot, filenameForMOHEFTPlot, plans);
 
   }
 
@@ -1022,7 +1020,7 @@ public class Main {
 //  }
 
   private static void addDistanceToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare,
-    ArrayList<Pair<String, Double>> legendInfo) {
+                                          ArrayList<Pair<String, Double>> legendInfo) {
 
     double disM = calculateRangeDistance(solutionsM);
     double disP = calculateRangeDistance(paretoToCompare);
@@ -1048,14 +1046,14 @@ public class Main {
     sum = 0.0;
     for (int i = 0; i < space.size() - 1; ++i) {
       sum += (Math.abs(calculateEuclidean(space.results.get(i + 1), space.results.get(i)) - avg))
-        / range;
+              / range;
     }
 
     return sum;
   }
 
   private static void addImprovementsToLegend(SolutionSpace solutionsM,
-    SolutionSpace paretoToCompare, ArrayList<Pair<String, Double>> legendInfo) {
+                                              SolutionSpace paretoToCompare, ArrayList<Pair<String, Double>> legendInfo) {
     double maxdist = 0.0;
     double mindist = Double.MAX_VALUE;
     Plan tplan = null;
@@ -1131,9 +1129,9 @@ public class Main {
     avgMKnee = avgMKnee / solutionsM.size() - 2;
 
     legendInfo.add(new Pair<String, Double>("FastestImprovement (>1)",
-      (double) (solutionsM.getFastestTime() / paretoToCompare.getFastestTime())));
+            (double) (solutionsM.getFastestTime() / paretoToCompare.getFastestTime())));
     legendInfo.add(new Pair<String, Double>("CheapestImprovement (>1)",
-      (double) (solutionsM.getMinCost() / paretoToCompare.getMinCost())));
+            (double) (solutionsM.getMinCost() / paretoToCompare.getMinCost())));
 
     //        legendInfo.add(new Pair<>("maxMoneyImprov (+)",maxdistMoney));
     //        legendInfo.add(new Pair<>("maxTimeImprov (+)",maxdistTime));

@@ -169,8 +169,8 @@ public class DAG {
         return ccr;
     }
 
-    public DAG add(DAG g){
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+    public DAG add(DAG g, HashMap<Long,Long> OldIdToNewId){
+       // HashMap<Long,Long> OldIdToNewId = new HashMap<>();
 
         Long oldid,newid;
         for(Operator op:g.getOperators()){
@@ -285,9 +285,9 @@ public class DAG {
 
     }
 
-    public DAG addEnd(DAG g) {
+    public DAG addEnd(DAG g, HashMap<Long,Long>  OldIdToNewId) {
         long endPrev = g.nextId-1;
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+        //HashMap<Long,Long> OldIdToNewId = new HashMap<>();
 
         Long oldid,newid;
         for(Operator op:g.getOperators()){

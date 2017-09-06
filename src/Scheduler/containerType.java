@@ -103,7 +103,7 @@ public enum containerType {//ccus as a metric for cpu and price normalized based
         E( 7.05/0.92,    (0.57),      "E"),//m2.xlarge    //2.6
        ///////////// //    F( 8.78,    0.68,   "F"),//c1.xlarge  //0.35
         G( 15.9/0.92,   (1.34),   "G"),//m2.2xlarge   //2.6
-        H( 27.25/0.92,   (2.68),   "H");//m2.xlarge    //2.6
+        H( 27.25/0.92,   (2.68),   "H");//m2.4xlarge    //2.6
 
 
 
