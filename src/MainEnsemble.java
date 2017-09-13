@@ -32,7 +32,7 @@ public class MainEnsemble {
         pathOut ="ensemblesExample/";// "./ensembles/LigoEnsemble4MixedSizes/";//userPref
 
 
-     // createDir(pathPlot, "sizeBased");
+      createDir(pathPlot, "sizeBased");
 
       //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
