@@ -1,3 +1,20 @@
+
+reset
+set terminal eps
+set key font ",15" height 3
+set xtics out font ",15"
+set ytics font ",15" 
+set xlabel font ",15" 
+set ylabel font ",15" offset -1
+set label font ",4"
+set offset 0, 0.05, graph 0.25, 0.0
+set xrange [0:*]
+set yrange [0:*]
+set pointsize 0.8
+
+
+
+
 set output 'hhExampleLigo.eps'
 set xlabel 'Cost ($)'
 set ylabel 'Execution Time (min)'

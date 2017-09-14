@@ -311,7 +311,7 @@ public class DAG {
     }
 
 
-    public double computeCrPathLength(containerType contType) {
+    public double computeCrPathLength(containerType contTypes[]) {
 
 
         double crPathLength = 0.0;
@@ -321,11 +321,25 @@ public class DAG {
 
         HashMap<Long, Double> rank = new HashMap<>();
 
+
+//        double wcur=0.0;
+//        for(containerType contType: contTypes)//contType.values();
+//            wcur+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
+//        int types= containerType.values().length;
+//        double w=wcur/(double)types;//average execution cost for operator op
+//
+
+        int types= containerType.values().length;
+
         for (Long opId : topOrder.iterator()) {
+
             double maxRankParent=0.0;
             for (Edge inLink: this.getParents(opId))
                 maxRankParent = Math.max(maxRankParent, rank.get(inLink.from));
-            double w = this.getOperator(opId).getRunTime_MS()/contType.container_CPU;
+            double w = 0.0;
+            for(containerType contType: contTypes)
+                w+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU;
+            w=w/(double)types;
             Double opRank=w+maxRankParent;
             rank.put(opId, opRank);
 

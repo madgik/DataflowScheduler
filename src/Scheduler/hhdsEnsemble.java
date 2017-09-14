@@ -22,6 +22,8 @@ public class hhdsEnsemble implements Scheduler {
     public ArrayList<DAG> ensemble;
 
 
+    public String rankingMethod = "dagMerge";//commonEntry:default, perDag, dagMerge
+
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
@@ -35,10 +37,12 @@ public class hhdsEnsemble implements Scheduler {
     public boolean backfillingUpgrade = false;
     public boolean migrationEnabled=false;
 
-    public boolean heteroStartEnabled = false;
-    public boolean HEFT = false;
+  //  public boolean heteroStartEnabled = false;
+   // public boolean HEFT = false;
     public boolean pruneEnabled = false;
     public String PruneMethod = "";
+
+    public boolean homotohetero = false;
 
     private HashMap<Long, Integer> opLevel;
 
@@ -87,7 +91,7 @@ public class hhdsEnsemble implements Scheduler {
 //
 //        }
 
-        if (!heteroStartEnabled){
+     //   if (!heteroStartEnabled){
 
             for (containerType cType : containerType.values()) {
 
@@ -126,7 +130,7 @@ public class hhdsEnsemble implements Scheduler {
                 }
 
             }
-        }
+     //   }
 
         skylinePlans.addAll(skylinePlans_DEC.results);
         skylinePlans.addAll(skylinePlans_INC.results);
@@ -134,39 +138,43 @@ public class hhdsEnsemble implements Scheduler {
 
 
         paretoPlans.addAll(skylinePlans.results);
-//
-//        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
-//
-//        mpinfo.add("pareto",paretoPlans.results);
-//
-//        long homoEnd = System.currentTimeMillis();
-//        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
-//
-//        skylinePlans.clear();
-//
-//        for(Plan pp: paretoPlans.results) {
-//            if (pp.vmUpgrading.equals("increasing/decreasing")) {
-//
-//                pp.vmUpgrading = "increasing";
-//                skylinePlans.add(pp);
-//
-//                Plan newpp = new Plan(pp);
-//                newpp.vmUpgrading="decreasing";
-//                skylinePlans.add(newpp);
-//            } else {
-//                skylinePlans.add(pp);
-//            }
-//        }
-//
-//        paretoPlans.clear();
 
 
-//        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+        if(homotohetero) {
 
-//        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
 
-//        paretoPlans.addAll(skylinePlans);
+        mpinfo.add("pareto",paretoPlans.results);
 
+        long homoEnd = System.currentTimeMillis();
+        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+
+        skylinePlans.clear();
+
+        for(Plan pp: paretoPlans.results) {
+            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+
+                pp.vmUpgrading = "increasing";
+                skylinePlans.add(pp);
+
+                Plan newpp = new Plan(pp);
+                newpp.vmUpgrading="decreasing";
+                skylinePlans.add(newpp);
+            } else {
+                skylinePlans.add(pp);
+            }
+        }
+
+        paretoPlans.clear();
+
+
+        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+
+        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+
+        paretoPlans.addAll(skylinePlans);
+
+        }
         space.addAll(paretoPlans);
 
         //        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
@@ -959,13 +967,10 @@ public class hhdsEnsemble implements Scheduler {
         final HashMap<Long, Double> t_rank = new HashMap<>();
         final HashMap<Long, Double> w_mean = new HashMap<>();
         final HashMap<Long, Double> sum_rank = new HashMap<>();
-        final HashMap<Long, Double> slacktime = new HashMap<>();
+       // final HashMap<Long, Double> slacktime = new HashMap<>();
         final  LinkedList<Long> opsSumRankSorted = new LinkedList<>();
         final LinkedList<Long> opsBySlack = new LinkedList<>();
 ///   private HashMap<Long, Double> opSlack = new HashMap<>();
-
-
-
 
         final TopologicalSorting topOrder = new TopologicalSorting(graph);
 
@@ -999,7 +1004,7 @@ public class hhdsEnsemble implements Scheduler {
         }
 
 
-        Double crPathLength=0.0;
+        //Double crPathLength=0.0;
         for (Long opId : topOrder.iteratorReverse()) {
             double maxRankChild=0.0;
             for (Edge childEdge: graph.getChildren(opId)) {
@@ -1039,15 +1044,15 @@ public class hhdsEnsemble implements Scheduler {
             t_rank.put(opId, (w+maxRankParent));
             Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
             sum_rank.put(opId, opRank);
-            crPathLength =Math.max(crPathLength, opRank);
+          //  crPathLength =Math.max(crPathLength, opRank);
         }
 
         for (Long op : topOrder.iterator()) {
             opsSumRankSorted.add(op);
             opsBySlack.add(op);
             Double opRank=sum_rank.get(op);
-            double opSlacktime = crPathLength - opRank;
-            slacktime.put(op, opSlacktime);
+          //  double opSlacktime = crPathLength - opRank;
+          //  slacktime.put(op, opSlacktime);
         }
 
         final HashMap<Long, Double> rankU = new HashMap<>();
@@ -1079,23 +1084,23 @@ public class hhdsEnsemble implements Scheduler {
 
 
 
-        Comparator<Long> rankComparator = new Comparator<Long>() {
-            @Override
-            public int compare(Long op1, Long op2) {
-                double r1 = rankU.get(op1);
-                double r2 = rankU.get(op2);
-                if (r1 > r2)
-                    return -1;
-                else if (r1 < r2)
-                    return 1;
-                else
-                    return 0;
-            }
-        };
+//        Comparator<Long> rankComparator = new Comparator<Long>() {
+//            @Override
+//            public int compare(Long op1, Long op2) {
+//                double r1 = rankU.get(op1);
+//                double r2 = rankU.get(op2);
+//                if (r1 > r2)
+//                    return -1;
+//                else if (r1 < r2)
+//                    return 1;
+//                else
+//                    return 0;
+//            }
+//        };
 
     //    Collections.sort(opsSorted, rankComparator);
 
-        Comparator<Long> sumrankComparator = new Comparator<Long>() {
+        Comparator<Long> sumrankComparator = new Comparator<Long>() {//sumrank for tasks of a single dag (superdag based) instead the opposite order for crpathlength-sumrank
             @Override
             public int compare(Long op1, Long op2) {
                 double r1 = sum_rank.get(op1);
@@ -1140,111 +1145,122 @@ public class hhdsEnsemble implements Scheduler {
             }
         };
 
+        //default: commonentry which has by slack and level
+        if(rankingMethod.equals("perDag"))
+            Collections.sort(opsSorted, dagIdComparator);
 
-        Collections.sort(opsSorted, dagIdComparator);
 
 
+        if(rankingMethod.equals("dagMerge")) {
 
-        Comparator<Long> subdagComparator = new Comparator<Long>() {
-            @Override
-            public int compare(Long op1, Long op2) {
-                Integer r1 = opsSorted.indexOf(op1);
-                Integer r2 = opsSorted.indexOf(op2);
-                if (r1 < r2)
-                    return -1;
-                else if (r1 > r2)
-                    return 1;
-                else
-                    return 0;
+            Comparator<Long> subdagComparator = new Comparator<Long>() {
+                @Override
+                public int compare(Long op1, Long op2) {
+                    Integer r1 = opsSorted.indexOf(op1);
+                    Integer r2 = opsSorted.indexOf(op2);
+                    if (r1 < r2)
+                        return -1;
+                    else if (r1 > r2)
+                        return 1;
+                    else
+                        return 0;
+                }
+            };
+
+            LinkedList<Long> opsToSchedule = new LinkedList<>();
+            HashMap<Long, LinkedList<Long>> subdagOpsList = new HashMap<>();
+            HashMap<Long, Long> subdagNext = new HashMap<>();
+            HashMap<Long, ListIterator<Long>> iteratorPerSubdag = new HashMap<>();
+
+            for (DAG subdag : graph.superDAG.subDAGList.values()) {
+                LinkedList<Long> opsSubdag = new LinkedList();
+                //  System.out.println("subdagid " + subdag.dagId);
+                Long subdagId = subdag.dagId;
+                for (Operator op : subdag.getOperators())
+                    opsSubdag.add(graph.superDAG.subdagToDagOpIds.get(subdag.dagId).get(op.getId()));//op.getId());
+                Collections.sort(opsSubdag, subdagComparator);
+                subdagOpsList.put(subdagId, opsSubdag);
+                iteratorPerSubdag.put(subdagId, subdagOpsList.get(subdagId).listIterator());
+                Long opc = iteratorPerSubdag.get(subdagId).next();
+                subdagNext.put(subdagId, opc);
             }
-        };
+
+       //     int opsAdded = 0;
+
+//        System.out.println("initially subdagNext \n");
+//        for(long opnext: subdagNext.values())
+//            System.out.println(opnext);
+//        System.out.println("\n");
+
+            while (opsToSchedule.size() < graph.getOperators().size()) {
+                double maxSumrank = 0.0;
+                double minSlack = Double.MAX_VALUE;
+                long nextToAdd = -1L;
+                for (long opnext : subdagNext.values()) {
+
+                    double crPathLength = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeCrPathLength(containerType.values());
+//                System.out.println("looks for "+ nextToAdd + " : " + opnext);
+
+                    double c = crPathLength - sum_rank.get(opnext);//only slack based
+                  //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+                    if (c <= minSlack) {
+                        nextToAdd = opnext;
+                        minSlack = c;
+
+                    }
+
+                }
+
+                opsToSchedule.addLast(nextToAdd);
+
+//            System.out.println(opsAdded+". adds " + opsToSchedule.getLast()+ " " + nextToAdd + " of ");
+
+                long dagToUse = graph.getOperator(nextToAdd).dagID;//or directly from row structure
+
+//            System.out.println(opsAdded+". adds " + opsToSchedule.getLast()+ " " + nextToAdd + " of "+ dagToUse);
+
+                if (!iteratorPerSubdag.get(dagToUse).hasNext())
+                    subdagNext.remove(dagToUse);
+                else {
+                    subdagNext.put(dagToUse, iteratorPerSubdag.get(dagToUse).next());
+                    //int indexNext = subdagOpsList.get(dagToUse).indexOf(nextToAdd);
+                }
 
 
-        LinkedList<Long> opsToSchedule = new LinkedList<>();
+            //    opsAdded++;
+//            System.out.println("subdagNext have");
+//            for(long op: subdagNext.values())
+//                System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
 
-        HashMap <Long, LinkedList<Long>> subdagOpsList = new HashMap<>();
-        HashMap <Long, Long> subdagNext = new HashMap<>();
-        HashMap <Long, ListIterator<Long>> iteratorPerSubdag = new HashMap<>();
+            }
+//
 
+//        System.out.println("\n\n opstoschedule");
 
+            opsSorted.clear();
+            opsSorted.addAll(opsToSchedule);
 
-        for( DAG subdag: graph.superDAG.subDAGList.values()) {
-
-            LinkedList<Long> opsSubdag = new LinkedList();
-
-            System.out.println("subdagid " + subdag.dagId);
-            Long subdagId = subdag.dagId;
-
-
-            //how did i change the op ids for each subdag so that they differ between different ones? check and use the proper ones
-            for (Long opnext : graph.superDAG.subdagToDagOpIds.get(subdag.dagId).keySet())//subdag.getOperators())
-                System.out.println("for " + opnext + ": " + graph.superDAG.subdagToDagOpIds.get(subdag.dagId).get(opnext));
-
-
-            for( Operator op: subdag.getOperators())
-                opsSubdag.add(graph.superDAG.subdagToDagOpIds.get(subdag.dagId).get(op.getId()));//op.getId());
-
-            Collections.sort(opsSubdag, subdagComparator);
-
-            subdagOpsList.put(subdagId, opsSubdag);
-
-
-            System.out.println("\n\nfor subdag \n" + subdagId);
-
-            LinkedList<Long> newsubdag=subdagOpsList.get(subdagId);
-            for(long opnext: newsubdag)
-                System.out.println(opnext);
-            System.out.println("\n");
-
-
-            iteratorPerSubdag.put(subdagId, subdagOpsList.get(subdagId).listIterator());
-            Long opc=iteratorPerSubdag.get(subdagId).next();
-            subdagNext.put(subdagId, opc);
 
         }
+//        for(Long op: opsToSchedule)
+//            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
 
-        int opsAdded=0;
+//        System.out.println("sorted ops");
+        for(Long op: opsSorted)
+            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
+
+    }
 
 
-        System.out.println("initially subdagNext \n");
-        for(long opnext: subdagNext.values())
-            System.out.println(opnext);
-        System.out.println("\n");
 
 
-        while(opsToSchedule.size() < graph.getOperators().size())
-        {
-            double maxSumrank = 0.0;
-            double minSlack = Double.MAX_VALUE;
-            long nextToAdd = -1L;
-            for(long opnext: subdagNext.values())
-            {
 
-                System.out.println("looks for "+ nextToAdd + " : " + opnext);
-//                if(sum_rank.get(opnext)>maxSumrank)
+    //                if(sum_rank.get(opnext)>maxSumrank)
 //                {
 //                    nextToAdd = opnext;
 //                    maxSumrank = sum_rank.get(opnext);
 //
 //                }
-
-//                if(crPathLength - sum_rank.get(opnext)<minSlack)//TODO: change crPathLength per subdag
-//                {
-//                    nextToAdd = opnext;
-//                    minSlack = crPathLength - sum_rank.get(opnext);
-//
-//                }
-
-
-                                double c=(sum_rank.get(opnext)/crPathLength)*(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
-
-
-                if(c<minSlack)
-                {
-                    nextToAdd = opnext;
-                    minSlack = c;
-
-                }
 
 
 //                double c=(crPathLength-sum_rank.get(opnext))/(graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size()/(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1));
@@ -1269,101 +1285,12 @@ public class hhdsEnsemble implements Scheduler {
 //                }
 
 //                double c=(sum_rank.get(opnext))*(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
-//                if( c <= minSlack)//TODO: change crPathLength per subdag
+//                if( c <= minSlack)
 //                {
 //                    nextToAdd = opnext;
 //                    minSlack =c;
 //
 //                }
-
-
-            }
-
-            opsToSchedule.addLast(nextToAdd);
-
-//            System.out.println(opsAdded+". adds " + opsToSchedule.getLast()+ " " + nextToAdd + " of ");
-
-            long dagToUse = graph.getOperator(nextToAdd).dagID;//or directly from row structure
-
-
-
-            System.out.println(opsAdded+". adds " + opsToSchedule.getLast()+ " " + nextToAdd + " of "+ dagToUse);
-
-           // long nextOpSubdag =  iteratorPerSubdag.get(dagToUse).next();//if(indexNext== subdagOpsList.get(dagToUse).size())
-                if(!iteratorPerSubdag.get(dagToUse).hasNext())
-                    subdagNext.remove(dagToUse);
-                else {
-                    subdagNext.put(dagToUse, iteratorPerSubdag.get(dagToUse).next());
-                    //int indexNext = subdagOpsList.get(dagToUse).indexOf(nextToAdd);
-            }
-
-
-            opsAdded++;
-            System.out.println("subdagNext have");
-            for(long op: subdagNext.values())
-                System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
-
-        }
-//
-
-        System.out.println("\n\n opstoschedule");
-
-        opsSorted.clear();
-        opsSorted.addAll(opsToSchedule);
-        for(Long op: opsToSchedule)
-            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
-
-        System.out.println("sorted ops");
-        for(Long op: opsSorted)
-            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
-
-
-
-
-
-//        System.out.println("starts");
-//        class opRankFields {
-//            long op;
-//            double sumrank;
-//            int level;
-//            long dagId;
-//
-//
-//            //constructor
-//            public opRankFields(long id, double opSumRank, int oplevel, long opDagId) {
-//                op = id;
-//                sumrank = opSumRank;
-//                level = oplevel;
-//                dagId = opDagId;
-//            }
-//        }
-//        ArrayList<opRankFields> opRanking = new ArrayList();
-//
-//        for( long idOp: topOrder.iterator()) {//
-//            Long dagOp = graph.getOperator(idOp).dagID;
-//            int levelOp = opLevel.get(idOp);
-//            double sumRankOp = sum_rank.get(idOp);
-//            opRanking.add(new opRankFields(idOp, sumRankOp, levelOp, dagOp));
-//        }
-//        Comparator<opRankFields> rowComparator = new Comparator<opRankFields>() {//dagsize, task slack
-//            @Override
-//            public int compare(opRankFields op1, opRankFields op2) {
-//                if(Long.compare(op1.dagId,op2.dagId)==0) {
-//                    if (Integer.compare(op1.level, op2.level)==0)//TODO: add precision error
-//                    return Double.compare(op1.sumrank, op2.sumrank);
-//                     else
-//                        return Integer.compare(op1.level, op2.level);
-//                }
-//                else
-//                    return Double.compare(op1.sumrank, op2.sumrank);
-//            }
-//        };
-//        for(opRankFields opField: opRanking)
-//             System.out.println(opField.op  + " " +  opField.dagId  + " " +  opField.level  + " " + opField.sumrank);
-//        System.out.println("finishes");
-
-    }
-
 
 
     public HashMap<Long, Long> computeLST(Plan plan) {
