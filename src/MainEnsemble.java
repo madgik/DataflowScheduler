@@ -124,14 +124,14 @@ public class MainEnsemble {
                 String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2,0);
                 Integer sizesMontage[] ={25, 25, 25};//{50, 50, 50};//{100, 100, 100};//
-                Integer sizesLigo[] ={50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
+                Integer sizesLigo[] ={25, 25, 25};//{50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
                 Integer size = 100;
                 if(i%2==1) {
                     appName = "MONTAGE";//"LIGO";//
                     size = sizesMontage[randomSize];
                 }
                 else {
-                    appName = "LIGO"; //"MONTAGE";//
+                    appName = "MONTAGE";//"LIGO"; //
                     size = sizesLigo[randomSize];
                 }
 

@@ -1201,13 +1201,28 @@ public class hhdsEnsemble implements Scheduler {
                     double crPathLength = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeCrPathLength(containerType.values());
 //                System.out.println("looks for "+ nextToAdd + " : " + opnext);
 
-                    double c = crPathLength - sum_rank.get(opnext);//only slack based
-                  //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
-                    if (c <= minSlack) {
-                        nextToAdd = opnext;
-                        minSlack = c;
+                    double tasksScheduledPerc =(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+                    double taskWeight = w_mean.get(opnext)/crPathLength;
+                    double taskSlack = crPathLength - sum_rank.get(opnext);//only slack based
+                   // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
+//add level/levels per subdag?
+                       double c = crPathLength - sum_rank.get(opnext);//only slack based
 
-                    }
+                   // double c =w_mean.get(opnext)*taskSlack/crPathLength*tasksScheduledPerc;
+                  //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+//                    if (c <= minSlack) {
+//                        nextToAdd = opnext;
+//                        minSlack = c;
+//
+//                    }
+
+                                    if(sum_rank.get(opnext)>=maxSumrank)
+                {
+                    //if equal select hte one with the smallest level
+                    nextToAdd = opnext;
+                    maxSumrank = sum_rank.get(opnext);
+
+                }
 
                 }
 
