@@ -28,11 +28,12 @@ public class MainEnsemble {
 
     public static void main(String[] args) {
 
-        pathPlot = "ensemblesExample/";//"./ensembles/LigoEnsemble4MixedSizes/";//sizeBased
-        pathOut ="ensemblesExample/";// "./ensembles/LigoEnsemble4MixedSizes/";//userPref
+        String dir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/slackByDag/";
+        pathPlot = dir;//"./ensembles/LigoEnsemble4MixedSizes/";//sizeBased
+        pathOut = dir;// "./ensembles/LigoEnsemble4MixedSizes/";//userPref
 
 
-      createDir(pathPlot, "sizeBased");
+      createDir(pathPlot, dir);
 
       //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 

@@ -22,12 +22,12 @@ public class hhdsEnsemble implements Scheduler {
     public ArrayList<DAG> ensemble;
 
 
-    public String rankingMethod = "dagMerge";//commonEntry:default, perDag, dagMerge
+    public String rankingMethod = "commonEntry";//"dagMerge";//commonEntry:default, perDag, dagMerge
 
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 10;
+    public int pruneSkylineSize = 30;
 
 
 
@@ -37,12 +37,12 @@ public class hhdsEnsemble implements Scheduler {
     public boolean backfillingUpgrade = false;
     public boolean migrationEnabled=false;
 
-  //  public boolean heteroStartEnabled = false;
-   // public boolean HEFT = false;
+    public boolean heteroStartEnabled = false;
+    public boolean HEFT = false;
     public boolean pruneEnabled = false;
     public String PruneMethod = "";
 
-    public boolean homotohetero = false;
+    public boolean homotohetero = true;
 
     private HashMap<Long, Integer> opLevel;
 
@@ -91,7 +91,7 @@ public class hhdsEnsemble implements Scheduler {
 //
 //        }
 
-     //   if (!heteroStartEnabled){
+        if (!heteroStartEnabled){
 
             for (containerType cType : containerType.values()) {
 
@@ -130,7 +130,7 @@ public class hhdsEnsemble implements Scheduler {
                 }
 
             }
-     //   }
+        }
 
         skylinePlans.addAll(skylinePlans_DEC.results);
         skylinePlans.addAll(skylinePlans_INC.results);
@@ -581,21 +581,6 @@ public class hhdsEnsemble implements Scheduler {
         //  plan.printAssignments();
         return plan;
     }
-
-//    public long nextOperator(HashSet<Long> readyOps) {
-//
-//        long minRankOpID = 0;
-//        Integer minRank = Integer.MAX_VALUE;
-//        for (Long opId : readyOps) {
-//            Integer opRank = opsSorted.indexOf(opId);
-//            if (opRank < minRank) {
-//                minRankOpID = opId;
-//                minRank = opRank;
-//            }
-//        }
-//
-//        return minRankOpID;
-//    }
 
     public long nextOperator(HashSet<Long> readyOps) {
 
@@ -1206,23 +1191,24 @@ public class hhdsEnsemble implements Scheduler {
                     double taskSlack = crPathLength - sum_rank.get(opnext);//only slack based
                    // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
 //add level/levels per subdag?
-                       double c = crPathLength - sum_rank.get(opnext);//only slack based
 
                    // double c =w_mean.get(opnext)*taskSlack/crPathLength*tasksScheduledPerc;
                   //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
-//                    if (c <= minSlack) {
-//                        nextToAdd = opnext;
-//                        minSlack = c;
+
+                    double c = crPathLength - sum_rank.get(opnext);//only slack based
+                    if (c <= minSlack) {
+                        nextToAdd = opnext;
+                        minSlack = c;
+
+                    }
+
+//                if(sum_rank.get(opnext)>=maxSumrank)
+//                {
+//                    //if equal select hte one with the smallest level
+//                    nextToAdd = opnext;
+//                    maxSumrank = sum_rank.get(opnext);
 //
-//                    }
-
-                                    if(sum_rank.get(opnext)>=maxSumrank)
-                {
-                    //if equal select hte one with the smallest level
-                    nextToAdd = opnext;
-                    maxSumrank = sum_rank.get(opnext);
-
-                }
+//                }
 
                 }
 
