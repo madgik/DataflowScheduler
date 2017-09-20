@@ -27,7 +27,7 @@ public class hhdsEnsemble implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 30;
+    public int pruneSkylineSize = 10;
 
 
 
@@ -42,7 +42,7 @@ public class hhdsEnsemble implements Scheduler {
     public boolean pruneEnabled = false;
     public String PruneMethod = "";
 
-    public boolean homotohetero = true;
+    public boolean homotohetero = false;
 
     private HashMap<Long, Integer> opLevel;
 
@@ -59,8 +59,8 @@ public class hhdsEnsemble implements Scheduler {
     @Override
     public SolutionSpace schedule() {
 
-      //  for(DAG graph:ensemble)
-       // {
+        //  for(DAG graph:ensemble)
+        // {
         long startCPU_MS = System.currentTimeMillis();
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
         SolutionSpace skylinePlans = new SolutionSpace();
@@ -100,32 +100,32 @@ public class hhdsEnsemble implements Scheduler {
                     skylinePlans.add(onlyOneContainer());
                 } else {
 
-                        ////INC DEC/////
+                    ////INC DEC/////
 //                    System.out.println("calc "+cType.name);
-                        if (cType.equals(containerType.getLargest())) {
-                            ArrayList<containerType> cTypes = new ArrayList<>();
-                            cTypes.add(cType);
+                    if (cType.equals(containerType.getLargest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
 
-                            skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
-                            //                    plotPlans("dec",skylinePlans);
-                            //                    System.out.println("s1 "+skylinePlans.size());
+                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
+                        //                    plotPlans("dec",skylinePlans);
+                        //                    System.out.println("s1 "+skylinePlans.size());
 
-                        } else if (cType.equals(containerType.getSmallest())) {
-                            ArrayList<containerType> cTypes = new ArrayList<>();
-                            cTypes.add(cType);
+                    } else if (cType.equals(containerType.getSmallest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
 
-                            skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
-                            //                    plotPlans("inc",skylinePlans);
-                            //                    System.out.println("s2 "+skylinePlans.size());
-                        } else {
-                            ArrayList<containerType> cTypes = new ArrayList<>();
-                            cTypes.add(cType);
+                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+                        //                    plotPlans("inc",skylinePlans);
+                        //                    System.out.println("s2 "+skylinePlans.size());
+                    } else {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
 
 
-                            skylinePlans_INCDEC
-                                    .addAll(this.createAssignments("increasing/decreasing", cTypes));
+                        skylinePlans_INCDEC
+                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
 
-                        }
+                    }
 
                 }
 
@@ -142,37 +142,37 @@ public class hhdsEnsemble implements Scheduler {
 
         if(homotohetero) {
 
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
+            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
 
-        mpinfo.add("pareto",paretoPlans.results);
+            mpinfo.add("pareto",paretoPlans.results);
 
-        long homoEnd = System.currentTimeMillis();
-        System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+            long homoEnd = System.currentTimeMillis();
+            System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
 
-        skylinePlans.clear();
+            skylinePlans.clear();
 
-        for(Plan pp: paretoPlans.results) {
-            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+            for(Plan pp: paretoPlans.results) {
+                if (pp.vmUpgrading.equals("increasing/decreasing")) {
 
-                pp.vmUpgrading = "increasing";
-                skylinePlans.add(pp);
+                    pp.vmUpgrading = "increasing";
+                    skylinePlans.add(pp);
 
-                Plan newpp = new Plan(pp);
-                newpp.vmUpgrading="decreasing";
-                skylinePlans.add(newpp);
-            } else {
-                skylinePlans.add(pp);
+                    Plan newpp = new Plan(pp);
+                    newpp.vmUpgrading="decreasing";
+                    skylinePlans.add(newpp);
+                } else {
+                    skylinePlans.add(pp);
+                }
             }
-        }
 
-        paretoPlans.clear();
+            paretoPlans.clear();
 
 
-        paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+            paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
-        System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+            System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
 
-        paretoPlans.addAll(skylinePlans);
+            paretoPlans.addAll(skylinePlans);
 
         }
         space.addAll(paretoPlans);
@@ -952,7 +952,7 @@ public class hhdsEnsemble implements Scheduler {
         final HashMap<Long, Double> t_rank = new HashMap<>();
         final HashMap<Long, Double> w_mean = new HashMap<>();
         final HashMap<Long, Double> sum_rank = new HashMap<>();
-       // final HashMap<Long, Double> slacktime = new HashMap<>();
+        // final HashMap<Long, Double> slacktime = new HashMap<>();
         final  LinkedList<Long> opsSumRankSorted = new LinkedList<>();
         final LinkedList<Long> opsBySlack = new LinkedList<>();
 ///   private HashMap<Long, Double> opSlack = new HashMap<>();
@@ -1029,15 +1029,15 @@ public class hhdsEnsemble implements Scheduler {
             t_rank.put(opId, (w+maxRankParent));
             Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
             sum_rank.put(opId, opRank);
-          //  crPathLength =Math.max(crPathLength, opRank);
+            //  crPathLength =Math.max(crPathLength, opRank);
         }
 
         for (Long op : topOrder.iterator()) {
             opsSumRankSorted.add(op);
             opsBySlack.add(op);
             Double opRank=sum_rank.get(op);
-          //  double opSlacktime = crPathLength - opRank;
-          //  slacktime.put(op, opSlacktime);
+            //  double opSlacktime = crPathLength - opRank;
+            //  slacktime.put(op, opSlacktime);
         }
 
         final HashMap<Long, Double> rankU = new HashMap<>();
@@ -1083,7 +1083,7 @@ public class hhdsEnsemble implements Scheduler {
 //            }
 //        };
 
-    //    Collections.sort(opsSorted, rankComparator);
+        //    Collections.sort(opsSorted, rankComparator);
 
         Comparator<Long> sumrankComparator = new Comparator<Long>() {//sumrank for tasks of a single dag (superdag based) instead the opposite order for crpathlength-sumrank
             @Override
@@ -1170,7 +1170,7 @@ public class hhdsEnsemble implements Scheduler {
                 subdagNext.put(subdagId, opc);
             }
 
-       //     int opsAdded = 0;
+            //     int opsAdded = 0;
 
 //        System.out.println("initially subdagNext \n");
 //        for(long opnext: subdagNext.values())
@@ -1189,11 +1189,11 @@ public class hhdsEnsemble implements Scheduler {
                     double tasksScheduledPerc =(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
                     double taskWeight = w_mean.get(opnext)/crPathLength;
                     double taskSlack = crPathLength - sum_rank.get(opnext);//only slack based
-                   // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
+                    // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
 //add level/levels per subdag?
 
-                   // double c =w_mean.get(opnext)*taskSlack/crPathLength*tasksScheduledPerc;
-                  //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+                    // double c =w_mean.get(opnext)*taskSlack/crPathLength*tasksScheduledPerc;
+                    //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
 
                     double c = crPathLength - sum_rank.get(opnext);//only slack based
                     if (c <= minSlack) {
@@ -1228,7 +1228,7 @@ public class hhdsEnsemble implements Scheduler {
                 }
 
 
-            //    opsAdded++;
+                //    opsAdded++;
 //            System.out.println("subdagNext have");
 //            for(long op: subdagNext.values())
 //                System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));

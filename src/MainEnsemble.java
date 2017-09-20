@@ -28,14 +28,17 @@ public class MainEnsemble {
 
     public static void main(String[] args) {
 
-        String dir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/slackByDag/";
+        String dir = "ensemblesRankComparison/LigoEnsemble4ops100/slackByDag/";
+
+
+        //String dir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/slackByDag/";
         pathPlot = dir;//"./ensembles/LigoEnsemble4MixedSizes/";//sizeBased
         pathOut = dir;// "./ensembles/LigoEnsemble4MixedSizes/";//userPref
 
 
-      createDir(pathPlot, dir);
+        createDir(pathPlot, "");
 
-      //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
+        //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
         if(savePlot){System.out.println("saving plots to "+ pathPlot);}
         if(saveOutput){System.out.println("saving output to "+ pathOut);}
@@ -78,7 +81,7 @@ public class MainEnsemble {
 //
 //            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
 //            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
-          //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
+            //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
 
 
             System.out.println("running single dataflows");
@@ -105,11 +108,11 @@ public class MainEnsemble {
 
                 String fileName =
                         "ensemble" + ensembleSize; //+
-                            //    (new java.util.Date()).toString().replace(" ","_");
+                //    (new java.util.Date()).toString().replace(" ","_");
 
                 outEnsemble = new PrintWriter(pathOut + fileName + ".txt");
 
-               // System.out.println("writes at " + );
+                // System.out.println("writes at " + );
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -124,15 +127,24 @@ public class MainEnsemble {
 
                 String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2,0);
-                Integer sizesMontage[] ={25, 25, 25};//{50, 50, 50};//{100, 100, 100};//
-                Integer sizesLigo[] ={25, 25, 25};//{50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
+                Integer sizesMontage[] ={50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
+                Integer sizesLigo[] ={100, 100, 100};//{50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
                 Integer size = 100;
+//                if(i%2==1) {
+//                    appName = "MONTAGE";//
+//                    size = sizesMontage[randomSize];
+//                }
+//                else {
+//                    appName = "LIGO";//"LIGO"; //
+//                    size = sizesLigo[randomSize];
+//                }
+
                 if(i%2==1) {
-                    appName = "MONTAGE";//"LIGO";//
-                    size = sizesMontage[randomSize];
+                    appName = "LIGO";//
+                    size = sizesLigo[randomSize];
                 }
                 else {
-                    appName = "MONTAGE";//"LIGO"; //
+                    appName = "LIGO";//"LIGO"; //
                     size = sizesLigo[randomSize];
                 }
 
@@ -183,8 +195,8 @@ public class MainEnsemble {
                 System.out.printf("%d %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
 
                 outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan + "\t" + p.stats.unfairness);
-                    for(Long dgId: p.stats.subdagFinishTime.keySet())
-                        System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+                for(Long dgId: p.stats.subdagFinishTime.keySet())
+                    System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
             }
 
 
@@ -207,18 +219,18 @@ public class MainEnsemble {
         Cluster cluster = new Cluster();
 
         Scheduler sched;
-      //  if(type.equals("multiple"))
-            sched = new hhdsEnsemble(graph,cluster,prune,method);
-              //  else
-                //    sched = new hhds(graph,cluster,prune,method);
+        //  if(type.equals("multiple"))
+        sched = new hhdsEnsemble(graph,cluster,prune,method);
+        //  else
+        //    sched = new hhds(graph,cluster,prune,method);
 
         space = sched.schedule();
 
         sbOut.append(space.toString());
 
-      //  mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+        //  mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
 
-       // plotUtility plot = new plotUtility();
+        // plotUtility plot = new plotUtility();
 
         combined.addAll(space);
 
@@ -251,7 +263,7 @@ public class MainEnsemble {
 
         Cluster clusterM = new Cluster();
 
-       // Scheduler schedM = new Moheft(graph, clusterM);
+        // Scheduler schedM = new Moheft(graph, clusterM);
 
         SolutionSpace solutionsM = new SolutionSpace();
 
@@ -269,22 +281,22 @@ public class MainEnsemble {
 
 
 
-    sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges()).append("\n");
-    sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
-    sbOut.append("pareto " + type + " time(sec) -> " + paretoToCompare.optimizationTime_MS/1000).append("\n");
-  //  sbOut.append("moheft " + type + " time(sec) -> " + solutionsM.optimizationTime_MS / 1000).append("\n");
+        sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges()).append("\n");
+        sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
+        sbOut.append("pareto " + type + " time(sec) -> " + paretoToCompare.optimizationTime_MS/1000).append("\n");
+        //  sbOut.append("moheft " + type + " time(sec) -> " + solutionsM.optimizationTime_MS / 1000).append("\n");
 
 
 
 //    combined.computeSkyline(false);
 
-    double distMtoC = 0.0, distPtoC = 0.0, distCtoM = 0.0, distCtoP = 0.0;
-    double JaccardMtoC = 0.0, JaccardPtoC = 0.0;
+        double distMtoC = 0.0, distPtoC = 0.0, distCtoM = 0.0, distCtoP = 0.0;
+        double JaccardMtoC = 0.0, JaccardPtoC = 0.0;
 
-    ArrayList<Pair<String, Double>> legendInfo = new ArrayList<>();
+        ArrayList<Pair<String, Double>> legendInfo = new ArrayList<>();
 
 
-    try {
+        try {
 
 //        if(moheft) {
 //            addImprovementsToLegend(solutionsM, paretoToCompare, legendInfo);
@@ -335,53 +347,53 @@ public class MainEnsemble {
 //        }
 
 
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-    double ccr = graph.computeCCR();
-
-    String filesname =
-            type +addToFilename+
-                "___"+paremetersToPrint.replace(" ","_")+
-                "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+"_ccr_"+ccr+"__"+
-                (new java.util.Date()).toString().replace(" ","_");
-
-
-    legendInfo.add(new Pair<String, Double>("data/comp (ccr)", ccr));
-
-    if (showOutput) {
-        System.out.println(sbOut.toString());
-    }
-    if (saveOutput) {
-        PrintWriter out = null;
-        try {
-            out = new PrintWriter(pathOut + filesname + ".txt");
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        out.println(sbOut.toString());
-        out.close();
 
-    }
+        double ccr = graph.computeCCR();
 
-    //plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
+        String filesname =
+                type +addToFilename+
+                        "___"+paremetersToPrint.replace(" ","_")+
+                        "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+"_ccr_"+ccr+"__"+
+                        (new java.util.Date()).toString().replace(" ","_");
 
-    //        if(validate){
-    //            System.out.println("Running sims");
-    //            SimEnginge simeng = new SimEnginge();
-    //            for (Plan p:solutions){
-    //                simeng.execute(p);
-    //            }
-    //
-    //        }
+
+        legendInfo.add(new Pair<String, Double>("data/comp (ccr)", ccr));
+
+        if (showOutput) {
+            System.out.println(sbOut.toString());
+        }
+        if (saveOutput) {
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(pathOut + filesname + ".txt");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            out.println(sbOut.toString());
+            out.close();
+
+        }
+
+        //plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
+
+        //        if(validate){
+        //            System.out.println("Running sims");
+        //            SimEnginge simeng = new SimEnginge();
+        //            for (Plan p:solutions){
+        //                simeng.execute(p);
+        //            }
+        //
+        //        }
 
 
 
     }
 
     private static void executeHS(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo,
-        String toprint, StringBuilder sbOut, SolutionSpace combined) {
+                                  String toprint, StringBuilder sbOut, SolutionSpace combined) {
 
         SolutionSpace space = new SolutionSpace();
 
@@ -400,7 +412,7 @@ public class MainEnsemble {
     }
 
     private static void executeHL(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo,
-        String toprint, StringBuilder sbOut, SolutionSpace combined) {
+                                  String toprint, StringBuilder sbOut, SolutionSpace combined) {
 
         SolutionSpace space = new SolutionSpace();
 
@@ -490,24 +502,24 @@ public class MainEnsemble {
 
 
 
-                Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
-                    @Override public int compare(Plan o1, Plan o2) {
-                        return Double.compare(o1.stats.money,o2.stats.money);
-                    }
-                });
+        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
+            @Override public int compare(Plan o1, Plan o2) {
+                return Double.compare(o1.stats.money,o2.stats.money);
+            }
+        });
 
 
-                double maxPKnee = 0.0;
-                double avgPKnee = 0.0;
-                for( int i=1;i<paretoToCompare.size()-1;++i){
-                    Plan p0 = paretoToCompare.results.get(i-1);
-                    Plan p1 = paretoToCompare.results.get(i);
-                    Plan p2 = paretoToCompare.results.get(i+1);
-                    double d = paretoToCompare.getDer(p0,p1,p2);
-                    maxPKnee = Math.max(maxPKnee,d);
-                    avgPKnee+=d;
-                }
-                avgPKnee = avgPKnee/paretoToCompare.size()-2;
+        double maxPKnee = 0.0;
+        double avgPKnee = 0.0;
+        for( int i=1;i<paretoToCompare.size()-1;++i){
+            Plan p0 = paretoToCompare.results.get(i-1);
+            Plan p1 = paretoToCompare.results.get(i);
+            Plan p2 = paretoToCompare.results.get(i+1);
+            double d = paretoToCompare.getDer(p0,p1,p2);
+            maxPKnee = Math.max(maxPKnee,d);
+            avgPKnee+=d;
+        }
+        avgPKnee = avgPKnee/paretoToCompare.size()-2;
 
         Collections.sort(solutionsM.results, new Comparator<Plan>() {
             @Override public int compare(Plan o1, Plan o2) {
@@ -594,7 +606,7 @@ public class MainEnsemble {
         double[] dataout = {0.2,0.4,0.6,0.8,1.0};
 
         RandomParameters
-            params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+                params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
         DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0, RuntimeConstants.quantum_MS);
 
@@ -612,29 +624,29 @@ public class MainEnsemble {
 
         try {
 
-                if(file.contains("lattice") || file.contains("Lattice")){
+            if(file.contains("lattice") || file.contains("Lattice")){
 
-                    double z = 1.0;
-                    double randType = 0.0;
-                    double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-                    double[] cpuUtil = {1.0};
-                    double[] memory = {0.3};
-                    double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+                double z = 1.0;
+                double randType = 0.0;
+                double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                double[] cpuUtil = {1.0};
+                double[] memory = {0.3};
+                double[] dataout = {0.2,0.4,0.6,0.8,1.0};
 
-                    RandomParameters
+                RandomParameters
                         params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
-                    tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0, RuntimeConstants.OneHour_MS);
-                }else {
+                tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0, RuntimeConstants.OneHour_MS);
+            }else {
 
-                    PegasusDaxParser parser = new PegasusDaxParser(mt, md);
-                    if (jar) {
-                        tmpGraph = parser.parseDax(file, 0L);
+                PegasusDaxParser parser = new PegasusDaxParser(mt, md);
+                if (jar) {
+                    tmpGraph = parser.parseDax(file, 0L);
 
-                    } else {
-                        tmpGraph = parser.parseDax(MainEnsemble.class.getResource(file).getFile(), 0L);
-                    }
+                } else {
+                    tmpGraph = parser.parseDax(MainEnsemble.class.getResource(file).getFile(), 0L);
                 }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1006,55 +1018,55 @@ public class MainEnsemble {
             System.out.println(tr.a+" "+tr.b+" "+tr.c);
         }
 
-            DAG graph = new DAG();
-           // DAGmerged graphMerged = new DAGmerged();
-            ArrayList<DAG> graphs = new ArrayList<>();
+        DAG graph = new DAG();
+        // DAGmerged graphMerged = new DAGmerged();
+        ArrayList<DAG> graphs = new ArrayList<>();
 
-            try {
-                int ensembleSize=flowsandParasms.size();
-                Long dagId=0L;
-                int did=0;
-                for(Triple<String,Integer,Integer> p: flowsandParasms) {
-                    dagId++;
-                    did++;
-                    if(p.a.contains("lattice") || p.a.contains("Lattice")){
+        try {
+            int ensembleSize=flowsandParasms.size();
+            Long dagId=0L;
+            int did=0;
+            for(Triple<String,Integer,Integer> p: flowsandParasms) {
+                dagId++;
+                did++;
+                if(p.a.contains("lattice") || p.a.contains("Lattice")){
 
-                        double z = 1.0;
-                        double randType = 0.0;
-                        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-                        double[] cpuUtil = {1.0};
-                        double[] memory = {0.3};
-                        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+                    double z = 1.0;
+                    double randType = 0.0;
+                    double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                    double[] cpuUtil = {1.0};
+                    double[] memory = {0.3};
+                    double[] dataout = {0.2,0.4,0.6,0.8,1.0};
 
-                        RandomParameters
+                    RandomParameters
                             params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
-                        graphs.add(LatticeGenerator.createLatticeGraph(p.b,p.c,params,0, RuntimeConstants.quantum_MS));
-                    }else {
+                    graphs.add(LatticeGenerator.createLatticeGraph(p.b,p.c,params,0, RuntimeConstants.quantum_MS));
+                }else {
 
-                        PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
-                        if (jar) {
-                            graphs.add(parser.parseDax(p.a, dagId));
+                    PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
+                    if (jar) {
+                        graphs.add(parser.parseDax(p.a, dagId));
 
-                        } else {
-                            graphs.add(parser.parseDax(MainEnsemble.class.getResource(p.a).getFile(), dagId));
-                        }
+                    } else {
+                        graphs.add(parser.parseDax(MainEnsemble.class.getResource(p.a).getFile(), dagId));
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            for(DAG g:graphs){
-                HashMap<Long,Long> OldIdToNewId = new HashMap<>();
-                graph.add(g, OldIdToNewId);
-                graph.superDAG.addSubDAG(g, OldIdToNewId);
-                //graphMerged.addSubDAG(g);
-            }
+        for(DAG g:graphs){
+            HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+            graph.add(g, OldIdToNewId);
+            graph.superDAG.addSubDAG(g, OldIdToNewId);
+            //graphMerged.addSubDAG(g);
+        }
 
 
 
-            runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
+        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
 
 //            ArrayList <Long> minTime = new ArrayList<>();
 //        ArrayList <Double> minCost = new ArrayList<>();
@@ -1083,8 +1095,8 @@ public class MainEnsemble {
         long seed = 0L;
 
         DAG graph  = TreeGraphGenerator.createTreeGraph(
-            leafs, height, 1.0, 1.0,
-            avgTimePerLevel, initialDataSize, dataReductionPerLevel, randomness, seed);
+                leafs, height, 1.0, 1.0,
+                avgTimePerLevel, initialDataSize, dataReductionPerLevel, randomness, seed);
 
         ArrayList<Plan> plans = new ArrayList<>();
         runDAG(graph," leafs: "+leafs+" height: "+height,"tree", plans);
@@ -1101,7 +1113,7 @@ public class MainEnsemble {
             e.printStackTrace();
         }
 
-     //   MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+        //   MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
 
         Cluster cluster;
@@ -1115,13 +1127,13 @@ public class MainEnsemble {
         }
 
 
-     //   mpinfo.add("HEFT "+(solutions.optimizationTime_MS), solutions.results);
+        //   mpinfo.add("HEFT "+(solutions.optimizationTime_MS), solutions.results);
 
 
 
 //        plotUtility plot = new plotUtility();
 
-      //  plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
+        //  plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
 //            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),
 //            pathPlot,
 //            savePlot);
@@ -1152,13 +1164,13 @@ public class MainEnsemble {
     }
 
 
-  private static String createDir(String basePath, String dirName) {
-    File dir = new File(basePath, dirName);
-    if (!dir.mkdirs()) {
-      System.out.print("existing DIR "+basePath+ " "+dirName);
-      //System.exit(1);
+    private static String createDir(String basePath, String dirName) {
+        File dir = new File(basePath, dirName);
+        if (!dir.mkdirs()) {
+            System.out.print("existing DIR "+basePath+ " "+dirName);
+            //System.exit(1);
+        }
+        return dir.getAbsolutePath()+"/";
     }
-    return dir.getAbsolutePath()+"/";
-  }
 
 }
