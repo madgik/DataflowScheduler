@@ -25,16 +25,16 @@ public class MainEnsemble {
     static Boolean showOutput = false;
     static Boolean saveOutput = true;
     static Boolean validate = false;
-    static boolean jar = true;//false;
+    static boolean jar = false;
     static String jarpath ="";
 
     public static void main(String[] args) {
 
 
         if(jar)
-        jarpath = "/home/ilia/MyScheduler/runRemotely/";
-        Integer ensembleSize =4;
-        String newDir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/weightByDag/";
+        jarpath = "/home/ilia/IdeaProjects/MyScheduler/runRemotely/";
+        Integer ensembleSize =20;
+        String newDir = "ensemblesSep2017/MixedEnsemble20Ligo100Montage50/slackByDag/";
 
 
        String rankMethod="dagMerge";

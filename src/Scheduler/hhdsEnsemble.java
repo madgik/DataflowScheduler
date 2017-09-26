@@ -32,7 +32,7 @@ public class hhdsEnsemble implements Scheduler {
 
 
 
-    public int maxContainers = 10000000;
+    public int maxContainers = 100000000;
 
     public boolean backfilling = false;
     public boolean backfillingUpgrade = false;
@@ -1193,6 +1193,10 @@ public class hhdsEnsemble implements Scheduler {
                     double tasksScheduledPerc =(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
                     double taskWeight = w_mean.get(opnext)/crPathLength;
                     double taskSlack = crPathLength - sum_rank.get(opnext);//only slack based
+
+                    double tasksUnScheduledPerc =((double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size()-iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex())/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+
+
                     // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
 //add level/levels per subdag?
 
@@ -1200,7 +1204,14 @@ public class hhdsEnsemble implements Scheduler {
                    //  double c =(w_mean.get(opnext)*taskSlack)/crPathLength*tasksScheduledPerc;
                     //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
 
-                    double c = crPathLength - sum_rank.get(opnext);//only slack based
+                  //  double c = crPathLength - sum_rank.get(opnext);//only slack based
+
+                //    double c =taskSlack*tasksScheduledPerc;
+
+               //     double c =taskSlack*tasksScheduledPerc/taskWeight;
+
+                    double c =taskSlack/tasksUnScheduledPerc;
+
                     if (c <= minSlack) {
                         nextToAdd = opnext;
                         minSlack = c;
