@@ -1,9 +1,7 @@
 import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
-import JsonOptiqueParse.JsonOptiqueParser;
 import Lattice.LatticeGenerator;
 import Scheduler.*;
-import Tree.TreeGraphGenerator;
 import utils.*;
 
 import java.io.File;
@@ -14,6 +12,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+
+//java -jar MyScheduler.jar dagMerge ensemblesRankComparison/example/weightByDag/ 10 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
+
+
 public class MainEnsemble {
 
     static Boolean savePlot = true;
@@ -23,12 +25,44 @@ public class MainEnsemble {
     static Boolean showOutput = false;
     static Boolean saveOutput = true;
     static Boolean validate = false;
-    static boolean jar = false;
+    static boolean jar = true;//false;
     static String jarpath ="";
 
     public static void main(String[] args) {
 
-        String dir = "ensemblesRankComparison/LigoEnsemble4ops100/slackByDag/";
+
+        if(jar)
+        jarpath = "/home/ilia/MyScheduler/runRemotely/";
+        Integer ensembleSize =4;
+        String newDir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/weightByDag/";
+
+
+       String rankMethod="dagMerge";
+
+        if(args.length>1) {
+            ensembleSize = Integer.parseInt(args[2]);
+            rankMethod = args[0];
+            newDir = args[1];
+        }
+
+//        for (int i = 0; i<args.length; ) {
+//
+//            String arg = args[i++];
+//
+//            String next = args[i++];
+//
+//            if ("-ensembleSize".equals(arg)) {
+//                ensembleSize=Integer.parseInt(next);
+//                break;
+//            }
+//
+//            //	System.out.println("next is " + arg);
+//            if ("-app1".equals(arg)) {
+//
+//            }
+//        }
+
+        String dir = newDir;//"ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/weightByDag/";//"ensemblesRankComparison/MixedEnsemble4Ligo50Montage100/slackByDag/";
 
 
         //String dir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/slackByDag/";
@@ -52,55 +86,43 @@ public class MainEnsemble {
         }
 
 
-        String flow = System.getProperty("flow");
-        if( flow != null){
-            if(flow.equals("lattice")){
-                String d = System.getProperty("d");
-                String b = System.getProperty("b");
-                runLattice(Integer.parseInt(d),Integer.parseInt(b));
-            }else if(flow.contains("runMul")) {
-                runOneMultipleEND(jar,jarpath+"MONTAGE.n.25.0.dax",100,400);
-
-
-                runOneMultipleEND(jar,jarpath+"Example",10000,3000);
-
-                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,400);
-
-                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
-
-//                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
-            }else{
-                String mt = System.getProperty("mt");
-                String md = System.getProperty("md");
-
-                ArrayList<Plan> plans = new ArrayList<>();
-                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans);
-            }
-        }else{
-//            runDax(jar,jarpath+"Example.dax",1000,3000);
+//        String flow = System.getProperty("flow");
+//        if( flow != null){
+//            if(flow.equals("lattice")){
+//                String d = System.getProperty("d");
+//                String b = System.getProperty("b");
+//                runLattice(Integer.parseInt(d),Integer.parseInt(b));
+//            }else if(flow.contains("runMul")) {
+//                runOneMultipleEND(jar,jarpath+"MONTAGE.n.25.0.dax",100,400);
 //
-//            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
-//            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
-            //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
-
-
-            System.out.println("running single dataflows");
-            ArrayList<Triple<String,Integer,Integer>> flowsandParasms = new ArrayList<>();
+//
+//                runOneMultipleEND(jar,jarpath+"Example",10000,3000);
+//
+//                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,400);
+//
+//                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
+//
+////                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
+//            }else{
+//                String mt = System.getProperty("mt");
+//                String md = System.getProperty("md");
+//
+//                ArrayList<Plan> plans = new ArrayList<>();
+//                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans, rankMethod);
+//            }
+//        }else {
+////            runDax(jar,jarpath+"Example.dax",1000,3000);
+////
+////            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
+////            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
+//            //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
+//
+//
+//            System.out.println("running single dataflows");
+            ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
 
 //            ArrayList <Long> minTimeSingle = new ArrayList<>();
 //            ArrayList <Double> minCostSingle = new ArrayList<>();
-
-            Integer ensembleSize =4;
-
-
-
-
-
-
-
-
-
-
 
 
             PrintWriter outEnsemble = null;
@@ -119,74 +141,53 @@ public class MainEnsemble {
             //   out.println(sbOut.toString());
 
 
+            if(args.length>1) {
 
 
 
+                for (int i = 3; i < 3 + 2 * ensembleSize; i += 2) {
 
-            for(int i=1;i<=ensembleSize;++i) {
+                    String appName = "MONTAGE";
+                    Integer randomSize = random.randomInRange(2, 0);
+                    Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
+                    Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
+                    Integer size = 100;
+
+
+                    appName = args[i];//"LIGO";
+                    size = Integer.parseInt(args[i + 1]);//sizesMontage[randomSize];
+
+                    flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
+
+                }
+
+            } else
+            {
+            for (int i = 1; i <= ensembleSize; i ++) {
 
                 String appName = "MONTAGE";
-                Integer randomSize = random.randomInRange(2,0);
-                Integer sizesMontage[] ={50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
-                Integer sizesLigo[] ={100, 100, 100};//{50, 50, 50};//{25, 25, 25};//{100, 100, 100};//
+                Integer randomSize = random.randomInRange(2, 0);
+                Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
+                Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
                 Integer size = 100;
-//                if(i%2==1) {
-//                    appName = "MONTAGE";//
-//                    size = sizesMontage[randomSize];
-//                }
-//                else {
-//                    appName = "LIGO";//"LIGO"; //
-//                    size = sizesLigo[randomSize];
-//                }
 
-                if(i%2==1) {
+                if (i % 2 == 1) {
                     appName = "LIGO";//
                     size = sizesLigo[randomSize];
-                }
-                else {
-                    appName = "LIGO";//"LIGO"; //
-                    size = sizesLigo[randomSize];
-                }
-
-                flowsandParasms.add(new Triple(jarpath + appName+ ".n."+ size +".0.dax", 1000 , 100));
-
-                ArrayList<Plan> hhdsPlans = new ArrayList<>();
-
-                PrintWriter outSingle = null;
-                try {
-                    String fileName =
-                            "single" +i;
-                    outSingle = new PrintWriter(pathOut + fileName + ".txt");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                } else {
+                    appName = "MONTAGE";//"LIGO"; //
+                    size = sizesMontage[randomSize];
                 }
 
-//                DAG subdag = runDax(jar,jarpath + appName+ ".n."+ size +".0.dax",1000,100, hhdsPlans);
-//
-//              //  System.out.println("crpathlength " + subdag.computeCrPathLength(containerType.getLargest()));
-//
-//                Long time=Long.MAX_VALUE;
-//                Double money=Double.MAX_VALUE;
-//
-//                for(int j=0;j<hhdsPlans.size()-1;++j) {
-//                    Plan p0;
-//                    p0 = hhdsPlans.get(j);
-//                    time =Math.min(time, p0.stats.runtime_MS);
-//                    money = Math.min(money, p0.stats.money);
-//
-//                    outSingle.println(p0.stats.money + "\t" + p0.stats.runtime_MS + "\t" + p0.stats.runtime_MS/p0.graph.computeCrPathLength(p0.cluster.containersList.get(0).contType));
-//                }
-//                outSingle.close();
-//                minTimeSingle.add(time);
-//                minCostSingle.add(money);
+                flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
 
             }
 
-
+        }
             System.out.println("running multiple dataflows");
 
             ArrayList<Plan> ensemblePlans =new ArrayList<>();
-            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans);
+            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod);
 
             for (int j = 0; j < ensemblePlans.size(); ++j) {
 
@@ -210,17 +211,17 @@ public class MainEnsemble {
 
 
         //TODO: Run the simulation to validate the results for the space of solutions
-    }
+   // }
 
 
-    public static SolutionSpace execute(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type){
+    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type){
         SolutionSpace space = new SolutionSpace();
 
         Cluster cluster = new Cluster();
 
         Scheduler sched;
         //  if(type.equals("multiple"))
-        sched = new hhdsEnsemble(graph,cluster,prune,method);
+        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod);//"dagMerge";//commonEntry:default, perDag, dagMerge
         //  else
         //    sched = new hhds(graph,cluster,prune,method);
 
@@ -238,7 +239,7 @@ public class MainEnsemble {
     }
 
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans)
+    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans, String rankMethod)
     {
 
         StringBuilder sbOut = new StringBuilder();
@@ -248,7 +249,7 @@ public class MainEnsemble {
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
-        SolutionSpace paretoToCompare = execute(graph,true,"Knee", mpinfo,"Hetero", sbOut,combined, type);
+        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero", sbOut,combined, type);
 
         hhdsPlans.addAll(paretoToCompare.results);
 
@@ -565,7 +566,7 @@ public class MainEnsemble {
         return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
     }
 
-    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans) {
+    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans, String rankMethod) {
 
         System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
 
@@ -589,90 +590,90 @@ public class MainEnsemble {
             flowname = file;
         }
 
-        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans);
+        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans, rankMethod);
 
         return graph;
     }
 
-    private static void runLattice(int d, int b) {
+//    private static void runLattice(int d, int b) {
+//
+//        System.out.println("Running Lattice d "+d+" b: "+b + " Pareto, Moheft");
+//
+//        double z = 1.0;
+//        double randType = 0.0;
+//        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+//        double[] cpuUtil = {1.0};
+//        double[] memory = {0.3};
+//        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+//
+//        RandomParameters
+//                params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+//
+//        DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0, RuntimeConstants.quantum_MS);
+//
+//
+//        ArrayList<Plan> plans = new ArrayList<>();
+//        runDAG(graph,"d: "+d+" b: "+b,"Lattice", plans, rankMethod);
+//
+//    }
 
-        System.out.println("Running Lattice d "+d+" b: "+b + " Pareto, Moheft");
-
-        double z = 1.0;
-        double randType = 0.0;
-        double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-        double[] cpuUtil = {1.0};
-        double[] memory = {0.3};
-        double[] dataout = {0.2,0.4,0.6,0.8,1.0};
-
-        RandomParameters
-                params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
-
-        DAG graph = LatticeGenerator.createLatticeGraph(d,b,params,0, RuntimeConstants.quantum_MS);
-
-
-        ArrayList<Plan> plans = new ArrayList<>();
-        runDAG(graph,"d: "+d+" b: "+b,"Lattice", plans);
-
-    }
-
-    private static void runOneMultipleEND(boolean jar,String file, int mt, int md){
-        DAG graph = new DAG();
-        DAG tmpGraph = null;
-        System.out.println("Running runOneMultipleEND mt "+mt+" md: "+md + " Pareto, Moheft " + file);
-
-
-        try {
-
-            if(file.contains("lattice") || file.contains("Lattice")){
-
-                double z = 1.0;
-                double randType = 0.0;
-                double[] runTime = {0.2,0.4,0.6,0.8,1.0};
-                double[] cpuUtil = {1.0};
-                double[] memory = {0.3};
-                double[] dataout = {0.2,0.4,0.6,0.8,1.0};
-
-                RandomParameters
-                        params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
-
-                tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0, RuntimeConstants.OneHour_MS);
-            }else {
-
-                PegasusDaxParser parser = new PegasusDaxParser(mt, md);
-                if (jar) {
-                    tmpGraph = parser.parseDax(file, 0L);
-
-                } else {
-                    tmpGraph = parser.parseDax(MainEnsemble.class.getResource(file).getFile(), 0L);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
-        graph.add(tmpGraph, OldIdToNewId);
-        for (int i = 0; i <10 ; i++) {
-            HashMap<Long,Long> OldIdToNewIdtmp = new HashMap<>();
-            graph.addEnd(tmpGraph, OldIdToNewIdtmp);
-        }
-
-//        for (int i = 0; i <2 ; i++) {
-//            DAG inGraph = new DAG();
-//            inGraph.add(tmpGraph);
-//            inGraph.add(tmpGraph);
-//            graph.addEnd(inGraph);
+//    private static void runOneMultipleEND(boolean jar,String file, int mt, int md){
+//        DAG graph = new DAG();
+//        DAG tmpGraph = null;
+//        System.out.println("Running runOneMultipleEND mt "+mt+" md: "+md + " Pareto, Moheft " + file);
+//
+//
+//        try {
+//
+//            if(file.contains("lattice") || file.contains("Lattice")){
+//
+//                double z = 1.0;
+//                double randType = 0.0;
+//                double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+//                double[] cpuUtil = {1.0};
+//                double[] memory = {0.3};
+//                double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+//
+//                RandomParameters
+//                        params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
+//
+//                tmpGraph = LatticeGenerator.createLatticeGraph(mt,md,params,0, RuntimeConstants.OneHour_MS);
+//            }else {
+//
+//                PegasusDaxParser parser = new PegasusDaxParser(mt, md);
+//                if (jar) {
+//                    tmpGraph = parser.parseDax(file, 0L);
+//
+//                } else {
+//                    tmpGraph = parser.parseDax(MainEnsemble.class.getResource(file).getFile(), 0L);
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
 //        }
-//        for (int i = 0; i <2 ; i++) {
-//            graph.addEnd(tmpGraph);
+//
+//        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+//        graph.add(tmpGraph, OldIdToNewId);
+//        for (int i = 0; i <10 ; i++) {
+//            HashMap<Long,Long> OldIdToNewIdtmp = new HashMap<>();
+//            graph.addEnd(tmpGraph, OldIdToNewIdtmp);
 //        }
-
-        ArrayList<Plan> plans = new ArrayList<>();
-        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
-
-    }
+//
+////        for (int i = 0; i <2 ; i++) {
+////            DAG inGraph = new DAG();
+////            inGraph.add(tmpGraph);
+////            inGraph.add(tmpGraph);
+////            graph.addEnd(inGraph);
+////        }
+////        for (int i = 0; i <2 ; i++) {
+////            graph.addEnd(tmpGraph);
+////        }
+//
+//        ArrayList<Plan> plans = new ArrayList<>();
+//        runDAG(graph," oneFlowMultipleTimeEND +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod);
+//
+//    }
 
 //    private static void  runEnseble(boolean jar,String file, int mt, int md,int times){
 //        DAG graph = new DAG();
@@ -1011,7 +1012,7 @@ public class MainEnsemble {
 
 
 
-    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans){
+    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans, String rankMethod){
 
         System.out.println("runinng multFLow");
         for(Triple<String,Integer,Integer> tr: flowsandParasms){
@@ -1066,7 +1067,7 @@ public class MainEnsemble {
 
 
 
-        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans);
+        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod);
 
 //            ArrayList <Long> minTime = new ArrayList<>();
 //        ArrayList <Double> minCost = new ArrayList<>();
@@ -1086,82 +1087,7 @@ public class MainEnsemble {
         return graph;
     }
 
-    private static void runTree(int leafs,int height) {
 
-        double[] avgTimePerLevel = new double[] {0.2, 0.2, 0.2, 0.2, 0.3};
-        double initialDataSize = 1000;
-        double[] dataReductionPerLevel = new double[] {0.3, 0.3, 0.3, 0.3, 0.3};
-        double randomness = 0.0;
-        long seed = 0L;
-
-        DAG graph  = TreeGraphGenerator.createTreeGraph(
-                leafs, height, 1.0, 1.0,
-                avgTimePerLevel, initialDataSize, dataReductionPerLevel, randomness, seed);
-
-        ArrayList<Plan> plans = new ArrayList<>();
-        runDAG(graph," leafs: "+leafs+" height: "+height,"tree", plans);
-
-    }
-
-    private static void runHEFT(String filename, int mulTime, int mulData) {
-        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
-
-        DAG graph = null;
-        try {
-            graph = parser.parseDax(MainEnsemble.class.getResource(filename).getFile(), 0L);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //   MultiplePlotInfo mpinfo = new MultiplePlotInfo();
-
-
-        Cluster cluster;
-        Scheduler sched;
-        SolutionSpace solutions = new SolutionSpace();
-        for(int i=1;i<10;++i){
-            cluster = new Cluster();
-            sched = new HEFT(graph, cluster,i,containerType.A);
-            solutions.addAll(sched.schedule());
-
-        }
-
-
-        //   mpinfo.add("HEFT "+(solutions.optimizationTime_MS), solutions.results);
-
-
-
-//        plotUtility plot = new plotUtility();
-
-        //  plot.plotMultiple(mpinfo, filename+" --- mulT: "+mulTime+" mulD: "+mulData
-//            +" sumDataGB "+ (graph.sumdata_B / 1073741824)+ " n "+graph.getOperators().size()+" e "+graph.sumEdges(),
-//            pathPlot,
-//            savePlot);
-
-        System.out.println("nodes "+graph.getOperators().size()+" edges "+graph.sumEdges());
-        System.out.println("mulTime "+mulTime + " mulData " + mulData + "  sumData GB " + (graph.sumdata_B / 1073741824));
-        System.out.println("HEFT Example time -> " + solutions.optimizationTime_MS);
-    }
-
-    private static void runJson(boolean jar,String filename, int mulTime, int mulData) {
-
-        JsonOptiqueParser parser = new JsonOptiqueParser(mulTime, mulData);
-
-        DAG graph = null;
-        try {
-            if(jar){
-                graph = parser.parse(filename);
-            }else {
-                graph = parser.parse(MainEnsemble.class.getResource(filename).getFile());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<Plan> plans = new ArrayList<>();
-        runDAG(graph," mulT: "+mulTime+" mulD: "+mulData,filename, plans);
-
-    }
 
 
     private static String createDir(String basePath, String dirName) {

@@ -22,7 +22,8 @@ public class hhdsEnsemble implements Scheduler {
     public ArrayList<DAG> ensemble;
 
 
-    public String rankingMethod = "commonEntry";//"dagMerge";//commonEntry:default, perDag, dagMerge
+    //public String newDir = "";
+    public String rankingMethod = "";//"dagMerge";//commonEntry:default, perDag, dagMerge
 
     public LinkedList<Long> opsSorted ;
 
@@ -41,12 +42,12 @@ public class hhdsEnsemble implements Scheduler {
     public boolean HEFT = false;
     public boolean pruneEnabled = false;
     public String PruneMethod = "";
-
     public boolean homotohetero = false;
 
     private HashMap<Long, Integer> opLevel;
 
-    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod){
+    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod){
+        this.rankingMethod = rankingMethod;
         this.pruneEnabled = prune;
         space = new SolutionSpace();
         this.graph = graph;
@@ -54,6 +55,7 @@ public class hhdsEnsemble implements Scheduler {
         this.opsSorted = new LinkedList<>();
         opLevel = new HashMap<>();
         this.PruneMethod = PruneMethod;
+       // this.newDir = dir;
     }
 
     @Override
@@ -963,6 +965,8 @@ public class hhdsEnsemble implements Scheduler {
         HashMap<Integer,ArrayList<Long>> opLevelList = new HashMap<>();
 
 
+        //TODO:initalize b_rank and t_rank!!
+
         int numLevels=0;
         for(int i=0;i<20;++i){
             opLevelList.put(i,new ArrayList<Long>());
@@ -995,7 +999,7 @@ public class hhdsEnsemble implements Scheduler {
             for (Edge childEdge: graph.getChildren(opId)) {
                 double comCostChild = 0.0;
                 for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
-                    if(parentofChildEdge.from==opId) {
+                    if(parentofChildEdge.from.equals(opId)) {// if((long)parentofChildEdge.from==(long)opId) {//
                         comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
                     }
                 }
@@ -1192,7 +1196,8 @@ public class hhdsEnsemble implements Scheduler {
                     // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
 //add level/levels per subdag?
 
-                    // double c =w_mean.get(opnext)*taskSlack/crPathLength*tasksScheduledPerc;
+               //     double c =taskSlack/(w_mean.get(opnext)/crPathLength);//(w_mean.get(opnext)*taskSlack)
+                   //  double c =(w_mean.get(opnext)*taskSlack)/crPathLength*tasksScheduledPerc;
                     //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
 
                     double c = crPathLength - sum_rank.get(opnext);//only slack based

@@ -1,0 +1,17 @@
+Running multiple  multipleFlows +sumdata:1142 Pareto, Moheft
+1382911152 1965.71 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:  35  -- #Conts: 156 A(156) 
+3529701190 1961.80 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 1.00, 1.00) #fs:  19  -- #Conts: 49 A(49) 
+1299451149 1965.96 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:  35  -- #Conts: 158 A(158) 
+1408761364 1965.20 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:  32  -- #Conts: 156 A(156) 
+3080841079 1961.89 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 1.00, 1.00) #fs:  19  -- #Conts: 55 A(55) 
+2291790815 1962.48 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:  12  -- #Conts: 80 A(80) 
+1701980854 1964.61 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:   9  -- #Conts: 120 A(120) 
+1706540848 1964.52 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:  10  -- #Conts: 120 A(120) 
+3535091190 1961.71 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 1.00, 1.00) #fs:  19  -- #Conts: 49 A(49) 
+1304791141 1965.88 || noQ Q (Avg,Max,Min) (1.00, 1.00, 1.00) (1.00, 0.99, 1.00) #fs:  36  -- #Conts: 158 A(158) 
+/////////////////size: 10
+nodes 400 edges 492
+ multipleFlows +sumdata:1142  sumDataGB 1142
+pareto multiple time(sec) -> 132.842
+moheft multiple time(sec) -> 0.0
+

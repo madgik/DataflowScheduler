@@ -1,0 +1,10 @@
+Running MONTAGE.n.50.0.dax mulT: 1000 mulD: 100 Pareto, Moheft
+  55674187 012.75 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.86) (0.97, 0.76, 1.00) #fs:   5  -- #Conts: 34 A(34) 
+  55682089 012.58 || noQ Q (Avg,Max,Min) (1.00, 1.01, 0.99) (0.97, 0.76, 1.00) #fs:   4  -- #Conts: 35 A(35) 
+  66252107 012.50 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.99) (0.97, 0.76, 1.00) #fs:   4  -- #Conts: 33 A(33) 
+/////////////////size: 3
+nodes 50 edges 108
+mulT: 1000 mulD: 100  sumDataGB 93
+pareto MONTAGE.n.50.0.dax time(sec) -> 0.05
+moheft MONTAGE.n.50.0.dax time(sec) -> 0.0
+
