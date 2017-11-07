@@ -1022,7 +1022,7 @@ public class hhdsEnsemble implements Scheduler {
             for (Edge inLink: graph.getParents(opId)) {
 //                Operator opParent=graph.getOperator(inLink.from.getopID());
                 double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
-                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from));
+                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from)+w_mean.get(inLink.from));
             }
 
             double wcur=0.0;
@@ -1030,8 +1030,8 @@ public class hhdsEnsemble implements Scheduler {
                 wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
             int types= containerType.values().length;
             double w=wcur/(double)types;//average execution cost for operator op
-            t_rank.put(opId, (w+maxRankParent));
-            Double opRank=b_rank.get(opId) + t_rank.get(opId) -w;
+            t_rank.put(opId, (maxRankParent));
+            Double opRank=b_rank.get(opId) + t_rank.get(opId);// -w;
             sum_rank.put(opId, opRank);
             //  crPathLength =Math.max(crPathLength, opRank);
         }
@@ -1067,8 +1067,10 @@ public class hhdsEnsemble implements Scheduler {
 
         }
 
-        for (Long op : topOrder.iterator())
+        for (Long op : topOrder.iterator()) {
+            System.out.println(op + " sumrank " +  sum_rank.get(op));
             opsSorted.add(op);
+        }
 
 
 
@@ -1210,7 +1212,9 @@ public class hhdsEnsemble implements Scheduler {
 
                //     double c =taskSlack*tasksScheduledPerc/taskWeight;
 
-                    double c =taskSlack/tasksUnScheduledPerc;
+               //     double c =taskSlack/tasksUnScheduledPerc;
+
+                    double c =taskSlack*tasksScheduledPerc;
 
                     if (c <= minSlack) {
                         nextToAdd = opnext;
