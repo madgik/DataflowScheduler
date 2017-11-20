@@ -513,7 +513,7 @@ public class Moheft implements Scheduler {
         SolutionSpace skyline = new SolutionSpace();
 
 
-        plans.sort(false); // Sort by time breaking equality by sorting by money
+        plans.sort(false, false); // Sort by time breaking equality by sorting by money
 
         Plan previous = null;
         for (Plan est : plans) {

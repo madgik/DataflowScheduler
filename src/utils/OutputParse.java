@@ -79,7 +79,7 @@ public class OutputParse {
                     pl.stats.money = p.getMoney();
                     comb.add(pl);
                 }
-                comb.computeSkyline(false);
+                comb.computeSkyline(false, false);
 
 
                 double distMtoC=0.0,distPtoC=0.0,distCtoM=0.0,distCtoP=0.0;

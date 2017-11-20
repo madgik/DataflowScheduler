@@ -180,7 +180,7 @@ public class hhds implements Scheduler {
 
         paretoPlans.addAll(skylinePlans.results);
 
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, false);
 
         mpinfo.add("pareto",paretoPlans.results);
 
@@ -223,7 +223,7 @@ public class hhds implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, false);
         return space;
 
     }
@@ -503,7 +503,7 @@ double s2;
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, false);
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
@@ -687,7 +687,7 @@ double s2;
 //            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, false);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
@@ -896,7 +896,7 @@ double s2;
 
 
 
-        plans.sort(true); // Sort by time breaking equality by sorting by money
+        plans.sort(true, false); // Sort by time breaking equality by sorting by money
 
         HashMap<Plan, ArrayList <Plan>> dominatedSet=new HashMap<>();
         HashMap<Plan, ArrayList <Plan>> dominanceSet=new HashMap<>();
@@ -1072,10 +1072,10 @@ double s2;
 
         SolutionSpace candidates = new SolutionSpace();
 
-        skylinePlans.sort(true);
+        skylinePlans.sort(true, false);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true);
+        candidates.sort(true, false);
 
         // Keep only the skyline
         SolutionSpace skyline = new SolutionSpace();
@@ -1111,7 +1111,7 @@ double s2;
         candidates.addAll(skylinePlansNew);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true);
+        candidates.sort(true, false);
 
         // Keep only the skyline
         SolutionSpace skyline = new SolutionSpace();

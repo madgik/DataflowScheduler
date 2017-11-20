@@ -31,7 +31,7 @@ public class MainHHDS {
   public static void main(String[] args) {
 
 //    pathPlot = "./expsforBigData/persec44/";//sizeBased
-    pathOut = "./expsforBigData/hh4/";//userPref
+    pathOut = "./expsforBigData/hh6/";//userPref
 
     //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 

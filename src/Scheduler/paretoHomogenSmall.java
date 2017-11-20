@@ -25,6 +25,7 @@ public class paretoHomogenSmall implements Scheduler {
 
 
 
+    public boolean multi=false;
     public int maxContainers = 10000000;
 
     public boolean backfilling = false;
@@ -237,7 +238,7 @@ public class paretoHomogenSmall implements Scheduler {
 
         paretoPlans.addAll(skylinePlans.results);
 
-        paretoPlans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+        paretoPlans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi);
 
 
         //        for(Plan p:paretoPlans){
@@ -314,7 +315,7 @@ public class paretoHomogenSmall implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi);
         return space;
 
     }
@@ -594,7 +595,7 @@ public class paretoHomogenSmall implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi);
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
@@ -778,7 +779,7 @@ public class paretoHomogenSmall implements Scheduler {
             //            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
@@ -987,7 +988,7 @@ public class paretoHomogenSmall implements Scheduler {
 
 
 
-        plans.sort(true); // Sort by time breaking equality by sorting by money
+        plans.sort(true, multi); // Sort by time breaking equality by sorting by money
 
         HashMap<Plan, ArrayList <Plan>> dominatedSet=new HashMap<>();
         HashMap<Plan, ArrayList <Plan>> dominanceSet=new HashMap<>();
@@ -1163,10 +1164,10 @@ public class paretoHomogenSmall implements Scheduler {
 
         SolutionSpace candidates = new SolutionSpace();
 
-        skylinePlans.sort(true);
+        skylinePlans.sort(true, multi);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true);
+        candidates.sort(true, multi);
 
         // Keep only the skyline
         SolutionSpace skyline = new SolutionSpace();
@@ -1202,7 +1203,7 @@ public class paretoHomogenSmall implements Scheduler {
         candidates.addAll(skylinePlansNew);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true);
+        candidates.sort(true, multi);
 
         // Keep only the skyline
         SolutionSpace skyline = new SolutionSpace();

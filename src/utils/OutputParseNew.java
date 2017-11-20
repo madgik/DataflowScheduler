@@ -77,7 +77,7 @@ public class OutputParseNew {
 
                 plotUtility plot = new plotUtility();
 
-                comb.computeSkyline(false);
+                comb.computeSkyline(false,false);
 
                 ////////print+plot
 

@@ -44,6 +44,8 @@ public class hhdsEnsemble implements Scheduler {
     public String PruneMethod = "";
     public boolean homotohetero = false;
 
+    public boolean multi=true;
+
     private HashMap<Long, Integer> opLevel;
 
     public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod){
@@ -144,7 +146,7 @@ public class hhdsEnsemble implements Scheduler {
 
         if(homotohetero) {
 
-            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod);
+            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, multi);
 
             mpinfo.add("pareto",paretoPlans.results);
 
@@ -376,7 +378,7 @@ public class hhdsEnsemble implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi);
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
@@ -537,7 +539,7 @@ public class hhdsEnsemble implements Scheduler {
 
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
@@ -712,47 +714,47 @@ public class hhdsEnsemble implements Scheduler {
 
     }
 
-    public  SolutionSpace computeSkyline(SolutionSpace plans){
-        SolutionSpace skyline = new SolutionSpace();
-
-
-
-        plans.sort(true); // Sort by time breaking equality by sorting by money
-
-        HashMap<Plan, ArrayList <Plan>> dominatedSet=new HashMap<>();
-        HashMap<Plan, ArrayList <Plan>> dominanceSet=new HashMap<>();
-        for(Plan p : plans){
-            dominanceSet.put(p,new ArrayList<>());
-            dominatedSet.put(p,new ArrayList<>());
-        }
-
-
-        Plan previous = null;
-        for (Plan est : plans) {
-            if (previous == null) {
-                skyline.add(est);
-                previous = est;
-                continue;
-            }
-            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
-                // Already sorted by money
-                continue;
-            }
-            if(Math.abs(previous.stats.money - est.stats.money)>RuntimeConstants.precisionError) //TODO ji fix or check
-                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
-                    skyline.add(est);
-                    previous = est;
-                }
-        }
-
-        findDominanceRelations(plans.results, dominatedSet,  dominanceSet, skyline.results);
-
-        HashMap<Plan, Double> domScore  = computeDominanceScore(plans.results, dominatedSet,  dominanceSet, skyline.results);
-
-        SolutionSpace skylinePruned = new SolutionSpace();
-
-        return skyline;
-    }
+//    public  SolutionSpace computeSkyline(SolutionSpace plans){
+//        SolutionSpace skyline = new SolutionSpace();
+//
+//
+//
+//        plans.sort(true, multi); // Sort by time breaking equality by sorting by money
+//
+//        HashMap<Plan, ArrayList <Plan>> dominatedSet=new HashMap<>();
+//        HashMap<Plan, ArrayList <Plan>> dominanceSet=new HashMap<>();
+//        for(Plan p : plans){
+//            dominanceSet.put(p,new ArrayList<>());
+//            dominatedSet.put(p,new ArrayList<>());
+//        }
+//
+//
+//        Plan previous = null;
+//        for (Plan est : plans) {
+//            if (previous == null) {
+//                skyline.add(est);
+//                previous = est;
+//                continue;
+//            }
+//            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+//                // Already sorted by money
+//                continue;
+//            }
+//            if(Math.abs(previous.stats.money - est.stats.money)>RuntimeConstants.precisionError) //TODO ji fix or check
+//                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+//                    skyline.add(est);
+//                    previous = est;
+//                }
+//        }
+//
+//        findDominanceRelations(plans.results, dominatedSet,  dominanceSet, skyline.results);
+//
+//        HashMap<Plan, Double> domScore  = computeDominanceScore(plans.results, dominatedSet,  dominanceSet, skyline.results);
+//
+//        SolutionSpace skylinePruned = new SolutionSpace();
+//
+//        return skyline;
+//    }
 
     private SolutionSpace pruneSkylineByDominanceScore(SolutionSpace skylinePlans, HashMap<Plan, Double> domScore) {
 
@@ -880,10 +882,10 @@ public class hhdsEnsemble implements Scheduler {
 
         SolutionSpace candidates = new SolutionSpace();
 
-        skylinePlans.sort(true);
+        skylinePlans.sort(true, multi);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true);
+        candidates.sort(true, multi);
 
         // Keep only the skyline
         SolutionSpace skyline = new SolutionSpace();
@@ -919,7 +921,7 @@ public class hhdsEnsemble implements Scheduler {
         candidates.addAll(skylinePlansNew);
 
         // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true);
+        candidates.sort(true, multi);
 
         // Keep only the skyline
         SolutionSpace skyline = new SolutionSpace();

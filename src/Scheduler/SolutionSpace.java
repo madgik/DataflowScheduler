@@ -4,6 +4,8 @@ import utils.Pair;
 
 import java.util.*;
 
+import static java.lang.Double.*;
+
 
 /**
  * Created by johnchronis on 2/19/17.
@@ -73,7 +75,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return runtime;
     }
     public double getMinCost(){
-        double cost = Double.MAX_VALUE;
+        double cost = MAX_VALUE;
         for(Plan p:results){
             cost = Math.min(cost,p.stats.money);
         }
@@ -81,13 +83,13 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public Plan getSlowest(){
-        this.sort(true);
+        this.sort(true, false);
         return results.get(results.size()-1);
     }
 
     public  Plan getKnee(){
         Plan tp=null;
-        double t= Double.MAX_VALUE;
+        double t= MAX_VALUE;
         for(Plan p:results){
             double tt = p.stats.runtime_MS*0.5-0.5*p.stats.money;
             if( tt<t ){
@@ -109,17 +111,17 @@ public class SolutionSpace implements Iterable<Plan> {
         optimizationTime_MS = -1;
     }
 
-    public void sort(boolean isPareto){
+    public void sort(boolean isPareto, boolean multi){
 
         Comparator<Plan> ParetoPlanComparator = (Comparator<Plan>) (p1, p2) -> {
             if (p1.stats.runtime_MS == p2.stats.runtime_MS) {
                 if (Math.abs(p1.stats.money - p2.stats.money) < RuntimeConstants.precisionError) {
-                    return Double.compare(p1.stats.contUtilization, p2.stats.contUtilization);
+                    return compare(p1.stats.contUtilization, p2.stats.contUtilization);
                     //return Long.compare(stats.quanta, p2.stats.quanta);
                     //return Long.compare(stats.containersUsed, p2.stats.containersUsed);
                     // TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
                 }
-                return Double.compare(p1.stats.money, p2.stats.money);
+                return compare(p1.stats.money, p2.stats.money);
             } else {
                 return Long.compare(p1.stats.runtime_MS, p2.stats.runtime_MS);
             }
@@ -128,7 +130,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         Comparator<Plan> PlanComparator = (Comparator<Plan>) (p1, p2) -> {
             if (p1.stats.runtime_MS == p2.stats.runtime_MS) {
-                return Double.compare(p1.stats.money, p2.stats.money);
+                return compare(p1.stats.money, p2.stats.money);
             } else {
                 return Long.compare(p1.stats.runtime_MS, p2.stats.runtime_MS);
             }
@@ -136,9 +138,92 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
 
+
+        Comparator<Plan> MultiParetoPlanComparator = (Comparator<Plan>) (p1, p2) -> {
+
+
+            if (p1.stats.runtime_MS == p2.stats.runtime_MS) {
+                if (Math.abs(p1.stats.money - p2.stats.money) < RuntimeConstants.precisionError) {
+                    if (Math.abs(p1.stats.money - p2.stats.money) < RuntimeConstants.precisionError) {
+
+                        if (Math.abs(p1.stats.contUtilization - p2.stats.contUtilization) < RuntimeConstants.precisionError)
+                            return compare(p1.stats.contUtilization, p2.stats.contUtilization);//leave it as it is;
+                        else if (p1.stats.contUtilization > p2.stats.contUtilization)
+                            return 1;
+                        else
+                            return -1;
+                    }
+                    else
+                    {
+                        if (Math.abs(p1.stats.contUtilization - p2.stats.contUtilization) < RuntimeConstants.precisionError)
+                            return compare(p1.stats.contUtilization, p2.stats.contUtilization);//leave it as it is;
+                        else if (p1.stats.contUtilization > p2.stats.contUtilization)
+                            return 1;
+                        else
+                            return -1;
+                    }
+                    //return Long.compare(stats.quanta, p2.stats.quanta);
+                    //return Long.compare(stats.containersUsed, p2.stats.containersUsed);
+                    // TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
+                }
+                return compare(p1.stats.money, p2.stats.money);
+            } else {
+                return Long.compare(p1.stats.runtime_MS, p2.stats.runtime_MS);
+            }
+
+//            double[] obj1= {p1.stats.runtime_MS, p1.stats.money};//, p1.stats.contUtilization};
+//            double[] obj2= {p2.stats.runtime_MS, p2.stats.money};//, p2.stats.contUtilization};
+//
+//            solutionObjectives solution1 = new solutionObjectives(p1, obj1);
+//            solutionObjectives solution2 = new solutionObjectives(p2, obj2);
+//
+//            boolean dominate1 = false;
+//            boolean dominate2 = false;
+//
+//            for (int i = 0; i < solution1.getObjectives().length; i++) {
+//                if ( (Math.abs(solution1.getObjective(i) - solution2.getObjective(i)) > RuntimeConstants.precisionError) && solution1.getObjective(i) < solution2.getObjective(i)) {
+//                    dominate1 = true;
+//
+//                    if (dominate2) {
+//                        return 0;
+//                    }
+//                } else if ((Math.abs(solution1.getObjective(i) - solution2.getObjective(i)) > RuntimeConstants.precisionError) &&  solution1.getObjective(i) > solution2.getObjective(i)) {
+//                    dominate2 = true;
+//
+//                    if (dominate1) {
+//                        return 0;
+//                    }
+//                }
+//            }
+//
+//            if (dominate1 == dominate2) {
+//                return 0;
+//            } else if (dominate1) {
+//                return -1;
+//            } else {
+//                return 1;
+//            }
+
+        };
+
+
+
+
         if(isPareto) {
-            Collections.sort(results, ParetoPlanComparator);
+            if(multi)
+            {
+                Collections.sort(results, MultiParetoPlanComparator);
+
+                for (int i = 0; i < results.size(); i++)
+                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.contUtilization);
+            }
+            else {
+                System.out.println("here");
+
+                Collections.sort(results, ParetoPlanComparator);
+            }
         }else {
+            System.out.println("oups");
             Collections.sort(results, PlanComparator);
         }
 
@@ -152,8 +237,8 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public double getScoreElastic(){
-        double maxTime=0,minTime= Double.MAX_VALUE;
-        double maxMoney=0,minMoney= Double.MAX_VALUE;
+        double maxTime=0,minTime= MAX_VALUE;
+        double maxMoney=0,minMoney= MAX_VALUE;
 
         for(Plan p: results){
             maxMoney = (long) Math.max(maxMoney,p.stats.money);
@@ -175,63 +260,132 @@ public class SolutionSpace implements Iterable<Plan> {
         });
     }
 
-    public  void computeSkyline(boolean isPareto){
+    public  void computeSkyline(boolean isPareto, boolean multi){
 
         SolutionSpace skyline = new SolutionSpace();
 
 
-        this.sort(isPareto); // Sort by time breaking equality by sorting by money
+        this.sort(isPareto, multi); // Sort by time breaking equality by sorting by money
 
-        Plan previous = null;
-        for (Plan est : results) {
-            if (previous == null) {
-                skyline.add(est);
-                previous = est;
-                continue;
-            }
-            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
-                // Already sorted by money
-                continue;
-            }
-            if(Math.abs(previous.stats.money - est.stats.money)>RuntimeConstants.precisionError) //TODO ji fix or check
-                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+
+        if(multi)
+        {
+
+
+            Plan previous = null;
+            for (Plan est : results) {
+                if (previous == null) {
                     skyline.add(est);
                     previous = est;
+                    continue;
                 }
+                if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+                    // Already sorted by money
+                    continue;
+                }
+                if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
+                    if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+                        previous = est;
+                    }
+            }
+
         }
 
+        else {
+            Plan previous = null;
+            for (Plan est : results) {
+                if (previous == null) {
+                    skyline.add(est);
+                    previous = est;
+                    continue;
+                }
+                if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+                    // Already sorted by money
+                    continue;
+                }
+                if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
+                    if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+                        previous = est;
+                    }
+            }
 
+        }
         results.clear();
         results.addAll(skyline.results);
 
     }
 
-    public  ArrayList<Plan> getSkyline(){
+    public  ArrayList<Plan> getSkyline(boolean multi){//todo: change
 
         SolutionSpace skyline = new SolutionSpace();
 
+        this.sort(true, multi); // Sort by time breaking equality by sorting by money
 
-        this.sort(true); // Sort by time breaking equality by sorting by money
+        System.out.println("sorted:");
+        for(Plan e: results)
+            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.contUtilization );
 
-        Plan previous = null;
-        for (Plan est : results) {
-            if (previous == null) {
-                skyline.add(est);
-                previous = est;
-                continue;
-            }
-            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
-                // Already sorted by money
-                continue;
-            }
-            if(Math.abs(previous.stats.money - est.stats.money)>RuntimeConstants.precisionError) //TODO ji fix or check
-                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+        if(multi) {
+            Plan previous = null;
+            for (Plan est : results) {
+                if (previous == null) {
                     skyline.add(est);
                     previous = est;
+                    continue;
                 }
+                if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+                    // Already sorted by money
+
+                    if (Math.abs(previous.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
+                        if (previous.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
+                            skyline.add(est);
+                          //  previous = est;
+                        }
+
+                    continue;
+                }
+                if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
+                    if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+                        previous = est;
+                        continue;
+                    }
+
+                if (Math.abs(previous.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
+                    if (previous.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+                      //  previous = est;
+                    }
+
+
+            }
         }
 
+        else {
+            Plan previous = null;
+            for (Plan est : results) {
+                if (previous == null) {
+                    skyline.add(est);
+                    previous = est;
+                    continue;
+                }
+                if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+                    // Already sorted by money
+                    continue;
+                }
+                if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
+                    if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+                        previous = est;
+                    }
+            }
+        }
 
+        System.out.println("skyline is:");
+        for(Plan e: skyline)
+        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.contUtilization );
      return skyline.results;
 
     }
@@ -253,8 +407,10 @@ public class SolutionSpace implements Iterable<Plan> {
 
     static int steps=0;
     static int aaa = 0;
-    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method){
-        ArrayList<Plan> skyline = getSkyline();
+    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi){
+
+
+        ArrayList<Plan> skyline = getSkyline(multi);
 
         if(!pruneEnabled){
             this.results.clear();
@@ -295,7 +451,7 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.addAll(retset);
             }
             else if (method.equals("crowdingMoney")) {
-                crowdingDistanceMoney(skyline,k,retset);
+                crowdingDistanceMoney(skyline,k,retset, false);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("crowdingRuntime")) {
@@ -329,7 +485,7 @@ public class SolutionSpace implements Iterable<Plan> {
             }
             else if (method.equals("newall2")){
                 crowdingDistanceScoreNormalized(skyline,k/2,retset);
-                crowdingDistanceMoney(skyline,k,retset);
+                crowdingDistanceMoney(skyline,k,retset, false);
                 this.results.clear();
                 this.results.addAll(retset);
             }else if (method.equals("scoreDist+maxMoney")){
@@ -475,8 +631,8 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public void keepK(int k) {
-        ArrayList<Plan> sk = getSkyline();
+    public void keepK(int k, boolean multi) {
+        ArrayList<Plan> sk = getSkyline(multi);
 
         if(results.size() == 0) {
             System.out.println("empty");
@@ -721,7 +877,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-    public HashSet<Plan> crowdingDistanceMoney(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret) {
+    public HashSet<Plan> crowdingDistanceMoney(ArrayList<Plan> donotchange, int skylinePlansToKeep, HashSet<Plan> ret, boolean multi) {
         //uses runtime to sort crowded spaces
 
 //        HashSet<Plan> ret = new HashSet<>();
@@ -739,7 +895,7 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         });
 
-        this.sort(true);
+        this.sort(true, multi);
         ret.add(results.get(0));
         ret.add(results.get(results.size()-1));
 
@@ -828,7 +984,7 @@ public class SolutionSpace implements Iterable<Plan> {
         });
         for (int p = 0; p < skylinePlans.size(); ++p) {
             if (p == 0 || p == skylinePlans.size() - 1) {
-                planDistance.put(skylinePlans.get(p), Double.MAX_VALUE);
+                planDistance.put(skylinePlans.get(p), MAX_VALUE);
             } else {
                 long makespan_prev = skylinePlans.get(0).stats.runtime_MS;
                 long makespan_next = skylinePlans.get(p).stats.runtime_MS;
@@ -844,7 +1000,7 @@ public class SolutionSpace implements Iterable<Plan> {
         });
         for (int p = 0; p < skylinePlans.size(); ++p) {
             if (p == 0 || p == skylinePlans.size() - 1) {
-                planDistance.put(skylinePlans.get(p), Double.MAX_VALUE);
+                planDistance.put(skylinePlans.get(p), MAX_VALUE);
             } else {
                 Double money_prev = skylinePlans.get(0).stats.money;
                 Double money_next = skylinePlans.get(p).stats.money;
@@ -887,7 +1043,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         for (int p = 0; p < skylinePlans.size(); ++p) {
             if (p == 0 || p == skylinePlans.size() - 1) {
-               sortedList.add(new Pair<>(skylinePlans.get(p),Double.MAX_VALUE));
+               sortedList.add(new Pair<>(skylinePlans.get(p), MAX_VALUE));
             } else {
                 double mon = skylinePlans.get(p).stats.money;
                 double mon1 = skylinePlans.get(p+1).stats.money;
@@ -967,7 +1123,7 @@ public class SolutionSpace implements Iterable<Plan> {
         for(int j=1;j<donotchange.size()-1;++j){
             Plan p = donotchange.get(j);
             if(knees.contains(p)){
-                finalMetric.add(new Pair<Plan, Double>(p,Double.MAX_VALUE));
+                finalMetric.add(new Pair<Plan, Double>(p, MAX_VALUE));
             }else{
                 finalMetric.add(new Pair<Plan, Double>(p,((0.5*secondDer.get(p))/maxSecondDer)*((0.5*minDist(p,knees))/maxDist ) ));
 
@@ -1024,7 +1180,7 @@ public class SolutionSpace implements Iterable<Plan> {
     }
     public double minDist(Plan p,ArrayList<Plan> knees){
         Plan r = null;
-        double dist = Double.MAX_VALUE;
+        double dist = MAX_VALUE;
         double td;
         for(Plan pp:knees){
             td = calculateEuclidean(p,pp);
@@ -1088,7 +1244,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return pl;
     }
     public Plan getMinCostPlan() {
-        double cost = Double.MAX_VALUE;
+        double cost = MAX_VALUE;
         Plan pl = null;
 
         for(Plan p:results){

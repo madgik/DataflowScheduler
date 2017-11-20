@@ -121,7 +121,7 @@ public class Plot extends ApplicationFrame {
         Double maxCost = combined.getMaxCost()+100;
         Double maxRutime = ((double)combined.getMaxRuntime())+100;
 
-        combined.computeSkyline(false);
+        combined.computeSkyline(false, false);
 
 
         XYSeries comb = new XYSeries("combined");
