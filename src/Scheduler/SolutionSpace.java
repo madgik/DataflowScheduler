@@ -326,22 +326,32 @@ public class SolutionSpace implements Iterable<Plan> {
         System.out.println("sorted:");
         for(Plan e: results)
             System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.contUtilization );
+        System.out.println(" \n");
 
         if(multi) {
             Plan previous = null;
+
+            Plan previousFair = null;
+
             for (Plan est : results) {
+
+//                System.out.println("looks for" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
+//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
+//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
+
                 if (previous == null) {
                     skyline.add(est);
                     previous = est;
+                    previousFair = est;
                     continue;
                 }
                 if (previous.stats.runtime_MS == est.stats.runtime_MS) {
                     // Already sorted by money
 
-                    if (Math.abs(previous.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
-                        if (previous.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
+                    if (Math.abs(previousFair.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
+                        if (previousFair.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
                             skyline.add(est);
-                          //  previous = est;
+                            previousFair = est;
                         }
 
                     continue;
@@ -350,19 +360,19 @@ public class SolutionSpace implements Iterable<Plan> {
                     if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
                         skyline.add(est);
                         previous = est;
+                        previousFair = est;
                         continue;
                     }
 
-                if (Math.abs(previous.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
-                    if (previous.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
+                if (Math.abs(previousFair.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
+                    if (previousFair.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
                         skyline.add(est);
-                      //  previous = est;
+                        previousFair = est;
                     }
 
 
             }
         }
-
         else {
             Plan previous = null;
             for (Plan est : results) {
@@ -411,7 +421,6 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
         ArrayList<Plan> skyline = getSkyline(multi);
-
         if(!pruneEnabled){
             this.results.clear();
             this.results.addAll(skyline);
@@ -420,13 +429,12 @@ public class SolutionSpace implements Iterable<Plan> {
             if (keepWhole) {
                 k = results.size();
             }
-            if (k > skyline.size()) {
+            if (k >= skyline.size()) {
                 this.results.clear();
                 this.results.addAll(skyline);
                 return;
             }
             HashSet<Plan> retset  = new HashSet<>();
-
 
             if (method.equals("valkanas")) {
                 valkanasPruning(skyline,k,retset);
@@ -751,7 +759,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
         int i=0;
-        while(i<skylinePlans.size() && ret.size()<skylinePlansToKeep){
+        while(i<skylinePlans.size()){// && ret.size()<skylinePlansToKeep){//
             if(!ret.contains(skylinePlans.get(i))){
                 ret.add(skylinePlans.get(i));
             }
@@ -1071,7 +1079,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-    public HashSet<Plan> Knee(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret){
+    public HashSet<Plan> Knee(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret){//TODO: if plans number > k then keep all plans
 
         addExtremes(donotchange,ret);
         
@@ -1108,9 +1116,11 @@ public class SolutionSpace implements Iterable<Plan> {
 ////
 ////        long dist1 = slowest.stats.runtime_MS - knee.stats.runtime_MS;
 ////        long dist2 = knee.stats.runtime_MS - fastest.stats.runtime_MS;
-
+     //   System.out.println("ret is " + ret.size());
         HashMap<Plan,Double> secondDer = new HashMap<>();
         ArrayList<Plan> knees = getKneess(donotchange,secondDer);
+
+
         ArrayList<Pair<Plan,Double>> finalMetric = new ArrayList<>();
 
         double maxSecondDer = 0.0;
@@ -1138,7 +1148,9 @@ public class SolutionSpace implements Iterable<Plan> {
                     });
 
         int i=0;
-        while(ret.size()<k){
+
+        while(ret.size()<k && finalMetric.size()>i+1){
+
             ret.add(finalMetric.get(i).a);
             ++i;
         }
