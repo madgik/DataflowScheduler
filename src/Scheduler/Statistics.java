@@ -14,6 +14,7 @@ public class Statistics {
     // in that way a VM is leased only for the quanta used and elastic provisioning is dynamic throughout
     public long containersUsed;
     public double contUtilization;
+    public double partialUnfairness;
 
     public int meanContainersUsed;
 
@@ -21,13 +22,16 @@ public class Statistics {
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan;//dagId, time
-
     public Double unfairness = 0.0;//dagId, time
-
     public Double subdagMaxMakespan=0.0;//dagId, time
     public Double subdagMinMakespan = Double.MAX_VALUE;//dagId, time
     public Double subdagMeanMoneyFragment;//dagId, time
     public HashMap <Long, Double> subdagMoneyFragment = new HashMap<>();//dagId, time
+    public HashMap  <Long, Long> subdagResponseTime = new HashMap<>();//dagId, time
+    public Double subdagMeanResponseTime;//dagId, time
+    public Double subdagMaxResponseTime=0.0;//dagId, time
+    public Double subdagMinResponseTime = Double.MAX_VALUE;//dagId, time
+
 
     public Statistics(Plan plan){
 
@@ -37,6 +41,8 @@ public class Statistics {
         quanta = 0;
         money = 0;
         contUtilization=0.0;
+        partialUnfairness = 0.0;
+
         for(Container c:plan.cluster.containersList){
             if(!plan.cluster.contUsed.contains(c.id)){
                 if(c.startofUse_MS>-1){
@@ -64,7 +70,11 @@ public class Statistics {
        int makespanQuanta = (int)Math.ceil(runtime_MS/(double)RuntimeConstants.quantum_MS);
         meanContainersUsed = (int) Math.ceil(quanta/(double)(makespanQuanta));
 
-     //   System.out.println("quanta " + quanta + " " + makespanQuanta + " " + meanContainersUsed);
+
+        for(Long dgId: subdagMakespan.keySet())//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
+            partialUnfairness += Math.abs(subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+
+        //   System.out.println("quanta " + quanta + " " + makespanQuanta + " " + meanContainersUsed);
 
 
 
@@ -168,6 +178,8 @@ public class Statistics {
 
 
 
+
+
         //  for the case of ensemble
         if(plan.graph.superDAG.merged) {//add a constraint to compute them only when all dags have been scheduled. not for partial plans
 
@@ -185,6 +197,7 @@ public class Statistics {
                     subdagStartTime.put(dId, minStartTime);
                     subdagFinishTime.put(dId, maxEndTime);
 
+
                 }
                 else {
                     Long ts = subdagStartTime.get(dId);
@@ -201,23 +214,34 @@ public class Statistics {
 
 
             double meanMakespan = 0L;
+            double meanResponseTime = 0L;
+
             for(Long dgId: subdagFinishTime.keySet()) {
                 subdagMakespan.put(dgId, subdagFinishTime.get(dgId) - subdagStartTime.get(dgId));
                 meanMakespan += (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType});
-
                 subdagMaxMakespan = Math.max(subdagMaxMakespan, (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}));
                 subdagMinMakespan = Math.min(subdagMinMakespan, (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}));
+
+                meanResponseTime += (subdagFinishTime.get(dgId) - subdagStartTime.get(dgId))/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType});
+                subdagResponseTime.put(dgId, subdagFinishTime.get(dgId));//for now TODO: change later by adding -submitTime
+                subdagMaxResponseTime = Math.max(subdagMaxResponseTime, (subdagFinishTime.get(dgId) - 0)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}));
+                subdagMinResponseTime = Math.min(subdagMinResponseTime, (subdagFinishTime.get(dgId) - 0)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}));
 
                 //   System.out.println(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType));
             }
 
             if(subdagFinishTime.size()>0) {
                 subdagMeanMakespan = meanMakespan / (double) subdagFinishTime.size();
+                subdagMeanResponseTime = meanResponseTime / (double) subdagFinishTime.size();
             }
 
 
+//            for(Long dgId: subdagMakespan.keySet())
+//            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
+
+
             for(Long dgId: subdagMakespan.keySet())
-            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
+                unfairness += Math.abs(subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
 
 
 
@@ -282,6 +306,8 @@ public class Statistics {
         this.contUtilization = s.contUtilization;
 
         this.meanContainersUsed = s.meanContainersUsed;
+        this.partialUnfairness = s.partialUnfairness;
+        this.unfairness = s.unfairness;//TODO is it required??
     }
 
 }
