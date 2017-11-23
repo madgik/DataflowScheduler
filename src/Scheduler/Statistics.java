@@ -43,6 +43,8 @@ public class Statistics {
         contUtilization=0.0;
         partialUnfairness = 0.0;
 
+
+
         for(Container c:plan.cluster.containersList){
             if(!plan.cluster.contUsed.contains(c.id)){
                 if(c.startofUse_MS>-1){
@@ -53,6 +55,13 @@ public class Statistics {
                     }
                 }
                 continue;}
+
+            //idea: the last slot of a container may affect previously computed response time and partial crpath (maxtrank)
+            //if last op is added in an idle slot, they won't be changed
+            long opCur= c.opsschedule.get(c.opsschedule.size()-1).opId;//last slot in container
+            //define maxTrank and compute it for opCur, dgId based on trank
+
+
             runtime_MS = Math.max(c.UsedUpTo_MS,runtime_MS);
             int localQuanta = (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS);
             if(localQuanta == 0 ){
@@ -63,6 +72,7 @@ public class Statistics {
 //            }
             quanta+=localQuanta;
             money+=localQuanta*c.contType.container_price;
+
         }
         containersUsed = plan.cluster.contUsed.size();
 
