@@ -17,15 +17,23 @@ public class Statistics {
 
     public int meanContainersUsed;
 
+    //TODO: move anythinf related to subdag to DAGmerged?
+    public HashMap  <Long, Long> subdagResponseTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagStartTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan;//dagId, time
+    public Double subdagMeanResponseTime;//dagId, time
+
 
     public Double unfairness = 0.0;//dagId, time
 
     public Double subdagMaxMakespan=0.0;//dagId, time
     public Double subdagMinMakespan = Double.MAX_VALUE;//dagId, time
+
+    public Double subdagMaxResponseTime=0.0;//dagId, time
+    public Double subdagMinResponseTime = Double.MAX_VALUE;//dagId, time
+
     public Double subdagMeanMoneyFragment;//dagId, time
     public HashMap <Long, Double> subdagMoneyFragment = new HashMap<>();//dagId, time
 
@@ -184,6 +192,7 @@ public class Statistics {
 
                     subdagStartTime.put(dId, minStartTime);
                     subdagFinishTime.put(dId, maxEndTime);
+                    subdagResponseTime.put(dId, maxEndTime-0);
 
                 }
                 else {
@@ -194,6 +203,7 @@ public class Statistics {
 
                     subdagStartTime.put(dId, minStartTime);
                     subdagFinishTime.put(dId, maxEndTime);
+                    subdagResponseTime.put(dId, maxEndTime-0);
                 }
 
 
@@ -216,8 +226,11 @@ public class Statistics {
             }
 
 
-            for(Long dgId: subdagMakespan.keySet())
-            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
+//            for(Long dgId: subdagMakespan.keySet())
+//            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
+
+            for(Long dgId: subdagResponseTime.keySet())
+                unfairness += Math.abs(subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
 
 
 
