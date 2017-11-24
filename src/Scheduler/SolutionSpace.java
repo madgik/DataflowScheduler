@@ -348,8 +348,8 @@ public class SolutionSpace implements Iterable<Plan> {
                 if (previous.stats.runtime_MS == est.stats.runtime_MS) {
                     // Already sorted by money
 
-                    if (Math.abs(previousFair.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
-                        if (previousFair.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
+                    if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                        if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
                             skyline.add(est);
                             previousFair = est;
                         }
@@ -364,8 +364,8 @@ public class SolutionSpace implements Iterable<Plan> {
                         continue;
                     }
 
-                if (Math.abs(previousFair.stats.contUtilization - est.stats.contUtilization) > RuntimeConstants.precisionError) //TODO use fairness
-                    if (previousFair.stats.contUtilization > est.stats.contUtilization) {//use Double.compare. at moheft as well or add precision error
+                if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                    if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
                         skyline.add(est);
                         previousFair = est;
                     }
@@ -395,7 +395,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         System.out.println("skyline is:");
         for(Plan e: skyline)
-        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.contUtilization );
+        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
      return skyline.results;
 
     }

@@ -1,5 +1,7 @@
 package Scheduler;
 
+import Graph.Edge;
+import Graph.DAG;
 import java.util.HashMap;
 
 /**
@@ -32,6 +34,8 @@ public class Statistics {
     public Double subdagMaxResponseTime=0.0;//dagId, time
     public Double subdagMinResponseTime = Double.MAX_VALUE;//dagId, time
 
+    public HashMap <Long, Double> subdagPartialCP = new HashMap<>();//dagId, time
+
 
     public Statistics(Plan plan){
 
@@ -41,7 +45,7 @@ public class Statistics {
         quanta = 0;
         money = 0;
         contUtilization=0.0;
-        partialUnfairness = 0.0;
+        partialUnfairness = -10.0;
 
 
 
@@ -58,7 +62,16 @@ public class Statistics {
 
             //idea: the last slot of a container may affect previously computed response time and partial crpath (maxtrank)
             //if last op is added in an idle slot, they won't be changed
-            long opCur= c.opsschedule.get(c.opsschedule.size()-1).opId;//last slot in container
+            long opCurId= c.opsschedule.get(c.opsschedule.size()-1).opId;//last slot in container
+
+            Long dId = plan.graph.operators.get(opCurId).dagID;
+
+            Double subdagMaxPath=0.0;
+            if(subdagPartialCP.get(dId)!=null)
+                subdagMaxPath = subdagPartialCP.get(dId);
+            Double path=0.0;//trank of operator = ;//
+            subdagMaxPath = Math.max(subdagMaxPath, path);
+            subdagPartialCP.put(dId, subdagMaxPath);
             //define maxTrank and compute it for opCur, dgId based on trank
 
 
@@ -82,7 +95,8 @@ public class Statistics {
 
 
         for(Long dgId: subdagMakespan.keySet())//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
-            partialUnfairness += Math.abs(subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+        partialUnfairness += Math.abs(subdagResponseTime.get(dgId)/computePartialCP(plan.graph.superDAG.getSubDAG(dgId))- subdagMeanResponseTime);
+        //plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
 
         //   System.out.println("quanta " + quanta + " " + makespanQuanta + " " + meanContainersUsed);
 
@@ -307,6 +321,36 @@ public class Statistics {
     public void printStats() {
         System.out.println("Time_MS: "+runtime_MS+" Money: "+money+" Quanta: "+quanta );
     }
+
+    public double computePartialCP(DAG graph)
+    {
+
+        Double maxPath = 0.0;
+
+        HashMap<Long, Double> path = new HashMap<>();
+        HashMap<Long, Double> w_mean = new HashMap<>();
+
+        TopologicalSorting topOrder = new TopologicalSorting(graph);
+        for (Long opId : topOrder.iterator()) {
+            double maxRankParent=0.0;
+            for (Edge inLink: graph.getParents(opId)) {
+                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
+                maxRankParent = Math.max(maxRankParent, comCostParent+path.get(inLink.from)+w_mean.get(inLink.from));
+            }
+            double wcur=0.0;
+            for(containerType contType: containerType.values())
+                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
+            int types= containerType.values().length;
+            double w=wcur/(double)types;//average execution cost for operator op
+            w_mean.put(opId, w);
+
+            path.put(opId, maxRankParent);
+            maxPath =Double.max(maxPath, path.get(opId)+w_mean.get(opId));
+        }
+
+        return maxPath;
+    }
+
 
     public Statistics(Statistics s){
         this.runtime_MS = s.runtime_MS;
