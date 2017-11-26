@@ -24,7 +24,7 @@ public class Statistics {
     public HashMap  <Long, Long> subdagFinishTime = new HashMap<>();//dagId, time
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan;//dagId, time
-    public Double unfairness = 0.0;//dagId, time
+    public Double unfairness;//dagId, time
     public Double subdagMaxMakespan=0.0;//dagId, time
     public Double subdagMinMakespan = Double.MAX_VALUE;//dagId, time
     public Double subdagMeanMoneyFragment;//dagId, time
@@ -45,8 +45,10 @@ public class Statistics {
         quanta = 0;
         money = 0;
         contUtilization=0.0;
-        partialUnfairness = -10.0;
 
+
+        partialUnfairness = 0.0;
+        unfairness=0.0;
 
 
         for(Container c:plan.cluster.containersList){
@@ -94,10 +96,11 @@ public class Statistics {
         meanContainersUsed = (int) Math.ceil(quanta/(double)(makespanQuanta));
 
 
-        for(Long dgId: subdagMakespan.keySet())//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
-        partialUnfairness += Math.abs(subdagResponseTime.get(dgId)/computePartialCP(plan.graph.superDAG.getSubDAG(dgId))- subdagMeanResponseTime);
-        //plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
-
+//        for(Long dgId: subdagMakespan.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
+//            partialUnfairness += Math.abs(subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime);
+//            //plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+//            System.out.println(dgId + " partialunfairnes " + partialUnfairness);
+//        }
         //   System.out.println("quanta " + quanta + " " + makespanQuanta + " " + meanContainersUsed);
 
 
@@ -262,11 +265,16 @@ public class Statistics {
 
 //            for(Long dgId: subdagMakespan.keySet())
 //            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
+            for(Long dgId: subdagMakespan.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
+                partialUnfairness += Math.abs(subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime);
+                //plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+                System.out.println(dgId + " partialunfairnes " + partialUnfairness);
+            }
 
-
-            for(Long dgId: subdagMakespan.keySet())
-                unfairness += Math.abs(subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
-
+            for(Long dgId: subdagMakespan.keySet()) {
+                unfairness += Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}))-subdagMeanResponseTime;//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+                System.out.println(dgId+ " unfairness is " + unfairness + " " +Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType})) + " " +subdagMeanResponseTime);
+            }
 
 
             Double sumCostSubdag =0.0;
