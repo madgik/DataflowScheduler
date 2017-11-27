@@ -1070,7 +1070,7 @@ public class hhdsEnsemble implements Scheduler {
         }
 
         for (Long op : topOrder.iterator()) {
-            System.out.println(op + " sumrank " +  sum_rank.get(op));
+       //     System.out.println(op + " sumrank " +  sum_rank.get(op));
             opsSorted.add(op);
         }
 
@@ -1214,7 +1214,7 @@ public class hhdsEnsemble implements Scheduler {
 
                //     double c =taskSlack*tasksScheduledPerc/taskWeight;
 
-               //     double c =taskSlack/tasksUnScheduledPerc;
+                 //   double c =taskSlack/tasksUnScheduledPerc;
 
                     double c =taskSlack*tasksScheduledPerc;
 
