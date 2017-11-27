@@ -28,7 +28,7 @@ public class hhdsEnsemble implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 10;
+    public int pruneSkylineSize = 20;
 
 
 

@@ -192,12 +192,18 @@ public class MainEnsemble {
             for (int j = 0; j < ensemblePlans.size(); ++j) {
 
                 Plan p=ensemblePlans.get(j);
-                System.out.print("plan " + j + ": ");
-                System.out.printf("%d %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.subdagMeanMakespan, p.stats.subdagMeanMoneyFragment);
-                System.out.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan + "unf \t" + p.stats.unfairness);
+                System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
+                //System.out.printf("%d %.1f %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.unfairness);
+                System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
+
                 outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan + " \t" + p.stats.unfairness);
+
+                System.out.println("dag responseTime makespan startTime finishTime");
+
+
                 for(Long dgId: p.stats.subdagFinishTime.keySet())
-                    System.out.println("dag " + dgId + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+                    System.out.println("dag " + dgId + " responseTime "  + p.stats.subdagResponseTime.get(dgId) + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+
             }
 
 
