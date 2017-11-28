@@ -28,7 +28,7 @@ public class hhdsEnsemble implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 20;
+    public int pruneSkylineSize = 10;
 
 
 
@@ -44,7 +44,7 @@ public class hhdsEnsemble implements Scheduler {
     public String PruneMethod = "";
     public boolean homotohetero = false;
 
-    public boolean multi=true;
+    public boolean multi=false;
 
     private HashMap<Long, Integer> opLevel;
 
