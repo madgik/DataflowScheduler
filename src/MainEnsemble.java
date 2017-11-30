@@ -34,15 +34,17 @@ public class MainEnsemble {
         if(jar)
         jarpath = "/home/ilia/IdeaProjects/MyScheduler/runRemotely/";
         Integer ensembleSize =20;
-        String newDir = "ensemblesSep2017/MixedEnsemble20Ligo100Montage50/slackByDag/";
+        String newDir = "ensemblesDec2017/MixedEnsemble4Ligo100Montage50/dagMergeTrue/";
 
 
        String rankMethod="dagMerge";
+       boolean multiObjective = true;
 
         if(args.length>1) {
-            ensembleSize = Integer.parseInt(args[2]);
+            ensembleSize = Integer.parseInt(args[3]);
             rankMethod = args[0];
             newDir = args[1];
+            multiObjective = Boolean.valueOf(args[2]);
         }
 
 //        for (int i = 0; i<args.length; ) {
@@ -126,18 +128,27 @@ public class MainEnsemble {
 
 
             PrintWriter outEnsemble = null;
+
+        PrintWriter outPlanDetails = null;
+
             try {
 
                 String fileName =
-                        "ensemble" + ensembleSize; //+
+                        "ensemble";
+
+                String filePlanDetails =
+                        "planDetails"; //+
                 //    (new java.util.Date()).toString().replace(" ","_");
 
-                outEnsemble = new PrintWriter(pathOut + fileName + ".txt");
+                outEnsemble = new PrintWriter(pathOut + fileName + ".dat");
+                outPlanDetails = new PrintWriter(pathOut + filePlanDetails + ".txt");
 
                 // System.out.println("writes at " + );
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
+
             //   out.println(sbOut.toString());
 
 
@@ -145,7 +156,7 @@ public class MainEnsemble {
 
 
 
-                for (int i = 3; i < 3 + 2 * ensembleSize; i += 2) {
+                for (int i = 4; i < 4 + 2 * ensembleSize; i += 2) {
 
                     String appName = "MONTAGE";
                     Integer randomSize = random.randomInRange(2, 0);
@@ -187,28 +198,34 @@ public class MainEnsemble {
             System.out.println("running multiple dataflows");
 
             ArrayList<Plan> ensemblePlans =new ArrayList<>();
-            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod);
+            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective);
 
-            for (int j = 0; j < ensemblePlans.size(); ++j) {
+        outEnsemble.println("money\truntime_MS\tsubdagMeanMoneyFragment\tsubdagMeanResponseTime\tsubdagMinResponseTime\tsubdagMaxResponseTime\tunfairness\tsubdagMeanMakespan\tsubdagMinMakespan\tsubdagMaxMakespan");
+
+        for (int j = 0; j < ensemblePlans.size(); ++j) {
 
                 Plan p=ensemblePlans.get(j);
                 System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
                 //System.out.printf("%d %.1f %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.unfairness);
+                outPlanDetails.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
+
                 System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
 
-                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan + " \t" + p.stats.unfairness);
+                outPlanDetails.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
 
-                System.out.println("dag responseTime makespan startTime finishTime");
+                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan);
 
+                for(Long dgId: p.stats.subdagFinishTime.keySet()) {
+                    System.out.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+                    outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId)/p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
 
-                for(Long dgId: p.stats.subdagFinishTime.keySet())
-                    System.out.println("dag " + dgId + " responseTime "  + p.stats.subdagResponseTime.get(dgId) + " makespan "  + p.stats.subdagMakespan.get(dgId) + " starts " +  p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-
+                }
             }
 
 
 
             outEnsemble.close();
+        outPlanDetails.close();
 
 
 
@@ -220,14 +237,14 @@ public class MainEnsemble {
    // }
 
 
-    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type){
+    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type, Boolean multiObjective){
         SolutionSpace space = new SolutionSpace();
 
         Cluster cluster = new Cluster();
 
         Scheduler sched;
         //  if(type.equals("multiple"))
-        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod);//"dagMerge";//commonEntry:default, perDag, dagMerge
+        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective);//"dagMerge";//commonEntry:default, perDag, dagMerge
         //  else
         //    sched = new hhds(graph,cluster,prune,method);
 
@@ -245,7 +262,7 @@ public class MainEnsemble {
     }
 
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans, String rankMethod)
+    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans, String rankMethod, boolean multiObjective)
     {
 
         StringBuilder sbOut = new StringBuilder();
@@ -255,7 +272,7 @@ public class MainEnsemble {
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
-        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero", sbOut,combined, type);
+        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero", sbOut,combined, type, multiObjective);
 
         hhdsPlans.addAll(paretoToCompare.results);
 
@@ -572,7 +589,7 @@ public class MainEnsemble {
         return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
     }
 
-    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans, String rankMethod) {
+    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans, String rankMethod, boolean multiObjective) {
 
         System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
 
@@ -596,7 +613,7 @@ public class MainEnsemble {
             flowname = file;
         }
 
-        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans, rankMethod);
+        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans, rankMethod, multiObjective);
 
         return graph;
     }
@@ -1018,7 +1035,7 @@ public class MainEnsemble {
 
 
 
-    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans, String rankMethod){
+    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans, String rankMethod, boolean multiObjective){
 
         System.out.println("runinng multFLow");
         for(Triple<String,Integer,Integer> tr: flowsandParasms){
@@ -1073,7 +1090,7 @@ public class MainEnsemble {
 
 
 
-        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod);
+        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod, multiObjective);
 
 //            ArrayList <Long> minTime = new ArrayList<>();
 //        ArrayList <Double> minCost = new ArrayList<>();

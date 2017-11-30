@@ -353,10 +353,10 @@ public class SolutionSpace implements Iterable<Plan> {
 
         this.sort(true, multi); // Sort by time breaking equality by sorting by money
 
-        System.out.println("sorted:");
-        for(Plan e: results)
-            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
-        System.out.println(" \n");
+//        System.out.println("sorted:");
+//        for(Plan e: results)
+//            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
+//        System.out.println(" \n");
 
         if(multi) {//multi-objective includes fairness
             Plan previous = null;
@@ -430,9 +430,10 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         }
 
-        System.out.println("skyline is:");
-        for(Plan e: skyline)
-        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
+//        System.out.println("skyline is:");
+//        for(Plan e: skyline)
+//        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
+
      return skyline.results;
 
     }
@@ -455,7 +456,6 @@ public class SolutionSpace implements Iterable<Plan> {
     static int steps=0;
     static int aaa = 0;
     public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi){
-
 
         ArrayList<Plan> skyline = getSkyline(multi);
         if(!pruneEnabled){

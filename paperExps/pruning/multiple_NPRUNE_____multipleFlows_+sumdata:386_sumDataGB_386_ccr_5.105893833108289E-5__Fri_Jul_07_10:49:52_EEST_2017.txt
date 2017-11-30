@@ -1,0 +1,7 @@
+Running multiple  multipleFlows +sumdata:386 Pareto, Moheft
+/////////////////size: 0
+nodes 150 edges 210
+ multipleFlows +sumdata:386  sumDataGB 386
+pareto multiple time(sec) -> 14.311
+moheft multiple time(sec) -> 0.0
+

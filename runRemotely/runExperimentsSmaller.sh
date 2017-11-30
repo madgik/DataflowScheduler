@@ -1,0 +1,17 @@
+java -jar MyScheduler.jar dagMerge ensemblesSep2017/MixedEnsemble10Ligo100Montage50/slackByDag/ 10 MONTAGE 50 MONTAGE 50 MONTAGE 50 MONTAGE 50 MONTAGE 50 LIGO 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
+
+java -jar MyScheduler.jar commonEntry ensemblesSep2017/MixedEnsemble10Ligo100Montage50/commonEntry/  10 MONTAGE 50 MONTAGE 50 MONTAGE 50 MONTAGE 50 MONTAGE 50 LIGO 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
+
+java -jar MyScheduler.jar perDag ensemblesSep2017/MixedEnsemble10Ligo100Montage50/userPref/  10 MONTAGE 50 MONTAGE 50 MONTAGE 50 MONTAGE 50 MONTAGE 50 LIGO 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
+
+java -jar MyScheduler.jar dagMerge ensemblesSep2017/MixedEnsemble10Ligo50Montage100/slackByDag/ 10 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 50
+
+java -jar MyScheduler.jar commonEntry ensemblesSep2017/MixedEnsemble10Ligo50Montage100/commonEntry/ 10 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 50
+
+java -jar MyScheduler.jar perDag ensemblesSep2017/MixedEnsemble10Ligo50Montage100/userPref/ 10 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 50
+
+java -jar MyScheduler.jar dagMerge ensemblesSep2017/MixedEnsembl10Ligo50Ligo100/slackByDag/ 10 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
+
+java -jar MyScheduler.jar commonEntry ensemblesSep2017/MixedEnsemble10Ligo50Ligo100/commonEntry/ 10 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
+
+java -jar MyScheduler.jar perDag ensemblesSep2017/MixedEnsemble10Ligo50Ligo100/userPref/ 10 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 50 LIGO 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100

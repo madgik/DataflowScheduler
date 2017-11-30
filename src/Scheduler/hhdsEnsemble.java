@@ -28,7 +28,7 @@ public class hhdsEnsemble implements Scheduler {
     public LinkedList<Long> opsSorted ;
 
     public int homoPlanstoKeep = 80;
-    public int pruneSkylineSize = 10;
+    public int pruneSkylineSize = 20;
 
 
 
@@ -48,7 +48,7 @@ public class hhdsEnsemble implements Scheduler {
 
     private HashMap<Long, Integer> opLevel;
 
-    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod){
+    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod, Boolean multi){
         this.rankingMethod = rankingMethod;
         this.pruneEnabled = prune;
         space = new SolutionSpace();
@@ -57,6 +57,7 @@ public class hhdsEnsemble implements Scheduler {
         this.opsSorted = new LinkedList<>();
         opLevel = new HashMap<>();
         this.PruneMethod = PruneMethod;
+        this.multi=multi;
        // this.newDir = dir;
     }
 
@@ -353,7 +354,7 @@ public class hhdsEnsemble implements Scheduler {
                         opsAssigned++;
                         long nextOpID = nextOperator(readyOps);
                         Operator nextOp = graph.getOperator(nextOpID);
-//                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
+                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
 
                         newPlan.assignOperator(nextOpID,plan.assignments.get(nextOpID),backfillingUpgrade);
 
