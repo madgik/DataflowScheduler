@@ -275,6 +275,30 @@ public class SolutionSpace implements Iterable<Plan> {
         this.sort(isPareto, multi); // Sort by time breaking equality by sorting by money
 
 
+
+
+//
+//        Plan previous = null;
+//        for (Plan est : results) {
+//            if (previous == null) {
+//                skyline.add(est);
+//                previous = est;
+//                continue;
+//            }
+//            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+//                // Already sorted by money
+//                continue;
+//            }
+//            if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
+//                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+//                    skyline.add(est);
+//                    previous = est;
+//                }
+//        }
+
+
+
+
         if(multi)
         {
             Plan previous = null;
@@ -358,6 +382,27 @@ public class SolutionSpace implements Iterable<Plan> {
 //            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
 //        System.out.println(" \n");
 
+
+
+//        Plan previous = null;
+//        for (Plan est : results) {
+//            if (previous == null) {
+//                skyline.add(est);
+//                previous = est;
+//                continue;
+//            }
+//            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+//                // Already sorted by money
+//                continue;
+//            }
+//            if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
+//                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+//                    skyline.add(est);
+//                    previous = est;
+//                }
+//        }
+
+        
         if(multi) {//multi-objective includes fairness
             Plan previous = null;
 
