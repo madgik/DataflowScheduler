@@ -168,7 +168,7 @@ public class OutputParseNew {
             Plan p0 = pareto.results.get(i-1);
             Plan p1 = pareto.results.get(i);
             Plan p2 = pareto.results.get(i+1);
-            double d = pareto.getDer(p0,p1,p2);
+            double d = pareto.getDer(p0,p1,p2, false);
             maxPKnee = Math.max(maxPKnee,d);
             avgPKnee+=d;
         }
@@ -187,7 +187,7 @@ public class OutputParseNew {
             Plan p0 = moheft.results.get(i-1);
             Plan p1 = moheft.results.get(i);
             Plan p2 = moheft.results.get(i+1);
-            double d = moheft.getDer(p0,p1,p2);
+            double d = moheft.getDer(p0,p1,p2, false);
             maxMKnee = Math.max(maxMKnee,d);
             avgMKnee+=d;
         }

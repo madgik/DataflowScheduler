@@ -1104,7 +1104,7 @@ public class MainHHDS {
       Plan p0 = paretoToCompare.results.get(i - 1);
       Plan p1 = paretoToCompare.results.get(i);
       Plan p2 = paretoToCompare.results.get(i + 1);
-      double d = paretoToCompare.getDer(p0, p1, p2);
+      double d = paretoToCompare.getDer(p0, p1, p2, false);
       maxPKnee = Math.max(maxPKnee, d);
       avgPKnee += d;
     }
@@ -1122,7 +1122,7 @@ public class MainHHDS {
       Plan p0 = solutionsM.results.get(i - 1);
       Plan p1 = solutionsM.results.get(i);
       Plan p2 = solutionsM.results.get(i + 1);
-      double d = solutionsM.getDer(p0, p1, p2);
+      double d = solutionsM.getDer(p0, p1, p2, false);
       maxMKnee = Math.max(maxMKnee, d);
       avgMKnee += d;
     }

@@ -270,10 +270,10 @@ public class Statistics {
 //            for(Long dgId: subdagMakespan.keySet())
 //            unfairness += Math.abs(subdagMakespan.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanMakespan);
             for(Long dgId: subdagResponseTime.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
-             //   partialUnfairness += Math.abs(subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime);
+                partialUnfairness += Math.abs(subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime);
 
                 //standard deviation
-                partialUnfairness += Math.pow(Math.abs((subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime)), 2);
+                //partialUnfairness += Math.pow(Math.abs((subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime)), 2);
 
                 //plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
              //   System.out.println(dgId + " partialunfairnes " + partialUnfairness);

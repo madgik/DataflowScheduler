@@ -160,8 +160,8 @@ public class MainEnsemble {
 
                     String appName = "MONTAGE";
                     Integer randomSize = random.randomInRange(2, 0);
-                    Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
-                    Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
+                    //Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
+                    //Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
                     Integer size = 100;
 
 
@@ -539,7 +539,7 @@ public class MainEnsemble {
             Plan p0 = paretoToCompare.results.get(i-1);
             Plan p1 = paretoToCompare.results.get(i);
             Plan p2 = paretoToCompare.results.get(i+1);
-            double d = paretoToCompare.getDer(p0,p1,p2);
+            double d = paretoToCompare.getDerMulti(p0,p1,p2, false);
             maxPKnee = Math.max(maxPKnee,d);
             avgPKnee+=d;
         }
@@ -558,7 +558,7 @@ public class MainEnsemble {
             Plan p0 = solutionsM.results.get(i-1);
             Plan p1 = solutionsM.results.get(i);
             Plan p2 = solutionsM.results.get(i+1);
-            double d = solutionsM.getDer(p0,p1,p2);
+            double d = solutionsM.getDerMulti(p0,p1,p2, false);
             maxMKnee = Math.max(maxMKnee,d);
             avgMKnee+=d;
         }
