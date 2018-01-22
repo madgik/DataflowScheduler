@@ -1437,12 +1437,12 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
 
-        double timeDif = Math.pow(p2Stats.runtime_MS-p0Stats.runtime_MS, 2);
-        double moneyDif = Math.pow(p2Stats.money-p0Stats.money, 2);
-        double unfDif = Math.pow(p2Stats.partialUnfairness-p0Stats.partialUnfairness, 2);
-
-        if(multi)
-        theta2P1 = Math.sqrt(timeDif + moneyDif + unfDif);
+//        double timeDif = Math.pow(p2Stats.runtime_MS-p0Stats.runtime_MS, 2);
+//        double moneyDif = Math.pow(p2Stats.money-p0Stats.money, 2);
+//        double unfDif = Math.pow(p2Stats.partialUnfairness-p0Stats.partialUnfairness, 2);
+//
+//        if(multi)
+////        theta2P1 = Math.sqrt(timeDif + moneyDif + unfDif);
 
 
         double normaL = Math.sqrt(Math.pow(p0Stats.money,2) + Math.pow(p0Stats.runtime_MS,2) + Math.pow(p0Stats.partialUnfairness,2));
@@ -1450,12 +1450,14 @@ public class SolutionSpace implements Iterable<Plan> {
         double normaR = Math.sqrt(Math.pow(p2Stats.money,2) + Math.pow(p2Stats.runtime_MS,2) + Math.pow(p2Stats.partialUnfairness,2));
 
 
-        double productLM = p0Stats.money*p1Stats.money + p0Stats.runtime_MS*p1Stats.runtime_MS +p0Stats.partialUnfairness*p1Stats.partialUnfairness;
+        double productLM = p0Stats.money*p1Stats.money + p0Stats.runtime_MS*p1Stats.runtime_MS +p0Stats.partialUnfairness*p1Stats.partialUnfairness;//eswteriko ginomeno
         double productMR = p2Stats.money*p1Stats.money + p2Stats.runtime_MS*p1Stats.runtime_MS +p2Stats.partialUnfairness*p1Stats.partialUnfairness;;
 
         thetaL = productLM/(normaL*normaM);
         thetaR = productMR/(normaR*normaM);
-        theta2P1 = thetaL*thetaR;
+       if(multi)
+         theta2P1 = thetaL*thetaR;
+        //use theta2PIu for unfairness cost and use product of theta2PI and theta2PIu
 
         return theta2P1;
     }
