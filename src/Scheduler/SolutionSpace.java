@@ -1456,8 +1456,8 @@ public class SolutionSpace implements Iterable<Plan> {
 
         thetaL = productLM/(normaL*normaM);
         thetaR = productMR/(normaR*normaM);
-      // if(multi)
-       //  theta2P1 = thetaL*thetaR;
+       if(multi)
+         theta2P1 = thetaL*thetaR;
         /////////////////////////////////////
 
         //p_0p_1 = (p0Stats.money-p1Stats.money, p0Stats.runtime_MS-p1Stats.runtime_MS, p0Stats.partialUnfairness-p1Stats.partialUnfairness)
@@ -1475,6 +1475,7 @@ public class SolutionSpace implements Iterable<Plan> {
         double normap0p1 =  Math.sqrt(Math.pow(p0p1money,2) + Math.pow(p0p1runtime,2) + Math.pow(p0p1unf,2));
         double normap2p1 =  Math.sqrt(Math.pow(p2p1money,2) + Math.pow(p2p1runtime,2) + Math.pow(p2p1unf,2));
 
+        if(multi)
         theta2P1 = productDif/(normap0p1*normap2p1);
 
         //p_1p_2 = (p2Stats.money-p1Stats.money, p2Stats.runtime_MS-p1Stats.runtime_MS, p2Stats.partialUnfairness-p1Stats.partialUnfairness)
