@@ -280,7 +280,6 @@ public class Statistics {
             }
 
 
-
           //  partialUnfairness = subdagMaxResponseTime - subdagMinResponseTime;//or max - mean
 
 

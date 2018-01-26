@@ -139,7 +139,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
 
-        Comparator<Plan> MultiParetoPlanComparator = (Comparator<Plan>) (p1, p2) -> {
+        Comparator<Plan> MultiParetoPlanComparator = (Comparator<Plan>) (p1, p2) -> {//
 
 
             if (p1.stats.runtime_MS == p2.stats.runtime_MS) {
@@ -151,27 +151,6 @@ public class SolutionSpace implements Iterable<Plan> {
                         return 1;
                     else
                         return -1;
-//                    if (Math.abs(p1.stats.money - p2.stats.money) < RuntimeConstants.precisionError) {
-//
-//                        if (Math.abs(p1.stats.partialUnfairness - p2.stats.partialUnfairness) < RuntimeConstants.precisionError)
-//                            return compare(p1.stats.contUtilization, p2.stats.contUtilization);//leave it as it is;
-//                        else if (p1.stats.partialUnfairness > p2.stats.partialUnfairness)
-//                            return 1;
-//                        else
-//                            return -1;
-//                    }
-//                    else
-//                    {
-//                        if (Math.abs(p1.stats.partialUnfairness - p2.stats.partialUnfairness) < RuntimeConstants.precisionError)
-//                            return compare(p1.stats.contUtilization, p2.stats.contUtilization);//leave it as it is;
-//                        else if (p1.stats.partialUnfairness > p2.stats.partialUnfairness)
-//                            return 1;
-//                        else
-//                            return -1;
-//                    }
-                    //return Long.compare(stats.quanta, p2.stats.quanta);
-                    //return Long.compare(stats.containersUsed, p2.stats.containersUsed);
-                    // TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
                 }
                 return compare(p1.stats.money, p2.stats.money);
             } else {
@@ -1254,14 +1233,14 @@ public class SolutionSpace implements Iterable<Plan> {
         Collections.sort(pp,new Comparator<Plan>() {
             @Override public int compare(Plan o1, Plan o2) {
 
-                if(multi) {
+               // if(multi) {
                     if (o1.stats.runtime_MS == o2.stats.runtime_MS) {
                         return Double.compare(o2.stats.money, o1.stats.money);
                     } else {
                         return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
                     }
-                }
-                else  return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+               // }
+               // else  return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
             }
         });
 
