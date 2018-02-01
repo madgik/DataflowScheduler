@@ -5,6 +5,7 @@ import utils.Pair;
 import java.util.*;
 
 import static java.lang.Double.*;
+import static java.lang.Double.compare;
 
 
 /**
@@ -117,8 +118,7 @@ public class SolutionSpace implements Iterable<Plan> {
             if (p1.stats.runtime_MS == p2.stats.runtime_MS) {
                 if (Math.abs(p1.stats.money - p2.stats.money) < RuntimeConstants.precisionError) {
                     return Double.compare(p1.stats.contUtilization, p2.stats.contUtilization);
-                    //return Long.compare(stats.quanta, p2.stats.quanta);
-                    //return Long.compare(stats.containersUsed, p2.stats.containersUsed);
+
                     // TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
                 }
                 return Double.compare(p1.stats.money, p2.stats.money);
@@ -200,8 +200,10 @@ public class SolutionSpace implements Iterable<Plan> {
             {
                 Collections.sort(results, MultiParetoPlanComparator);
 
-//                for (int i = 0; i < results.size(); i++)
-//                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.contUtilization);
+                System.out.println("sorted as");
+
+                for (int i = 0; i < results.size(); i++)
+                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.contUtilization);
             }
             else {
                // System.out.println("ppc here");
@@ -1232,17 +1234,41 @@ public class SolutionSpace implements Iterable<Plan> {
         //sort by one dimension just to get an orderding
         Collections.sort(pp,new Comparator<Plan>() {
             @Override public int compare(Plan o1, Plan o2) {
+                //System.out.println("done");
 
-               // if(multi) {
-                    if (o1.stats.runtime_MS == o2.stats.runtime_MS) {
-                        return Double.compare(o2.stats.money, o1.stats.money);
-                    } else {
-                        return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+//               // if(multi) {
+//                    if (o1.stats.runtime_MS == o2.stats.runtime_MS) {
+//                        return Double.compare(o2.stats.money, o1.stats.money);
+//                    } else {
+//                        return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+//                    }
+//               // }
+//               // else  return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+
+                if (o1.stats.money  == o2.stats.money) {
+                    if (Math.abs(o1.stats.runtime_MS - o2.stats.runtime_MS) < RuntimeConstants.precisionError) {
+
+                        if (Math.abs(o1.stats.partialUnfairness - o2.stats.partialUnfairness) < RuntimeConstants.precisionError)
+                            return Double.compare(o1.stats.contUtilization, o2.stats.contUtilization);//leave it as it is;
+                        else if (o1.stats.partialUnfairness > o2.stats.partialUnfairness)
+                            return 1;
+                        else
+                            return -1;
                     }
-               // }
-               // else  return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+                    return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+                } else {
+                    return Double.compare(o1.stats.money, o2.stats.money );
+                }
+
+
+
+
+
             }
         });
+
+
+
 
         SolutionSpace plans = new SolutionSpace();
         ArrayList<Plan> knees = new ArrayList<>();
@@ -1254,7 +1280,7 @@ public class SolutionSpace implements Iterable<Plan> {
             Plan p1 = plans.results.get(i);
             Plan p2 = plans.results.get(i+1);
 
-            System.out.println("next is " + " " + p1.stats.money +  " " + p1.stats.runtime_MS +  " "+ p1.stats.unfairness);
+        //    System.out.println("next is " + " " + p1.stats.money +  " " + p1.stats.runtime_MS +  " "+ p1.stats.unfairness);
 
             double secder=0.0;
           //  if(multi)
@@ -1399,22 +1425,29 @@ public class SolutionSpace implements Iterable<Plan> {
         Statistics p1Stats = p1.stats;
         Statistics p2Stats = p2.stats;
 
-        double aR = p1Stats.money - p0Stats.money;
-        double bR = p1Stats.runtime_MS - p0Stats.runtime_MS;
+        double mR = p1Stats.money - p0Stats.money;
+        double rR = p1Stats.runtime_MS - p0Stats.runtime_MS;
+        double uR = p1Stats.partialUnfairness - p0Stats.partialUnfairness;
 
-        double aL = p2Stats.money - p1Stats.money;
-        double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
+        double mL = p2Stats.money - p1Stats.money;
+        double rL = p2Stats.runtime_MS - p1Stats.runtime_MS;
+        double uL = p2Stats.partialUnfairness - p1Stats.partialUnfairness;
+
 
 
         //compute for each two-dimensional space the partial derivative as the difference between the left and right point (the start is the middle point)
         //and add the partial derivatives (i think it is not needed as it is directly the norm...)
         //change the euclidean distance for three dimensions
 
-        double thetaL = bR/aR;
-        double thetaR = bL/aL;
-        double theta2P1 = Math.abs(thetaL - thetaR);
+        double thetaL_t = rR/mR;
+        double thetaR_t = rL/mL;
+        double thetaL_u = uR/mR;
+        double thetaR_u = uL/mL;
+        double theta2P1 = Math.abs(thetaL_t - thetaR_t)*Math.abs(thetaL_u - thetaR_u);
 
 
+        if(!multi)
+            theta2P1 = Math.abs(thetaL_t - thetaR_t);
 
 //        double timeDif = Math.pow(p2Stats.runtime_MS-p0Stats.runtime_MS, 2);
 //        double moneyDif = Math.pow(p2Stats.money-p0Stats.money, 2);
@@ -1433,8 +1466,8 @@ public class SolutionSpace implements Iterable<Plan> {
         double productLM = p0Stats.money*p1Stats.money + p0Stats.runtime_MS*p1Stats.runtime_MS +p0Stats.partialUnfairness*p1Stats.partialUnfairness;//eswteriko ginomeno
         double productMR = p2Stats.money*p1Stats.money + p2Stats.runtime_MS*p1Stats.runtime_MS +p2Stats.partialUnfairness*p1Stats.partialUnfairness;;
 
-        thetaL = productLM/(normaL*normaM);
-        thetaR = productMR/(normaR*normaM);
+        double thetaL = productLM/(normaL*normaM);
+        double thetaR = productMR/(normaR*normaM);
        if(multi)
          theta2P1 = thetaL*thetaR;
         /////////////////////////////////////
@@ -1455,9 +1488,12 @@ public class SolutionSpace implements Iterable<Plan> {
         double normap2p1 =  Math.sqrt(Math.pow(p2p1money,2) + Math.pow(p2p1runtime,2) + Math.pow(p2p1unf,2));
 
         if(multi)
-        theta2P1 = productDif/(normap0p1*normap2p1);
+            theta2P1 = Math.abs(thetaL_t - thetaR_t)*Math.abs(thetaL_u - thetaR_u);
+        //theta2P1 = productDif/(normap0p1*normap2p1);
 
         //p_1p_2 = (p2Stats.money-p1Stats.money, p2Stats.runtime_MS-p1Stats.runtime_MS, p2Stats.partialUnfairness-p1Stats.partialUnfairness)
+
+
 
 
 
