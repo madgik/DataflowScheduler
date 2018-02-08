@@ -101,6 +101,22 @@ public class SolutionSpace implements Iterable<Plan> {
         return tp;
     }
 
+    public double getMinUnfairness(){
+        double unfairness=Double.MAX_VALUE;
+        for(Plan p:results){
+            unfairness = Math.min(unfairness,p.stats.unfairness);
+        }
+        return unfairness;
+    }
+
+    public double getMaxUnfairness(){
+        double unfairness=Double.MIN_VALUE;
+        for(Plan p:results){
+            unfairness = Math.max(unfairness,p.stats.unfairness);
+        }
+        return unfairness;
+    }
+
 
     public void print() {
         System.out.println(this.toString());
@@ -1229,7 +1245,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-
+    // returns the second der and the knees
     public ArrayList<Plan> getKneess(ArrayList<Plan> pp,HashMap<Plan,Double> planMetric, boolean multi){
         //sort by one dimension just to get an orderding
         Collections.sort(pp,new Comparator<Plan>() {
@@ -1268,8 +1284,6 @@ public class SolutionSpace implements Iterable<Plan> {
         });
 
 
-
-
         SolutionSpace plans = new SolutionSpace();
         ArrayList<Plan> knees = new ArrayList<>();
         plans.addAll(pp);
@@ -1301,6 +1315,7 @@ public class SolutionSpace implements Iterable<Plan> {
         }
         return knees;
     }
+
     public double minDist(Plan p,ArrayList<Plan> knees, boolean multi){
         Plan r = null;
         double dist = MAX_VALUE;
@@ -1417,6 +1432,54 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
         return theta2P1;
+    }
+
+    public double normalize(double range, double min, double value){
+        return (value - min) / range;
+    }
+    public long normalize(long range, long min, long value){
+        return (value - min) / range;
+    }
+
+    //YC changes
+    public double getDerMultiYC_combined(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){
+        Statistics p0Stats = p0.stats;
+        Statistics p1Stats = p1.stats;
+        Statistics p2Stats = p2.stats;
+
+        if ( p2.stats.money < p1.stats.money || p1.stats.money < p0.stats.money){
+            System.out.println("VALUES ARE NOT SORTED");
+            System.exit(0);
+        }
+
+        double costRange = plans.getMaxCost() - plans.getMinCost();
+        long timeRange = plans.getMaxRuntime() - plans.getMinRuntime();
+        double unfairRange = plans.getMaxUnfairness() - plans.getMinUnfairness();
+
+        double minCost = plans.getMinCost();
+        long minTime = plans.getMinRuntime();
+        double minUnfair = plans.getMinUnfairness();
+
+        double m01 = normalize(costRange, minCost, p1Stats.money) - normalize(costRange, minCost,p0Stats.money);
+        double t01 = normalize(timeRange, minTime, p1Stats.runtime_MS) - normalize(timeRange, minTime, p0Stats.runtime_MS);
+        double u01 = normalize(unfairRange, minUnfair, p1Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p0Stats.partialUnfairness);
+
+        double m12 = normalize(costRange, minCost, p2Stats.money) - normalize(costRange, minCost, p1Stats.money);
+        double t12 = normalize(timeRange, minTime, p2Stats.runtime_MS) - normalize(timeRange, minTime, p1Stats.runtime_MS);
+        double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
+
+
+        double theta01 = ( t01 + u01 ) / (m01);
+        double theta12 = ( t12 + u12 ) / (m12);
+
+
+        return theta12 - theta01;  // I am not taking absolutes because I am not sure if they affect the result
+        /* for example: in the two dimensional problem we knew that by sorting by money we sort execution time
+        in the opposite way, if this did not hold our points would not be in the pareto set.
+        But now when we sort by money we do not know what the other two dimension improve as we pay more money so we need to keep the
+        signs (prosima?)
+         */
+
     }
 
     public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi){
