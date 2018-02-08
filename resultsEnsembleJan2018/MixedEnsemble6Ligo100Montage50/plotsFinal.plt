@@ -1,15 +1,15 @@
 reset
 set terminal eps
-set key font ",9" height 3
-set xtics out font ",15"
-set ytics font ",15" 
-set xlabel font ",15" 
-set ylabel font ",15" #offset -1
-set label font ",4"
-set offset 0, 0.1, graph 0.35, 0.0
+set key font ",10" height 3
+set xtics out font ",10"
+set ytics font ",10" 
+set xlabel font ",10" 
+set ylabel font ",9"
+set label font ",7"
+set offset 0.05, 0.05, graph 0.25, 0.05
 set xrange [*:*]
 set yrange [*:*]
-set pointsize 0.9
+set pointsize 1.1
 
 
 system "mkdir plotsFinal"
@@ -74,13 +74,15 @@ system "mkdir plotsVS"
 set output 'plotsVS/skyline.eps'
 set xlabel 'Total Money ($)'
 set ylabel 'Execution Time (min)'
-plot "commonEntry/BiObj/ensemble.dat" using ($1):($2/60000) title 'minUtilization - rankedOps' with points pt 2 lc rgb 'black',\
-"dagMerge/MultiObjMD/ensemble.dat" using ($1):($2/60000) title 'multiObjectiveMD - rankedOps' with points pt 8 lc rgb 'blue'
+plot "commonEntry/BiObj/ensemble.dat" using ($1):($2/60000) title 'minUtilization (commonEntry)' with points pt 2 lc rgb 'black',\
+"dagMerge/MultiObjMD/ensemble.dat" using ($1):($2/60000) title 'multiObjectiveMD - rankedOps' with points pt 8 lc rgb 'blue',\
+"commonEntry/MultiObjMD/ensemble.dat" using ($1):($2/60000) title 'multiObjectiveMD (commonEntry)' with points pt 8 lc rgb 'grey'
 set output 'others.eps'
 
 set output 'plotsVS/unfairnessToMoney.eps'
 set xlabel 'Total Money ($)'
 set ylabel 'Unfairness'
-plot "commonEntry/BiObj/ensemble.dat" using ($1):($7) title 'minUtilization - rankedOps' with points pt 2 lc rgb 'black',\
-"dagMerge/MultiObjMD/ensemble.dat" using ($1):($7) title 'multiObjectiveMD - rankedOps' with points pt 8 lc rgb 'blue'
+plot "commonEntry/BiObj/ensemble.dat" using ($1):($7) title 'minUtilization (commonEntry)' with points pt 2 lc rgb 'black',\
+"dagMerge/MultiObjMD/ensemble.dat" using ($1):($7) title 'multiObjectiveMD - rankedOps' with points pt 8 lc rgb 'blue',\
+"commonEntry/MultiObjMD/ensemble.dat" using ($1):($7) title 'multiObjectiveMD (commonEntry)' with points pt 8 lc rgb 'grey'
 set output 'others.eps'

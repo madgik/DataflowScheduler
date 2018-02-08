@@ -539,7 +539,7 @@ public class MainEnsemble {
             Plan p0 = paretoToCompare.results.get(i-1);
             Plan p1 = paretoToCompare.results.get(i);
             Plan p2 = paretoToCompare.results.get(i+1);
-            double d = paretoToCompare.getDerMulti(p0,p1,p2, false);
+            double d = paretoToCompare.getDerMulti(p0,p1,p2, false, paretoToCompare);
             maxPKnee = Math.max(maxPKnee,d);
             avgPKnee+=d;
         }
@@ -558,7 +558,7 @@ public class MainEnsemble {
             Plan p0 = solutionsM.results.get(i-1);
             Plan p1 = solutionsM.results.get(i);
             Plan p2 = solutionsM.results.get(i+1);
-            double d = solutionsM.getDerMulti(p0,p1,p2, false);
+            double d = solutionsM.getDerMulti(p0,p1,p2, false, solutionsM);
             maxMKnee = Math.max(maxMKnee,d);
             avgMKnee+=d;
         }

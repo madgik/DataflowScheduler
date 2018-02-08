@@ -1298,7 +1298,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
             double secder=0.0;
           //  if(multi)
-                secder = plans.getDerMulti(p0,p1,p2, multi);
+                secder = plans.getDerMulti(p0,p1,p2, multi, plans);
             //    else
                  //       secder = plans.getDer(p0,p1,p2, multi);
             d+=secder;
@@ -1442,7 +1442,7 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     //YC changes
-    public double getDerMultiYC_combined(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){
+    public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){//getDerMultiYC_combined
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
         Statistics p2Stats = p2.stats;
@@ -1482,7 +1482,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi){
+    public double getDerMultiIP(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){
         //sort by money first
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
@@ -1495,6 +1495,7 @@ public class SolutionSpace implements Iterable<Plan> {
         double mL = p2Stats.money - p1Stats.money;
         double rL = p2Stats.runtime_MS - p1Stats.runtime_MS;
         double uL = p2Stats.partialUnfairness - p1Stats.partialUnfairness;
+
 
 
 
@@ -1511,47 +1512,72 @@ public class SolutionSpace implements Iterable<Plan> {
 
         if(!multi)
             theta2P1 = Math.abs(thetaL_t - thetaR_t);
-
-//        double timeDif = Math.pow(p2Stats.runtime_MS-p0Stats.runtime_MS, 2);
-//        double moneyDif = Math.pow(p2Stats.money-p0Stats.money, 2);
-//        double unfDif = Math.pow(p2Stats.partialUnfairness-p0Stats.partialUnfairness, 2);
 //
-//        if(multi)
-////        theta2P1 = Math.sqrt(timeDif + moneyDif + unfDif);
-
-        ///////////////////
-
-        double normaL = Math.sqrt(Math.pow(p0Stats.money,2) + Math.pow(p0Stats.runtime_MS,2) + Math.pow(p0Stats.partialUnfairness,2));
-        double normaM = Math.sqrt(Math.pow(p1Stats.money,2) + Math.pow(p1Stats.runtime_MS,2) + Math.pow(p1Stats.partialUnfairness,2));
-        double normaR = Math.sqrt(Math.pow(p2Stats.money,2) + Math.pow(p2Stats.runtime_MS,2) + Math.pow(p2Stats.partialUnfairness,2));
-
-
-        double productLM = p0Stats.money*p1Stats.money + p0Stats.runtime_MS*p1Stats.runtime_MS +p0Stats.partialUnfairness*p1Stats.partialUnfairness;//eswteriko ginomeno
-        double productMR = p2Stats.money*p1Stats.money + p2Stats.runtime_MS*p1Stats.runtime_MS +p2Stats.partialUnfairness*p1Stats.partialUnfairness;;
-
-        double thetaL = productLM/(normaL*normaM);
-        double thetaR = productMR/(normaR*normaM);
-       if(multi)
-         theta2P1 = thetaL*thetaR;
-        /////////////////////////////////////
-
-        //p_0p_1 = (p0Stats.money-p1Stats.money, p0Stats.runtime_MS-p1Stats.runtime_MS, p0Stats.partialUnfairness-p1Stats.partialUnfairness)
-        //p_1p_2 = (p2Stats.money-p1Stats.money, p2Stats.runtime_MS-p1Stats.runtime_MS, p2Stats.partialUnfairness-p1Stats.partialUnfairness)
-
-        double p0p1money= p1Stats.money-p0Stats.money;
-        double p0p1runtime= p1Stats.runtime_MS-p0Stats.runtime_MS;
-        double p0p1unf=p1Stats.partialUnfairness-p0Stats.partialUnfairness;
-
-        double p2p1money= p2Stats.money-p1Stats.money;
-        double p2p1runtime= p2Stats.runtime_MS-p1Stats.runtime_MS;
-        double p2p1unf=p2Stats.partialUnfairness-p1Stats.partialUnfairness;
-
-        double productDif = p0p1money*p2p1money + p0p1runtime*p2p1runtime + p0p1unf*p2p1unf;
-        double normap0p1 =  Math.sqrt(Math.pow(p0p1money,2) + Math.pow(p0p1runtime,2) + Math.pow(p0p1unf,2));
-        double normap2p1 =  Math.sqrt(Math.pow(p2p1money,2) + Math.pow(p2p1runtime,2) + Math.pow(p2p1unf,2));
+////        double timeDif = Math.pow(p2Stats.runtime_MS-p0Stats.runtime_MS, 2);
+////        double moneyDif = Math.pow(p2Stats.money-p0Stats.money, 2);
+////        double unfDif = Math.pow(p2Stats.partialUnfairness-p0Stats.partialUnfairness, 2);
+////
+////        if(multi)
+//////        theta2P1 = Math.sqrt(timeDif + moneyDif + unfDif);
+//
+//        ///////////////////
+//
+//        double normaL = Math.sqrt(Math.pow(p0Stats.money,2) + Math.pow(p0Stats.runtime_MS,2) + Math.pow(p0Stats.partialUnfairness,2));
+//        double normaM = Math.sqrt(Math.pow(p1Stats.money,2) + Math.pow(p1Stats.runtime_MS,2) + Math.pow(p1Stats.partialUnfairness,2));
+//        double normaR = Math.sqrt(Math.pow(p2Stats.money,2) + Math.pow(p2Stats.runtime_MS,2) + Math.pow(p2Stats.partialUnfairness,2));
+//
+//
+//        double productLM = p0Stats.money*p1Stats.money + p0Stats.runtime_MS*p1Stats.runtime_MS +p0Stats.partialUnfairness*p1Stats.partialUnfairness;//eswteriko ginomeno
+//        double productMR = p2Stats.money*p1Stats.money + p2Stats.runtime_MS*p1Stats.runtime_MS +p2Stats.partialUnfairness*p1Stats.partialUnfairness;;
+//
+//        double thetaL = productLM/(normaL*normaM);
+//        double thetaR = productMR/(normaR*normaM);
+//       if(multi)
+//         theta2P1 = thetaL*thetaR;
+//        /////////////////////////////////////
+//
+//        double p0p1money= p1Stats.money-p0Stats.money;
+//        double p0p1runtime= p1Stats.runtime_MS-p0Stats.runtime_MS;
+//        double p0p1unf=p1Stats.partialUnfairness-p0Stats.partialUnfairness;
+//
+//        double p2p1money= p2Stats.money-p1Stats.money;
+//        double p2p1runtime= p2Stats.runtime_MS-p1Stats.runtime_MS;
+//        double p2p1unf=p2Stats.partialUnfairness-p1Stats.partialUnfairness;
+//
+//        double productDif = p0p1money*p2p1money + p0p1runtime*p2p1runtime + p0p1unf*p2p1unf;
+//        double normap0p1 =  Math.sqrt(Math.pow(p0p1money,2) + Math.pow(p0p1runtime,2) + Math.pow(p0p1unf,2));
+//        double normap2p1 =  Math.sqrt(Math.pow(p2p1money,2) + Math.pow(p2p1runtime,2) + Math.pow(p2p1unf,2));
 
         if(multi)
-            theta2P1 = Math.abs(thetaL_t - thetaR_t)*Math.abs(thetaL_u - thetaR_u);
+
+        {
+
+            double costRange = plans.getMaxCost() - plans.getMinCost();
+            long timeRange = plans.getMaxRuntime() - plans.getMinRuntime();
+            double unfairRange = plans.getMaxUnfairness() - plans.getMinUnfairness();
+
+            double minCost = plans.getMinCost();
+            long minTime = plans.getMinRuntime();
+            double minUnfair = plans.getMinUnfairness();
+
+            double m01 = normalize(costRange, minCost, p1Stats.money) - normalize(costRange, minCost,p0Stats.money);
+            double t01 = normalize(timeRange, minTime, p1Stats.runtime_MS) - normalize(timeRange, minTime, p0Stats.runtime_MS);
+            double u01 = normalize(unfairRange, minUnfair, p1Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p0Stats.partialUnfairness);
+
+            double m12 = normalize(costRange, minCost, p2Stats.money) - normalize(costRange, minCost, p1Stats.money);
+            double t12 = normalize(timeRange, minTime, p2Stats.runtime_MS) - normalize(timeRange, minTime, p1Stats.runtime_MS);
+            double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
+
+
+            thetaL_t = t12/m12;
+            thetaR_t = t01/m01;
+            thetaL_u = u12/m12;
+            thetaR_u = u01/m01;
+
+
+
+            theta2P1 = Math.abs(thetaL_t - thetaR_t) * Math.abs(thetaL_u - thetaR_u);
+        }
         //theta2P1 = productDif/(normap0p1*normap2p1);
 
         //p_1p_2 = (p2Stats.money-p1Stats.money, p2Stats.runtime_MS-p1Stats.runtime_MS, p2Stats.partialUnfairness-p1Stats.partialUnfairness)
