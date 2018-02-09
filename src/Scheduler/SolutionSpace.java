@@ -1442,7 +1442,7 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     //YC changes
-    public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){//getDerMultiYC_combined
+    public double getDerMultiYC(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){//getDerMultiYC_combined
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
         Statistics p2Stats = p2.stats;
@@ -1486,7 +1486,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public double getDerMultiIP(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){
+    public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){
         //sort by money first
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
@@ -1581,10 +1581,23 @@ public class SolutionSpace implements Iterable<Plan> {
             double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
 
 
+
+
             thetaL_t = t12/m12;
+            if(Math.abs(m12)<1e-12)
+                thetaL_t=0.0;
+
             thetaR_t = t01/m01;
+            if(Math.abs(m01)<1e-12)
+                thetaR_t=0.0;
+
             thetaL_u = u12/m12;
+            if(Math.abs(m12)<1e-12)
+                thetaL_u=0.0;
+
             thetaR_u = u01/m01;
+            if(Math.abs(m01)<1e-12)
+                thetaR_u=0.0;
 
 
 

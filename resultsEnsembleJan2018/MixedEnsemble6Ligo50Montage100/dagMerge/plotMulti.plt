@@ -20,6 +20,7 @@ set xlabel 'Total Money ($)'
 set ylabel 'Execution Time'
 plot "MultiObjIP/ensemble.dat" using ($1):($2/60000) title 'MultiObj' with points pt 8 lc rgb 'blue',\
 "MultiObjYC/ensemble.dat" using ($1):($2/60000) title 'MultiObjYC' with points pt 2 lc rgb 'green',\
+"MultiObjYC0/ensemble.dat" using ($1):($2/60000) title 'MultiObjYC0' with points pt 2 lc rgb 'grey',\
 "BiObj/ensemble.dat" using ($1):($2/60000) title 'BiObj' with points pt 2 lc rgb 'red'
 set output 'plots/others.eps'
 
@@ -29,6 +30,7 @@ set xlabel 'Total Money ($)'
 set ylabel 'Unfairness'
 plot "MultiObjIP/ensemble.dat" using ($1):($7) title 'MultiObj' with points pt 8 lc rgb 'blue',\
 "MultiObjYC/ensemble.dat" using ($1):($7) title 'MultiObjYC' with points pt 2 lc rgb 'green',\
+"MultiObjYC0/ensemble.dat" using ($1):($7) title 'MultiObjYC0' with points pt 2 lc rgb 'grey',\
 "BiObj/ensemble.dat" using ($1):($7) title 'BiObj' with points pt 2 lc rgb 'red'
 set output 'plots/others.eps'
 
