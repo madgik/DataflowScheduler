@@ -1470,7 +1470,11 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
         double theta01 = ( t01 + u01 ) / (m01);
+        if(Math.abs(m01)<1e-12)
+            theta01=0.0;
         double theta12 = ( t12 + u12 ) / (m12);
+        if(Math.abs(m12)<1e-12)
+            theta01=0.0;
 
 
         return theta12 - theta01;  // I am not taking absolutes because I am not sure if they affect the result
@@ -1504,9 +1508,17 @@ public class SolutionSpace implements Iterable<Plan> {
         //change the euclidean distance for three dimensions
 
         double thetaL_t = rR/mR;
+        if(Math.abs(mR)<1e-12)
+            thetaL_t=0.0;
         double thetaR_t = rL/mL;
+        if(Math.abs(mL)<1e-12)
+            thetaR_t=0.0;
         double thetaL_u = uR/mR;
+        if(Math.abs(mR)<1e-12)
+            thetaL_u=0.0;
         double thetaR_u = uL/mL;
+        if(Math.abs(mL)<1e-12)
+            thetaR_u=0.0;
         double theta2P1 = Math.abs(thetaL_t - thetaR_t)*Math.abs(thetaL_u - thetaR_u);
 
 
