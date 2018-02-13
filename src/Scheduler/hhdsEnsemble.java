@@ -1193,7 +1193,10 @@ public class hhdsEnsemble implements Scheduler {
                 for (long opnext : subdagNext.values()) {
 
                     double crPathLength = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeCrPathLength(containerType.values());
-//                System.out.println("looks for "+ nextToAdd + " : " + opnext);
+
+                    HashMap<Long, Double> pathToExit= graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePathToExit(containerType.values());
+                    Long idsub= graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).get(opnext);
+                System.out.println("looks for: " + opnext + " pathToExit " + pathToExit.get(idsub));
 
                     double tasksScheduledPerc =(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
                     double taskWeight = w_mean.get(opnext)/crPathLength;
@@ -1224,6 +1227,8 @@ public class hhdsEnsemble implements Scheduler {
                         minSlack = c;
 
                     }
+
+
 
 //                if(sum_rank.get(opnext)>=maxSumrank)
 //                {

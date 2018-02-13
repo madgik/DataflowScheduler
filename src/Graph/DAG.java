@@ -350,13 +350,39 @@ public class DAG {
 
         return crPathLength;
     }
-    //    public void addFile(Data data){
-//        nameToFile.put(data.name,data);
-//    }
-//
-//    public Data getFile(String name){
-//        return nameToFile.get(name);
-//    }
+
+
+    public HashMap<Long, Double> computePathToExit(containerType contTypes[]) {//b_rank
+
+
+        TopologicalSorting topOrder = new TopologicalSorting(this);
+        HashMap<Long, Double> b_rank = new HashMap<>();
+        HashMap<Long, Double> w_mean = new HashMap<>();
+
+        for (Long opId : topOrder.iteratorReverse()) {
+            double maxRankChild=0.0;
+            for (Edge childEdge: this.getChildren(opId)) {
+                double comCostChild = 0.0;
+                for(Edge parentofChildEdge: this.getParents(childEdge.to)) {
+                    if(parentofChildEdge.from.equals(opId)) {// if((long)parentofChildEdge.from==(long)opId) {//
+                        comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
+                    }
+                }
+                //assumptions for output data and communication cost
+                maxRankChild = Math.max(maxRankChild, comCostChild+b_rank.get(childEdge.to));
+            }
+
+            double wcur=0.0;
+            for(containerType contType: containerType.values())
+                wcur+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
+            int types= containerType.values().length;
+            double w=wcur/(double)types;//average execution cost for operator op
+            b_rank.put(opId, (w+maxRankChild));//b_rank.put(opId, (w+maxRankChild));
+            w_mean.put(opId, w);
+
+        }
+        return b_rank;
+    }
 
 
 }
