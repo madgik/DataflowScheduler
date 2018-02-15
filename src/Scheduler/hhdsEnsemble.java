@@ -1198,6 +1198,11 @@ public class hhdsEnsemble implements Scheduler {
                     double crPathLength = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeCrPathLength(containerType.values());
 
                     HashMap<Long, Double> pathToExit= graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePathToExit(containerType.values());
+                    HashMap<Long, Double> maxPath= graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePath(containerType.values());
+                    Double cpSubdag = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeMaxPath(containerType.values());
+
+
+
 
                     Long idsub = graph.superDAG.dagToSubdagOpIds.get(opnext);
                             //graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).g(opnext);
@@ -1228,27 +1233,30 @@ public class hhdsEnsemble implements Scheduler {
 
                  //   double c =taskSlack/tasksUnScheduledPerc;
 
-//                    double c =taskSlack*tasksScheduledPerc;
+
+                    taskSlack = cpSubdag - maxPath.get(graph.superDAG.dagToSubdagOpIds.get(opnext));//only slack based
+
+                    double c =taskSlack*tasksScheduledPerc;
+
+                    if (c <= minSlack) {
+                        nextToAdd = opnext;
+                        minSlack = c;
+
+                    }
+
+
+//                    double br = pathToExit.get(graph.superDAG.dagToSubdagOpIds.get(opnext));
+//                    double c =(br/crPathLength)*tasksUnScheduledPerc;
 //
-//                    if (c <= minSlack) {
-//                        nextToAdd = opnext;
-//                        minSlack = c;
+//                if(c>=maxPriority)
+//                {
+//                    //if equal select hte one with the smallest level
+//                    nextToAdd = opnext;
+//                    maxPriority = c;
 //
-//                    }
+//                }
 
 
-
-
-                    double br = pathToExit.get(graph.superDAG.dagToSubdagOpIds.get(opnext));
-                    double c =(br/crPathLength)*tasksUnScheduledPerc;
-
-                if(c>=maxPriority)
-                {
-                    //if equal select hte one with the smallest level
-                    nextToAdd = opnext;
-                    maxPriority = c;
-
-                }
 
                 }
 

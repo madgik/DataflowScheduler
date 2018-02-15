@@ -405,12 +405,46 @@ public class DAG {
                 wcur+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU;
             int types= containerType.values().length;
             double w=wcur/(double)types;//average execution cost for operator op
-            t_rank.put(opId, (maxRankParent));
+            w_mean.put(opId, w);
+
+            t_rank.put(opId, maxRankParent);
         }
 
         return t_rank;
     }
 
 
+    public HashMap<Long, Double> computePath(containerType contTypes[]) {//critical path with communication cost
+
+        TopologicalSorting topOrder = new TopologicalSorting(this);
+        HashMap<Long, Double> t_rank = computePathFromEntry(contTypes);
+        HashMap<Long, Double> b_rank = computePathToExit(contTypes);
+        HashMap<Long, Double> tb_rank = new HashMap<>();
+
+        double maxPath=0.0;
+        for (Long opId : topOrder.iterator()) {
+            Double sumRank = t_rank.get(opId)+b_rank.get(opId);
+            tb_rank.put(opId, sumRank);
+            //maxPath=Double.max(sumRank, maxPath);
+        }
+
+        return tb_rank;
+    }
+
+
+    public Double computeMaxPath(containerType contTypes[]) {//critical path with communication cost
+
+        TopologicalSorting topOrder = new TopologicalSorting(this);
+        HashMap<Long, Double> t_rank = computePathFromEntry(contTypes);
+        HashMap<Long, Double> b_rank = computePathToExit(contTypes);
+
+        double maxPath=0.0;
+        for (Long opId : topOrder.iterator()) {
+           Double sumRank = t_rank.get(opId)+b_rank.get(opId);
+           maxPath=Double.max(sumRank, maxPath);
+        }
+
+        return maxPath;
+    }
 
 }
