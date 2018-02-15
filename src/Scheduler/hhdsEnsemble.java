@@ -1189,14 +1189,22 @@ public class hhdsEnsemble implements Scheduler {
             while (opsToSchedule.size() < graph.getOperators().size()) {
                 double maxSumrank = 0.0;
                 double minSlack = Double.MAX_VALUE;
+                double maxPriority = 0.0;
                 long nextToAdd = -1L;
                 for (long opnext : subdagNext.values()) {
 
+                    //long opId= subdagNext.get()
+                //    System.out.println("opnext" + " " + opnext + " "+ graph.getOperator(opnext).dagID + " " + graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).dagId);
                     double crPathLength = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeCrPathLength(containerType.values());
 
                     HashMap<Long, Double> pathToExit= graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePathToExit(containerType.values());
-                    Long idsub= graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).get(opnext);
-                System.out.println("looks for: " + opnext + " pathToExit " + pathToExit.get(idsub));
+
+                    Long idsub = graph.superDAG.dagToSubdagOpIds.get(opnext);
+                            //graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).g(opnext);
+                    ////   subdagOpsList.get(graph.getOperator(opnext).dagID);
+
+                   // Long idsub= graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).get(opnext);
+//               System.out.println("looks for: " + opnext + " pathToExit " + pathToExit.get(idsub) + " " +idsub);
 
                     double tasksScheduledPerc =(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
                     double taskWeight = w_mean.get(opnext)/crPathLength;
@@ -1220,23 +1228,27 @@ public class hhdsEnsemble implements Scheduler {
 
                  //   double c =taskSlack/tasksUnScheduledPerc;
 
-                    double c =taskSlack*tasksScheduledPerc;
-
-                    if (c <= minSlack) {
-                        nextToAdd = opnext;
-                        minSlack = c;
-
-                    }
-
-
-
-//                if(sum_rank.get(opnext)>=maxSumrank)
-//                {
-//                    //if equal select hte one with the smallest level
-//                    nextToAdd = opnext;
-//                    maxSumrank = sum_rank.get(opnext);
+//                    double c =taskSlack*tasksScheduledPerc;
 //
-//                }
+//                    if (c <= minSlack) {
+//                        nextToAdd = opnext;
+//                        minSlack = c;
+//
+//                    }
+
+
+
+
+                    double br = pathToExit.get(graph.superDAG.dagToSubdagOpIds.get(opnext));
+                    double c =(br/crPathLength)*tasksUnScheduledPerc;
+
+                if(c>=maxPriority)
+                {
+                    //if equal select hte one with the smallest level
+                    nextToAdd = opnext;
+                    maxPriority = c;
+
+                }
 
                 }
 

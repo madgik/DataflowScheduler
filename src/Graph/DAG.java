@@ -385,4 +385,32 @@ public class DAG {
     }
 
 
+
+    public HashMap<Long, Double> computePathFromEntry(containerType contTypes[]) {//t_rank
+
+
+        TopologicalSorting topOrder = new TopologicalSorting(this);
+        HashMap<Long, Double> t_rank = new HashMap<>();
+        HashMap<Long, Double> w_mean = new HashMap<>();
+
+        for (Long opId : topOrder.iterator()) {
+            double maxRankParent=0.0;
+            for (Edge inLink: this.getParents(opId)) {
+                double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
+                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from)+w_mean.get(inLink.from));
+            }
+
+            double wcur=0.0;
+            for(containerType contType: containerType.values())
+                wcur+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU;
+            int types= containerType.values().length;
+            double w=wcur/(double)types;//average execution cost for operator op
+            t_rank.put(opId, (maxRankParent));
+        }
+
+        return t_rank;
+    }
+
+
+
 }
