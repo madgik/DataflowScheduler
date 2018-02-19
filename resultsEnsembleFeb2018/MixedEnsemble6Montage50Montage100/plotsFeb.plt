@@ -49,3 +49,20 @@ plot "commonEntry/Multiobj/ensemble.dat" using ($1):($7) title 'HHDS: minUtiliza
 "dagMergeBR/Multiobj/ensemble.dat" using ($1):($7) title 'dagMergeBR' with points pt 3 lc rgb 'green'
 set output 'others.eps'
 
+
+
+system "mkdir plotsComp"
+
+set output 'plotsComp/skyline.eps'
+set xlabel 'Total Money ($)'
+set ylabel 'Execution Time (min)'
+plot "commonEntry/Biobj/ensemble.dat" using ($1):($2/60000) title 'HHDS: minUtilization (commonEntry)' with points pt 8 lc rgb 'black',\
+"dagMergeBR/Multiobj/ensemble.dat" using ($1):($2/60000) title 'dagMergeBR multiobjective' with points pt 3 lc rgb 'blue'
+set output 'others.eps'
+
+set output 'plotsComp/unfairnessToMoney.eps'
+set xlabel 'Total Money ($)'
+set ylabel 'Unfairness'
+plot "commonEntry/Biobj/ensemble.dat" using ($1):($7) title 'HHDS: minUtilization (commonEntry)' with points pt 8 lc rgb 'black',\
+"dagMergeBR/Multiobj/ensemble.dat" using ($1):($7) title 'dagMergeBR multiobjective' with points pt 3 lc rgb 'blue'
+set output 'others.eps'
