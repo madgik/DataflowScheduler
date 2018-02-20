@@ -216,10 +216,10 @@ public class SolutionSpace implements Iterable<Plan> {
             {
                 Collections.sort(results, MultiParetoPlanComparator);
 
-                System.out.println("sorted as");
-
-                for (int i = 0; i < results.size(); i++)
-                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.contUtilization);
+//                System.out.println("sorted as");
+//
+//                for (int i = 0; i < results.size(); i++)
+//                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.partialUnfairness);
             }
             else {
                // System.out.println("ppc here");
@@ -424,7 +424,7 @@ public class SolutionSpace implements Iterable<Plan> {
                         if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
                             skyline.add(est);
                             previousFair = est;
-                            System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                      //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
                         }
 
                     continue;
@@ -448,7 +448,7 @@ public class SolutionSpace implements Iterable<Plan> {
                     if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
                         skyline.add(est);
                         previousFair = est;
-                        System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                   //     System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
                     }
 
 
@@ -595,8 +595,11 @@ public class SolutionSpace implements Iterable<Plan> {
         }
 
         System.out.println("\n\nafter pruning:");
-        for(Plan e: results)
-            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
+        for(Plan e: results) {
+            System.out.println(e.stats.money + " " + e.stats.runtime_MS + " " + e.stats.partialUnfairness);
+
+        }
+
         System.out.println(" \n");
 
     }

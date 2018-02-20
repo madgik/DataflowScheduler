@@ -62,90 +62,66 @@ public class hhdsEnsemble implements Scheduler {
     }
 
     @Override
-    public SolutionSpace schedule() {
+    public SolutionSpace schedule(){
+            long startCPU_MS = System.currentTimeMillis();
+            MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+            SolutionSpace skylinePlans = new SolutionSpace();
 
-        //  for(DAG graph:ensemble)
-        // {
-        long startCPU_MS = System.currentTimeMillis();
-        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
-        SolutionSpace skylinePlans = new SolutionSpace();
+            SolutionSpace skylinePlans_INC = new SolutionSpace();
+            SolutionSpace skylinePlans_DEC = new SolutionSpace();
+            SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
 
-        SolutionSpace skylinePlans_INC = new SolutionSpace();
-        SolutionSpace skylinePlans_DEC = new SolutionSpace();
-        SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
+            SolutionSpace paretoPlans = new SolutionSpace();
 
-        SolutionSpace paretoPlans = new SolutionSpace();
+            computeRankings();
 
-        computeRankings();
+            skylinePlans.clear();
 
-        skylinePlans.clear();
+            if (!heteroStartEnabled){
 
-//        if (heteroStartEnabled) {
-//
-//            ArrayList<containerType> cTypes = new ArrayList<>();
-//            cTypes.clear();
-//            cTypes.add(containerType.A);
-//            cTypes.add(containerType.H);
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//
-//            cTypes.clear();
-//            cTypes.add(containerType.C);
-//            cTypes.add(containerType.G);
-//            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
-//
-//        }
+                for (containerType cType : containerType.values()) {
 
-        if (!heteroStartEnabled){
-
-            for (containerType cType : containerType.values()) {
-
-
-                if (maxContainers == 1) {
-                    skylinePlans.add(onlyOneContainer());
-                } else {
-
-                    ////INC DEC/////
-//                    System.out.println("calc "+cType.name);
-                    if (cType.equals(containerType.getLargest())) {
-                        ArrayList<containerType> cTypes = new ArrayList<>();
-                        cTypes.add(cType);
-
-                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
-                        //                    plotPlans("dec",skylinePlans);
-                        //                    System.out.println("s1 "+skylinePlans.size());
-
-                    } else if (cType.equals(containerType.getSmallest())) {
-                        ArrayList<containerType> cTypes = new ArrayList<>();
-                        cTypes.add(cType);
-
-                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
-                        //                    plotPlans("inc",skylinePlans);
-                        //                    System.out.println("s2 "+skylinePlans.size());
+                    if (maxContainers == 1) {
+                        skylinePlans.add(onlyOneContainer());
                     } else {
-                        ArrayList<containerType> cTypes = new ArrayList<>();
-                        cTypes.add(cType);
+                            ////INC DEC/////
+//                    System.out.println("calc "+cType.name);
+                            if (cType.equals(containerType.getLargest())) {
+                                ArrayList<containerType> cTypes = new ArrayList<>();
+                                cTypes.add(cType);
+
+                                skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
+                                //                    plotPlans("dec",skylinePlans);
+                                //                    System.out.println("s1 "+skylinePlans.size());
+
+                            } else if (cType.equals(containerType.getSmallest())) {
+                                ArrayList<containerType> cTypes = new ArrayList<>();
+                                cTypes.add(cType);
+
+                                skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+                                //                    plotPlans("inc",skylinePlans);
+                                //                    System.out.println("s2 "+skylinePlans.size());
+                            } else {
+                                ArrayList<containerType> cTypes = new ArrayList<>();
+                                cTypes.add(cType);
 
 
-                        skylinePlans_INCDEC
-                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
+                                skylinePlans_INCDEC
+                                        .addAll(this.createAssignments("increasing/decreasing", cTypes));
+                                //                    plotPlans("inc,dec",skylinePlans);
+                                //                    System.out.println("s3 "+skylinePlans.size());
+                            }
 
                     }
 
                 }
-
             }
-        }
 
-        skylinePlans.addAll(skylinePlans_DEC.results);
-        skylinePlans.addAll(skylinePlans_INC.results);
-        skylinePlans.addAll(skylinePlans_INCDEC.results);
+            skylinePlans.addAll(skylinePlans_DEC.results);
+            skylinePlans.addAll(skylinePlans_INC.results);
+            skylinePlans.addAll(skylinePlans_INCDEC.results);
 
-
-        paretoPlans.addAll(skylinePlans.results);
-
-
-        if(homotohetero) {
+            paretoPlans.addAll(skylinePlans.results);
 
             paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, multi);
 
@@ -175,24 +151,158 @@ public class hhdsEnsemble implements Scheduler {
 
             paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
-            System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+            System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
 
             paretoPlans.addAll(skylinePlans);
 
+            space.addAll(paretoPlans);
+
+
+            long endCPU_MS = System.currentTimeMillis();
+            space.setOptimizationTime(endCPU_MS - startCPU_MS);
+
+
+            mpinfo.add("final space",space.results);
+
+            space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi);
+            return space;
+
         }
-        space.addAll(paretoPlans);
-
-        //        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
-        long endCPU_MS = System.currentTimeMillis();
-        space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
 
-        mpinfo.add("final space",space.results);
 
-
-        return space;
-
-    }
+//    @Override
+//    public SolutionSpace schedule() {
+//
+//        //  for(DAG graph:ensemble)
+//        // {
+//        long startCPU_MS = System.currentTimeMillis();
+//        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+//        SolutionSpace skylinePlans = new SolutionSpace();
+//
+//        SolutionSpace skylinePlans_INC = new SolutionSpace();
+//        SolutionSpace skylinePlans_DEC = new SolutionSpace();
+//        SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
+//
+//        SolutionSpace paretoPlans = new SolutionSpace();
+//
+//        computeRankings();
+//
+//        skylinePlans.clear();
+//
+////        if (heteroStartEnabled) {
+////
+////            ArrayList<containerType> cTypes = new ArrayList<>();
+////            cTypes.clear();
+////            cTypes.add(containerType.A);
+////            cTypes.add(containerType.H);
+////            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+////            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+////
+////            cTypes.clear();
+////            cTypes.add(containerType.C);
+////            cTypes.add(containerType.G);
+////            skylinePlans.addAll(this.createAssignments("increasing/decreasing", cTypes));
+////
+////        }
+//
+//        if (!heteroStartEnabled){
+//
+//            for (containerType cType : containerType.values()) {
+//
+//
+//                if (maxContainers == 1) {
+//                    skylinePlans.add(onlyOneContainer());
+//                } else {
+//
+//                    ////INC DEC/////
+////                    System.out.println("calc "+cType.name);
+//                    if (cType.equals(containerType.getLargest())) {
+//                        ArrayList<containerType> cTypes = new ArrayList<>();
+//                        cTypes.add(cType);
+//
+//                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
+//                        //                    plotPlans("dec",skylinePlans);
+//                        //                    System.out.println("s1 "+skylinePlans.size());
+//
+//                    } else if (cType.equals(containerType.getSmallest())) {
+//                        ArrayList<containerType> cTypes = new ArrayList<>();
+//                        cTypes.add(cType);
+//
+//                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+//                        //                    plotPlans("inc",skylinePlans);
+//                        //                    System.out.println("s2 "+skylinePlans.size());
+//                    } else {
+//                        ArrayList<containerType> cTypes = new ArrayList<>();
+//                        cTypes.add(cType);
+//
+//
+//                        skylinePlans_INCDEC
+//                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
+//
+//                    }
+//
+//                }
+//
+//            }
+//        }
+//
+//        skylinePlans.addAll(skylinePlans_DEC.results);
+//        skylinePlans.addAll(skylinePlans_INC.results);
+//        skylinePlans.addAll(skylinePlans_INCDEC.results);
+//
+//
+//        paretoPlans.addAll(skylinePlans.results);
+//
+//
+//        if(homotohetero) {
+//
+//            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, multi);
+//
+//            mpinfo.add("pareto",paretoPlans.results);
+//
+//            long homoEnd = System.currentTimeMillis();
+//            System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
+//
+//            skylinePlans.clear();
+//
+//            for(Plan pp: paretoPlans.results) {
+//                if (pp.vmUpgrading.equals("increasing/decreasing")) {
+//
+//                    pp.vmUpgrading = "increasing";
+//                    skylinePlans.add(pp);
+//
+//                    Plan newpp = new Plan(pp);
+//                    newpp.vmUpgrading="decreasing";
+//                    skylinePlans.add(newpp);
+//                } else {
+//                    skylinePlans.add(pp);
+//                }
+//            }
+//
+//            paretoPlans.clear();
+//
+//
+//            paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+//
+//            System.out.println("Pare homoToHetero End: "+(System.currentTimeMillis() - homoEnd));
+//
+//            paretoPlans.addAll(skylinePlans);
+//
+//        }
+//        space.addAll(paretoPlans);
+//
+//        //        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod);
+//        long endCPU_MS = System.currentTimeMillis();
+//        space.setOptimizationTime(endCPU_MS - startCPU_MS);
+//
+//
+//        mpinfo.add("final space",space.results);
+//
+//
+//        return space;
+//
+//    }
 
     //input plan
     //output contSlack, contOps, opSlack
@@ -354,7 +464,7 @@ public class hhdsEnsemble implements Scheduler {
                         opsAssigned++;
                         long nextOpID = nextOperator(readyOps);
                         Operator nextOp = graph.getOperator(nextOpID);
-                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
+//                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
 
                         newPlan.assignOperator(nextOpID,plan.assignments.get(nextOpID),backfillingUpgrade);
 
@@ -1234,27 +1344,27 @@ public class hhdsEnsemble implements Scheduler {
                  //   double c =taskSlack/tasksUnScheduledPerc;
 
 
-                    taskSlack = cpSubdag - maxPath.get(graph.superDAG.dagToSubdagOpIds.get(opnext));//only slack based
-
-                    double c =taskSlack*tasksScheduledPerc;
-
-                    if (c <= minSlack) {
-                        nextToAdd = opnext;
-                        minSlack = c;
-
-                    }
-
-
-//                    double br = pathToExit.get(graph.superDAG.dagToSubdagOpIds.get(opnext));
-//                    double c =(br/crPathLength)*tasksUnScheduledPerc;
+//                    taskSlack = cpSubdag - maxPath.get(graph.superDAG.dagToSubdagOpIds.get(opnext));//only slack based
 //
-//                if(c>=maxPriority)
-//                {
-//                    //if equal select hte one with the smallest level
-//                    nextToAdd = opnext;
-//                    maxPriority = c;
+//                    double c =taskSlack*tasksScheduledPerc;
 //
-//                }
+//                    if (c <= minSlack) {
+//                        nextToAdd = opnext;
+//                        minSlack = c;
+//
+//                    }
+
+
+                    double br = pathToExit.get(graph.superDAG.dagToSubdagOpIds.get(opnext));
+                    double c =(br/crPathLength)*tasksUnScheduledPerc;
+
+                if(c>=maxPriority)
+                {
+                    //if equal select hte one with the smallest level
+                    nextToAdd = opnext;
+                    maxPriority = c;
+
+                }
 
 
 
@@ -1295,8 +1405,8 @@ public class hhdsEnsemble implements Scheduler {
 //            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
 
 //        System.out.println("sorted ops");
-        for(Long op: opsSorted)
-            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
+//        for(Long op: opsSorted)
+//            System.out.println(op + " dagId " + graph.getOperator(op).dagID + " level " +opLevel.get(op) + " rank " + sum_rank.get(op));
 
     }
 
