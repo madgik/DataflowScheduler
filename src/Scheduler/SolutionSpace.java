@@ -1485,7 +1485,6 @@ public class SolutionSpace implements Iterable<Plan> {
             theta12 = ( t12 + u12 ) / (m12);
         }
 
-
         return theta12 - theta01;  // I am not taking absolutes because I am not sure if they affect the result
         /* for example: in the two dimensional problem we knew that by sorting by money we sort execution time
         in the opposite way, if this did not hold our points would not be in the pareto set.
