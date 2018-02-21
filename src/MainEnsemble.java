@@ -485,103 +485,103 @@ public class MainEnsemble {
         return sum;
     }
 
-    private static void addImprovementsToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare, ArrayList<Pair<String, Double>> legendInfo) {
-        double maxdist = 0.0;
-        double mindist = Double.MAX_VALUE;
-        Plan tplan = null;
-
-        double maxdistMoney =  Double.MAX_VALUE;
-        double maxdistTime = Long.MAX_VALUE;
-
-//        double dist = 0.0;
-//        double tdist;
-//        boolean isparetoSmaller = true;
-//        SolutionSpace minSpace = paretoToCompare;
-//        SolutionSpace maxSpace = solutionsM;
-
-//        if( minSpace.size() > maxSpace.size() ){
-//            minSpace = solutionsM;
-//            maxSpace = paretoToCompare;
-//            isparetoSmaller = false;
-//        }
+//    private static void addImprovementsToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare, ArrayList<Pair<String, Double>> legendInfo) {
+//        double maxdist = 0.0;
+//        double mindist = Double.MAX_VALUE;
+//        Plan tplan = null;
 //
-//        for(Plan minp:solutionsM){
-//            tdist = Double.MAX_VALUE;
-//            for(Plan maxp:paretoToCompare){
-//                if(tdist>calculateEuclidean(minp,maxp)){
-//                    tdist = calculateEuclidean(minp,maxp);
-//                    tplan = maxp;
-//                }
-//                tdist = Math.min(tdist, calculateEuclidean(minp,maxp));
+//        double maxdistMoney =  Double.MAX_VALUE;
+//        double maxdistTime = Long.MAX_VALUE;
+//
+////        double dist = 0.0;
+////        double tdist;
+////        boolean isparetoSmaller = true;
+////        SolutionSpace minSpace = paretoToCompare;
+////        SolutionSpace maxSpace = solutionsM;
+//
+////        if( minSpace.size() > maxSpace.size() ){
+////            minSpace = solutionsM;
+////            maxSpace = paretoToCompare;
+////            isparetoSmaller = false;
+////        }
+////
+////        for(Plan minp:solutionsM){
+////            tdist = Double.MAX_VALUE;
+////            for(Plan maxp:paretoToCompare){
+////                if(tdist>calculateEuclidean(minp,maxp)){
+////                    tdist = calculateEuclidean(minp,maxp);
+////                    tplan = maxp;
+////                }
+////                tdist = Math.min(tdist, calculateEuclidean(minp,maxp));
+////            }
+////            if(isparetoSmaller){
+////                maxdistMoney = Math.max(maxdistMoney,  ( (minp.stats.money - tplan.stats.money)/tplan.stats.money)*100 );//pros8esa () kai sta tessera!
+////                maxdistTime  = Math.max(maxdistTime,    ( (minp.stats.runtime_MS - tplan.stats.runtime_MS) /tplan.stats.runtime_MS)*100   );
+////            }else{
+////                maxdistMoney = Math.max(maxdistMoney,  ( (tplan.stats.money - minp.stats.money) /minp.stats.money)*100  );
+////                maxdistTime  = Math.max(maxdistTime,    ( (tplan.stats.runtime_MS - minp.stats.runtime_MS) /minp.stats.runtime_MS)*100   );
+////            }
+////
+////        }
+//
+//
+//
+//        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
+//            @Override public int compare(Plan o1, Plan o2) {
+//                return Double.compare(o1.stats.money,o2.stats.money);
 //            }
-//            if(isparetoSmaller){
-//                maxdistMoney = Math.max(maxdistMoney,  ( (minp.stats.money - tplan.stats.money)/tplan.stats.money)*100 );//pros8esa () kai sta tessera!
-//                maxdistTime  = Math.max(maxdistTime,    ( (minp.stats.runtime_MS - tplan.stats.runtime_MS) /tplan.stats.runtime_MS)*100   );
-//            }else{
-//                maxdistMoney = Math.max(maxdistMoney,  ( (tplan.stats.money - minp.stats.money) /minp.stats.money)*100  );
-//                maxdistTime  = Math.max(maxdistTime,    ( (tplan.stats.runtime_MS - minp.stats.runtime_MS) /minp.stats.runtime_MS)*100   );
-//            }
+//        });
 //
+//
+//        double maxPKnee = 0.0;
+//        double avgPKnee = 0.0;
+//        for( int i=1;i<paretoToCompare.size()-1;++i){
+//            Plan p0 = paretoToCompare.results.get(i-1);
+//            Plan p1 = paretoToCompare.results.get(i);
+//            Plan p2 = paretoToCompare.results.get(i+1);
+//            double d = paretoToCompare.getDerMulti(p0,p1,p2, false, paretoToCompare);
+//            maxPKnee = Math.max(maxPKnee,d);
+//            avgPKnee+=d;
 //        }
-
-
-
-        Collections.sort(paretoToCompare.results, new Comparator<Plan>() {
-            @Override public int compare(Plan o1, Plan o2) {
-                return Double.compare(o1.stats.money,o2.stats.money);
-            }
-        });
-
-
-        double maxPKnee = 0.0;
-        double avgPKnee = 0.0;
-        for( int i=1;i<paretoToCompare.size()-1;++i){
-            Plan p0 = paretoToCompare.results.get(i-1);
-            Plan p1 = paretoToCompare.results.get(i);
-            Plan p2 = paretoToCompare.results.get(i+1);
-            double d = paretoToCompare.getDerMulti(p0,p1,p2, false, paretoToCompare);
-            maxPKnee = Math.max(maxPKnee,d);
-            avgPKnee+=d;
-        }
-        avgPKnee = avgPKnee/paretoToCompare.size()-2;
-
-        Collections.sort(solutionsM.results, new Comparator<Plan>() {
-            @Override public int compare(Plan o1, Plan o2) {
-                return Double.compare(o1.stats.money,o2.stats.money);
-            }
-        });
-
-
-        double maxMKnee = 0.0;
-        double avgMKnee = 0.0;
-        for( int i=1;i<solutionsM.size()-1;++i){
-            Plan p0 = solutionsM.results.get(i-1);
-            Plan p1 = solutionsM.results.get(i);
-            Plan p2 = solutionsM.results.get(i+1);
-            double d = solutionsM.getDerMulti(p0,p1,p2, false, solutionsM);
-            maxMKnee = Math.max(maxMKnee,d);
-            avgMKnee+=d;
-        }
-        avgMKnee = avgMKnee/solutionsM.size()-2;
-
-        legendInfo.add(new Pair<String,Double>("FastestImprovement (>1)", (double) ( solutionsM.getFastestTime()/paretoToCompare.getFastestTime()  )));
-        legendInfo.add(new Pair<String,Double>("CheapestImprovement (>1)", (double) ( solutionsM.getMinCost()/paretoToCompare.getMinCost() ) ));
-
-//        legendInfo.add(new Pair<>("maxMoneyImprov (+)",maxdistMoney));
-//        legendInfo.add(new Pair<>("maxTimeImprov (+)",maxdistTime));
-
-        legendInfo.add(new Pair<>("avgKnee Comp (>1) ",avgPKnee /avgMKnee));
-        legendInfo.add(new Pair<>("maxKnee Comp (>1) ",maxPKnee /maxMKnee));
-
-//        legendInfo.add(new Pair<>("avgPKnee ",avgPKnee));
-//        legendInfo.add(new Pair<>("maxPKnee ",maxPKnee));
+//        avgPKnee = avgPKnee/paretoToCompare.size()-2;
 //
-//        legendInfo.add(new Pair<>("avgMKnee ",avgMKnee));
-//        legendInfo.add(new Pair<>("maxMKnee ",maxMKnee));
-
-
-
-    }
+//        Collections.sort(solutionsM.results, new Comparator<Plan>() {
+//            @Override public int compare(Plan o1, Plan o2) {
+//                return Double.compare(o1.stats.money,o2.stats.money);
+//            }
+//        });
+//
+//
+//        double maxMKnee = 0.0;
+//        double avgMKnee = 0.0;
+//        for( int i=1;i<solutionsM.size()-1;++i){
+//            Plan p0 = solutionsM.results.get(i-1);
+//            Plan p1 = solutionsM.results.get(i);
+//            Plan p2 = solutionsM.results.get(i+1);
+//            double d = solutionsM.getDerMulti(p0,p1,p2, false, solutionsM);
+//            maxMKnee = Math.max(maxMKnee,d);
+//            avgMKnee+=d;
+//        }
+//        avgMKnee = avgMKnee/solutionsM.size()-2;
+//
+//        legendInfo.add(new Pair<String,Double>("FastestImprovement (>1)", (double) ( solutionsM.getFastestTime()/paretoToCompare.getFastestTime()  )));
+//        legendInfo.add(new Pair<String,Double>("CheapestImprovement (>1)", (double) ( solutionsM.getMinCost()/paretoToCompare.getMinCost() ) ));
+//
+////        legendInfo.add(new Pair<>("maxMoneyImprov (+)",maxdistMoney));
+////        legendInfo.add(new Pair<>("maxTimeImprov (+)",maxdistTime));
+//
+//        legendInfo.add(new Pair<>("avgKnee Comp (>1) ",avgPKnee /avgMKnee));
+//        legendInfo.add(new Pair<>("maxKnee Comp (>1) ",maxPKnee /maxMKnee));
+//
+////        legendInfo.add(new Pair<>("avgPKnee ",avgPKnee));
+////        legendInfo.add(new Pair<>("maxPKnee ",maxPKnee));
+////
+////        legendInfo.add(new Pair<>("avgMKnee ",avgMKnee));
+////        legendInfo.add(new Pair<>("maxMKnee ",maxMKnee));
+//
+//
+//
+//    }
 
     public static double calculateEuclidean(Plan a,Plan b){
         double x = a.stats.runtime_MS - b.stats.runtime_MS;

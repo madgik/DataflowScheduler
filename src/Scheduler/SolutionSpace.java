@@ -101,17 +101,26 @@ public class SolutionSpace implements Iterable<Plan> {
         return tp;
     }
 
-    public double getMinUnfairness(){
+    public double getMinUnfairness(boolean partialSolution){
         double unfairness=Double.MAX_VALUE;
         for(Plan p:results){
-            unfairness = Math.min(unfairness,p.stats.unfairness);
+
+            if(partialSolution)
+                unfairness = Math.min(unfairness,p.stats.partialUnfairness);
+            else
+                unfairness = Math.min(unfairness,p.stats.unfairness);
+
+
         }
         return unfairness;
     }
 
-    public double getMaxUnfairness(){
+    public double getMaxUnfairness(boolean partialSolution){
         double unfairness=Double.MIN_VALUE;
         for(Plan p:results){
+            if(partialSolution)
+                unfairness = Math.max(unfairness,p.stats.partialUnfairness);
+                else
             unfairness = Math.max(unfairness,p.stats.unfairness);
         }
         return unfairness;
@@ -216,10 +225,11 @@ public class SolutionSpace implements Iterable<Plan> {
             {
                 Collections.sort(results, MultiParetoPlanComparator);
 
-//                System.out.println("sorted as");
-//
-//                for (int i = 0; i < results.size(); i++)
-//                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.partialUnfairness);
+                System.out.println("sorted as");
+
+                for (int i = 0; i < results.size(); i++)
+                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.partialUnfairness);
+
             }
             else {
                // System.out.println("ppc here");
@@ -268,33 +278,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         SolutionSpace skyline = new SolutionSpace();
 
-
         this.sort(isPareto, multi); // Sort by time breaking equality by sorting by money
-
-
-
-
-//
-//        Plan previous = null;
-//        for (Plan est : results) {
-//            if (previous == null) {
-//                skyline.add(est);
-//                previous = est;
-//                continue;
-//            }
-//            if (previous.stats.runtime_MS == est.stats.runtime_MS) {
-//                // Already sorted by money
-//                continue;
-//            }
-//            if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError) //TODO ji fix or check
-//                if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
-//                    skyline.add(est);
-//                    previous = est;
-//                }
-//        }
-
-
-
 
         if(multi)
         {
@@ -303,10 +287,6 @@ public class SolutionSpace implements Iterable<Plan> {
             Plan previousFair = null;
 
             for (Plan est : results) {
-
-//                System.out.println("looks for" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
-//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
-//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
 
                 if (previous == null) {
                     skyline.add(est);
@@ -342,8 +322,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
             }
         }
-
-        else {
+            else{
             Plan previous = null;
             for (Plan est : results) {
                 if (previous == null) {
@@ -368,7 +347,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public  ArrayList<Plan> getSkyline(boolean multi){//todo: change
+    public  ArrayList<Plan> getSkyline(boolean multi, boolean partialSolution){//todo: change
 
         SolutionSpace skyline = new SolutionSpace();
 
@@ -400,7 +379,7 @@ public class SolutionSpace implements Iterable<Plan> {
 //        }
 
         
-        if(multi) {//multi-objective includes fairness
+        if(multi && partialSolution) {//multi-objective includes fairness
             Plan previous = null;
 
             Plan previousFair = null;
@@ -421,7 +400,7 @@ public class SolutionSpace implements Iterable<Plan> {
                     // Already sorted by money
 
                     if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
-                        if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                        if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
                             skyline.add(est);
                             previousFair = est;
                       //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
@@ -454,6 +433,61 @@ public class SolutionSpace implements Iterable<Plan> {
 
             }
         }//bi-objective for time-money
+        else if(multi && !partialSolution)
+        {//multi-objective includes fairness
+            Plan previous = null;
+
+            Plan previousFair = null;
+
+            for (Plan est : results) {
+
+//                System.out.println("looks for" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
+//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
+//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
+
+                if (previous == null) {
+                    skyline.add(est);
+                    previous = est;
+                    previousFair = est;
+                    continue;
+                }
+                if (previous.stats.runtime_MS == est.stats.runtime_MS) {
+                    // Already sorted by money
+
+                    if (Math.abs(previousFair.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                        if (previousFair.stats.unfairness > est.stats.unfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                            skyline.add(est);
+                            previousFair = est;
+                            //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                        }
+
+                    continue;
+                }
+                if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError)
+                    if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+
+                        previous = est;
+
+                        //right?
+                        if (Math.abs(previousFair.stats.unfairness - previous.stats.unfairness) > RuntimeConstants.precisionError)
+                            if (previousFair.stats.unfairness > previous.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                                previousFair = est;
+                            }
+
+                        continue;
+                    }
+
+                if (Math.abs(previousFair.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                    if (previousFair.stats.unfairness > est.stats.unfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                        skyline.add(est);
+                        previousFair = est;
+                        //     System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                    }
+
+
+            }
+        }
         else {
             Plan previous = null;
             for (Plan est : results) {
@@ -476,7 +510,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         System.out.println("skyline is:");
         for(Plan e: skyline)
-        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
+        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness + " " + e.stats.unfairness);
 
      return skyline.results;
 
@@ -499,9 +533,9 @@ public class SolutionSpace implements Iterable<Plan> {
 
     static int steps=0;
     static int aaa = 0;
-    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi){
+    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi, boolean partialSolution){
 
-        ArrayList<Plan> skyline = getSkyline(multi);
+        ArrayList<Plan> skyline = getSkyline(multi, partialSolution);
         if(!pruneEnabled){
             this.results.clear();
             this.results.addAll(skyline);
@@ -568,7 +602,7 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.addAll(retset);
             }
             else if (method.equals("Knee")) {
-                Knee(skyline, k , retset, multi);
+                Knee(skyline, k , retset, multi,partialSolution);
                 this.results.clear();
                 this.results.addAll(retset);
             }
@@ -596,7 +630,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         System.out.println("\n\nafter pruning:");
         for(Plan e: results) {
-            System.out.println(e.stats.money + " " + e.stats.runtime_MS + " " + e.stats.partialUnfairness);
+            System.out.println(e.stats.money + " " + e.stats.runtime_MS + " " + e.stats.partialUnfairness + " " + e.stats.unfairness);
 
         }
 
@@ -729,8 +763,8 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public void keepK(int k, boolean multi) {
-        ArrayList<Plan> sk = getSkyline(multi);
+    public void keepK(int k, boolean multi, boolean partialSolution) {
+        ArrayList<Plan> sk = getSkyline(multi, partialSolution);
 
         if(results.size() == 0) {
             System.out.println("empty");
@@ -1169,7 +1203,7 @@ public class SolutionSpace implements Iterable<Plan> {
         return ret;
     }
 
-    public HashSet<Plan> Knee(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret, boolean multi){//TODO: if plans number > k then keep all plans
+    public HashSet<Plan> Knee(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret, boolean multi, boolean partialSolution){//TODO: if plans number > k then keep all plans
 
         addExtremes(donotchange,ret);
         
@@ -1208,7 +1242,7 @@ public class SolutionSpace implements Iterable<Plan> {
 ////        long dist2 = knee.stats.runtime_MS - fastest.stats.runtime_MS;
      //   System.out.println("ret is " + ret.size());
         HashMap<Plan,Double> secondDer = new HashMap<>();
-        ArrayList<Plan> knees = getKneess(donotchange,secondDer, multi);
+        ArrayList<Plan> knees = getKneess(donotchange,secondDer, multi,partialSolution);
 
 
         ArrayList<Pair<Plan,Double>> finalMetric = new ArrayList<>();
@@ -1217,7 +1251,7 @@ public class SolutionSpace implements Iterable<Plan> {
         for(Double der:secondDer.values()){
             maxSecondDer = Math.max(maxSecondDer,der);
         }
-        double maxDist = calculateEuclideanMulti(getMaxCostPlan(), getMinCostPlan(), multi);
+        double maxDist = calculateEuclideanMulti(getMaxCostPlan(), getMinCostPlan(), multi, partialSolution);
 
 
         for(int j=1;j<donotchange.size()-1;++j){
@@ -1225,7 +1259,7 @@ public class SolutionSpace implements Iterable<Plan> {
             if(knees.contains(p)){
                 finalMetric.add(new Pair<Plan, Double>(p, MAX_VALUE));
             }else{
-                finalMetric.add(new Pair<Plan, Double>(p,((0.5*secondDer.get(p))/maxSecondDer)*((0.5*minDist(p,knees, multi))/maxDist ) ));//ignore 0.5...
+                finalMetric.add(new Pair<Plan, Double>(p,((0.5*secondDer.get(p))/maxSecondDer)*((0.5*minDist(p,knees, multi, partialSolution))/maxDist ) ));//ignore 0.5...
 
             }
         }
@@ -1249,7 +1283,7 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     // returns the second der and the knees
-    public ArrayList<Plan> getKneess(ArrayList<Plan> pp,HashMap<Plan,Double> planMetric, boolean multi){
+    public ArrayList<Plan> getKneess(ArrayList<Plan> pp,HashMap<Plan,Double> planMetric, boolean multi, boolean partialSolution){
         //sort by one dimension just to get an orderding
         Collections.sort(pp,new Comparator<Plan>() {
             @Override public int compare(Plan o1, Plan o2) {
@@ -1301,7 +1335,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
             double secder=0.0;
           //  if(multi)
-                secder = plans.getDerMulti(p0,p1,p2, multi, plans);
+                secder = plans.getDerMulti(p0,p1,p2, multi, plans,partialSolution);
             //    else
                  //       secder = plans.getDer(p0,p1,p2, multi);
             d+=secder;
@@ -1319,12 +1353,12 @@ public class SolutionSpace implements Iterable<Plan> {
         return knees;
     }
 
-    public double minDist(Plan p,ArrayList<Plan> knees, boolean multi){
+    public double minDist(Plan p,ArrayList<Plan> knees, boolean multi, boolean partialSolution){
         Plan r = null;
         double dist = MAX_VALUE;
         double td;
         for(Plan pp:knees){
-            td = calculateEuclideanMulti(p,pp, multi);
+            td = calculateEuclideanMulti(p,pp, multi, partialSolution);
             if( td<dist ) {
                 dist = td;
                 r = pp;
@@ -1371,10 +1405,12 @@ public class SolutionSpace implements Iterable<Plan> {
         return Math.sqrt((x*x)+(y*y));
     }
 
-    public double calculateEuclideanMulti(Plan a,Plan b, boolean multi){
+    public double calculateEuclideanMulti(Plan a,Plan b, boolean multi, boolean partialSolution){
         double x = a.stats.runtime_MS - b.stats.runtime_MS;
         double y = a.stats.money - b.stats.money;
         double z = a.stats.partialUnfairness - b.stats.partialUnfairness;
+        if(!partialSolution)
+            z = a.stats.unfairness - b.stats.unfairness;
         if(!multi)
             z=0.0;
         return Math.sqrt((x*x)+(y*y)+(z*z));
@@ -1416,7 +1452,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public double getDer(Plan p0, Plan p1, Plan p2, Boolean multi){
+    public double getDer(Plan p0, Plan p1, Plan p2, Boolean multi, Boolean partialSolution){
         //sort by money first
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
@@ -1447,7 +1483,7 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     //YC changes
-    public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){//getDerMultiYC_combined
+    public double getDerMulti(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans, boolean partialSolution){//getDerMultiYC_combined
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
         Statistics p2Stats = p2.stats;
@@ -1459,19 +1495,23 @@ public class SolutionSpace implements Iterable<Plan> {
 
         double costRange = plans.getMaxCost() - plans.getMinCost();
         long timeRange = plans.getMaxRuntime() - plans.getMinRuntime();
-        double unfairRange = plans.getMaxUnfairness() - plans.getMinUnfairness();
+        double unfairRange = plans.getMaxUnfairness(partialSolution) - plans.getMinUnfairness(partialSolution);
 
         double minCost = plans.getMinCost();
         long minTime = plans.getMinRuntime();
-        double minUnfair = plans.getMinUnfairness();
+        double minUnfair = plans.getMinUnfairness(partialSolution);
 
         double m01 = normalize(costRange, minCost, p1Stats.money) - normalize(costRange, minCost,p0Stats.money);
         double t01 = normalize(timeRange, minTime, p1Stats.runtime_MS) - normalize(timeRange, minTime, p0Stats.runtime_MS);
         double u01 = normalize(unfairRange, minUnfair, p1Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p0Stats.partialUnfairness);
+        if(!partialSolution)
+            u01 = normalize(unfairRange, minUnfair, p1Stats.unfairness) - normalize(unfairRange, minUnfair, p0Stats.unfairness);
 
         double m12 = normalize(costRange, minCost, p2Stats.money) - normalize(costRange, minCost, p1Stats.money);
         double t12 = normalize(timeRange, minTime, p2Stats.runtime_MS) - normalize(timeRange, minTime, p1Stats.runtime_MS);
         double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
+        if(!partialSolution)
+            u12 = normalize(unfairRange, minUnfair, p2Stats.unfairness) - normalize(unfairRange, minUnfair, p1Stats.unfairness);
 
 
         double theta01;
@@ -1497,7 +1537,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public double getDerMultiIP(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans){
+    public double getDerMultiIP(Plan p0, Plan p1, Plan p2, boolean multi, SolutionSpace plans, boolean partialSolution){
         //sort by money first
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
@@ -1577,19 +1617,23 @@ public class SolutionSpace implements Iterable<Plan> {
 
             double costRange = plans.getMaxCost() - plans.getMinCost();
             long timeRange = plans.getMaxRuntime() - plans.getMinRuntime();
-            double unfairRange = plans.getMaxUnfairness() - plans.getMinUnfairness();
+            double unfairRange = plans.getMaxUnfairness(partialSolution) - plans.getMinUnfairness(partialSolution);
 
             double minCost = plans.getMinCost();
             long minTime = plans.getMinRuntime();
-            double minUnfair = plans.getMinUnfairness();
+            double minUnfair = plans.getMinUnfairness(partialSolution);
 
             double m01 = normalize(costRange, minCost, p1Stats.money) - normalize(costRange, minCost,p0Stats.money);
             double t01 = normalize(timeRange, minTime, p1Stats.runtime_MS) - normalize(timeRange, minTime, p0Stats.runtime_MS);
             double u01 = normalize(unfairRange, minUnfair, p1Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p0Stats.partialUnfairness);
+            if(!partialSolution)
+                u01 = normalize(unfairRange, minUnfair, p1Stats.unfairness) - normalize(unfairRange, minUnfair, p0Stats.partialUnfairness);
 
             double m12 = normalize(costRange, minCost, p2Stats.money) - normalize(costRange, minCost, p1Stats.money);
             double t12 = normalize(timeRange, minTime, p2Stats.runtime_MS) - normalize(timeRange, minTime, p1Stats.runtime_MS);
             double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
+            if(!partialSolution)
+                u12 = normalize(unfairRange, minUnfair, p2Stats.unfairness) - normalize(unfairRange, minUnfair, p1Stats.unfairness);
 
 
 
