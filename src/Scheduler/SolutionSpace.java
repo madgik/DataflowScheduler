@@ -1435,9 +1435,11 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
     public double normalize(double range, double min, double value){
+        if( range == 0) {return 0;}
         return (value - min) / range;
     }
     public long normalize(long range, long min, long value){
+        if( range == 0) {return 0;}
         return (value - min) / range;
     }
 
@@ -1469,14 +1471,18 @@ public class SolutionSpace implements Iterable<Plan> {
         double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
 
 
-        double theta01 = ( t01 + u01 ) / (m01);
+        double theta01;
         if(Math.abs(m01)<1e-12) {
            // System.out.println("m01 " + m01);
             theta01 = 0.0;
+        }else {
+            theta01 = ( t01 + u01 ) / (m01);
         }
-        double theta12 = ( t12 + u12 ) / (m12);
+        double theta12;
         if(Math.abs(m12)<1e-12) {
             theta12 = 0.0;
+        }else{
+            theta12 = ( t12 + u12 ) / (m12);
         }
 
 
