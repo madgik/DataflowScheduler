@@ -384,6 +384,38 @@ public class Statistics {
         this.meanContainersUsed = s.meanContainersUsed;
         this.partialUnfairness = s.partialUnfairness;
         this.unfairness = s.unfairness;//TODO is it required??
+
+
+
+        this.subdagMeanMakespan=s.subdagMeanMakespan;
+        this.subdagMaxMakespan=s.subdagMaxMakespan;
+        this.subdagMinMakespan=s.subdagMinMakespan;
+        this.subdagMeanMoneyFragment=s.subdagMeanMoneyFragment;
+        this.subdagMeanResponseTime=s.subdagMeanResponseTime;
+        this.subdagMaxResponseTime=s.subdagMaxResponseTime;
+        this.subdagMinResponseTime=s.subdagMinResponseTime;
+
+
+        subdagMoneyFragment = new HashMap<>();//dagId, time
+        this.subdagMoneyFragment.putAll(s.subdagMoneyFragment);
+
+        subdagStartTime = new HashMap<>();//dagId, time
+        this.subdagStartTime.putAll(s.subdagStartTime);
+
+        subdagFinishTime = new HashMap<>();//dagId, time
+        this.subdagFinishTime.putAll(s.subdagFinishTime);
+
+        subdagMakespan = new HashMap<>();//dagId, time
+        this.subdagMakespan.putAll(s.subdagMakespan);
+
+        subdagResponseTime = new HashMap<>();//dagId, time
+        this.subdagResponseTime.putAll(s.subdagResponseTime);
+
+        subdagPartialCP = new HashMap<>();//dagId, time
+        this.subdagPartialCP.putAll(s.subdagPartialCP);
+
+
+
     }
 
 }
