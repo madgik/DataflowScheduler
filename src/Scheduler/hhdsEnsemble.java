@@ -30,19 +30,15 @@ public class hhdsEnsemble implements Scheduler {
     public int homoPlanstoKeep = 80;//80;
     public int pruneSkylineSize = 10;//20;
 
-
-
     public int maxContainers = 100000000;
 
     public boolean backfilling = false;
     public boolean backfillingUpgrade = false;
-    public boolean migrationEnabled=false;
 
-    public boolean heteroStartEnabled = false;
-    public boolean HEFT = false;
-    public boolean pruneEnabled = false;
+    public boolean heteroEnabled = true;
+    public boolean pruneEnabled = true;
     public String PruneMethod = "";
-    public boolean homotohetero = false;
+   // public boolean homotohetero = false;
 
     public boolean multi=false;
 
@@ -77,7 +73,7 @@ public class hhdsEnsemble implements Scheduler {
 
             skylinePlans.clear();
 
-            if (!heteroStartEnabled){
+            if (heteroEnabled ){
 
                 for (containerType cType : containerType.values()) {
 
@@ -115,11 +111,36 @@ public class hhdsEnsemble implements Scheduler {
                     }
 
                 }
+
+                skylinePlans.addAll(skylinePlans_DEC.results);
+                skylinePlans.addAll(skylinePlans_INC.results);
+                skylinePlans.addAll(skylinePlans_INCDEC.results);
+
+
+            }
+            else
+            {
+
+               // for (containerType cType : containerType.values()) {
+
+                    containerType cType = containerType.getSmallest();
+                    if (maxContainers == 1) {
+                        skylinePlans.add(onlyOneContainer());
+                    } else {
+
+                            ArrayList<containerType> cTypes = new ArrayList<>();
+                            cTypes.add(cType);
+
+                            skylinePlans_INCDEC.addAll(this.createAssignments("increasing", cTypes));
+
+                    }
+
+               // }
+                skylinePlans.addAll(skylinePlans_INCDEC.results);
+
+
             }
 
-            skylinePlans.addAll(skylinePlans_DEC.results);
-            skylinePlans.addAll(skylinePlans_INC.results);
-            skylinePlans.addAll(skylinePlans_INCDEC.results);
 
             paretoPlans.addAll(skylinePlans.results);
 
@@ -149,6 +170,7 @@ public class hhdsEnsemble implements Scheduler {
             paretoPlans.clear();
 
 
+        if (heteroEnabled)
             paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
 
             System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
@@ -257,7 +279,7 @@ public class hhdsEnsemble implements Scheduler {
 //
 //        if(homotohetero) {
 //
-//            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, multi);
+//            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, multi, true);
 //
 //            mpinfo.add("pareto",paretoPlans.results);
 //

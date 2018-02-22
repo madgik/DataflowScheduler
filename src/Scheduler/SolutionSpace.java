@@ -379,7 +379,7 @@ public class SolutionSpace implements Iterable<Plan> {
 //        }
 
         
-        if(multi && partialSolution) {//multi-objective includes fairness
+        if(multi) {//multi-objective includes fairness
             Plan previous = null;
 
             Plan previousFair = null;
@@ -399,12 +399,21 @@ public class SolutionSpace implements Iterable<Plan> {
                 if (previous.stats.runtime_MS == est.stats.runtime_MS) {
                     // Already sorted by money
 
-                    if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
-                        if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
-                            skyline.add(est);
-                            previousFair = est;
-                      //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
-                        }
+                    if(partialSolution) {
+                        if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                            if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
+                                skyline.add(est);
+                                previousFair = est;
+                                //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                            }
+                    }else {
+                        if (Math.abs(previousFair.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                            if (previousFair.stats.unfairness > est.stats.unfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                                skyline.add(est);
+                                previousFair = est;
+                                //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                            }
+                    }
 
                     continue;
                 }
@@ -414,80 +423,42 @@ public class SolutionSpace implements Iterable<Plan> {
 
                         previous = est;
 
-                        //right?
-                        if (Math.abs(previousFair.stats.partialUnfairness - previous.stats.partialUnfairness) > RuntimeConstants.precisionError)
-                            if (previousFair.stats.partialUnfairness > previous.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
-                                previousFair = est;
-                            }
+                        if(partialSolution) {
+                            if (Math.abs(previousFair.stats.partialUnfairness - previous.stats.partialUnfairness) > RuntimeConstants.precisionError)
+                                if (previousFair.stats.partialUnfairness > previous.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
+                                    previousFair = est;
+                                }
+                        }
+                        else {
+                            if (Math.abs(previousFair.stats.unfairness - previous.stats.unfairness) > RuntimeConstants.precisionError)
+                                if (previousFair.stats.unfairness > previous.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                                    previousFair = est;
+                                }
+                        }
 
                         continue;
                     }
 
-                if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
-                    if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
-                        skyline.add(est);
-                        previousFair = est;
-                   //     System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                    if(partialSolution) {
+                        if (Math.abs(previousFair.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.partialUnfairness - est.stats.partialUnfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                            if (previousFair.stats.partialUnfairness > est.stats.partialUnfairness && previous.stats.partialUnfairness > est.stats.partialUnfairness) {//use Double.compare. at moheft as well or add precision error
+                                skyline.add(est);
+                                previousFair = est;
+                                //     System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                            }
+                    }
+                    else {
+                        if (Math.abs(previousFair.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError) //TODO use fairness
+                            if (previousFair.stats.unfairness > est.stats.unfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
+                                skyline.add(est);
+                                previousFair = est;
+                                //     System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
+                            }
                     }
 
 
             }
         }//bi-objective for time-money
-        else if(multi && !partialSolution)
-        {//multi-objective includes fairness
-            Plan previous = null;
-
-            Plan previousFair = null;
-
-            for (Plan est : results) {
-
-//                System.out.println("looks for" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
-//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
-//                System.out.println("compares with" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.contUtilization );
-
-                if (previous == null) {
-                    skyline.add(est);
-                    previous = est;
-                    previousFair = est;
-                    continue;
-                }
-                if (previous.stats.runtime_MS == est.stats.runtime_MS) {
-                    // Already sorted by money
-
-                    if (Math.abs(previousFair.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError) //TODO use fairness
-                        if (previousFair.stats.unfairness > est.stats.unfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
-                            skyline.add(est);
-                            previousFair = est;
-                            //      System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
-                        }
-
-                    continue;
-                }
-                if (Math.abs(previous.stats.money - est.stats.money) > RuntimeConstants.precisionError)
-                    if (previous.stats.money > est.stats.money) {//use Double.compare. at moheft as well or add precision error
-                        skyline.add(est);
-
-                        previous = est;
-
-                        //right?
-                        if (Math.abs(previousFair.stats.unfairness - previous.stats.unfairness) > RuntimeConstants.precisionError)
-                            if (previousFair.stats.unfairness > previous.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
-                                previousFair = est;
-                            }
-
-                        continue;
-                    }
-
-                if (Math.abs(previousFair.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError && Math.abs(previous.stats.unfairness - est.stats.unfairness) > RuntimeConstants.precisionError) //TODO use fairness
-                    if (previousFair.stats.unfairness > est.stats.unfairness && previous.stats.unfairness > est.stats.unfairness) {//use Double.compare. at moheft as well or add precision error
-                        skyline.add(est);
-                        previousFair = est;
-                        //     System.out.println("also added" + est.stats.money+ " " + est.stats.runtime_MS+ " " + est.stats.partialUnfairness );
-                    }
-
-
-            }
-        }
         else {
             Plan previous = null;
             for (Plan est : results) {
@@ -537,6 +508,8 @@ public class SolutionSpace implements Iterable<Plan> {
 
         ArrayList<Plan> skyline = getSkyline(multi, partialSolution);
         if(!pruneEnabled){
+
+            System.out.println("pruneEnabled false");
             this.results.clear();
             this.results.addAll(skyline);
             return;
@@ -1452,7 +1425,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public double getDer(Plan p0, Plan p1, Plan p2, Boolean multi, Boolean partialSolution){
+    public double getDer(Plan p0, Plan p1, Plan p2, Boolean multi, boolean partialSolution){
         //sort by money first
         Statistics p0Stats = p0.stats;
         Statistics p1Stats = p1.stats;
