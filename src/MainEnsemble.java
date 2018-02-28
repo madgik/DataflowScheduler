@@ -29,6 +29,10 @@ public class MainEnsemble {
     static boolean jar = false;
     static String jarpath ="";
 
+ //   static Boolean useMoheft = false;
+
+
+
     public static void main(String[] args) {
 
 
@@ -296,11 +300,11 @@ public class MainEnsemble {
 
         System.out.println("paretoDone");
 
-        Cluster clusterM = new Cluster();
+  //      Cluster clusterM = new Cluster();
 
         // Scheduler schedM = new Moheft(graph, clusterM);
 
-        SolutionSpace solutionsM = new SolutionSpace();
+   //     SolutionSpace solutionsM = new SolutionSpace();
 
 //        if(moheft) {
 //
@@ -314,7 +318,24 @@ public class MainEnsemble {
 //
 //        }
 
-
+//        //// Execute MOHEFT /////////////////////////
+//        int pruning_k = 10;
+//        Cluster clusterM = new Cluster();
+//        Scheduler MOHEFT = new Moheft(graph, clusterM, pruning_k);
+//        SolutionSpace MOHEFTSchedules = new SolutionSpace();
+//
+//        if (useMoheft) {
+//            MOHEFTSchedules = MOHEFT.schedule();
+//            sbOut.append(MOHEFTSchedules.toString());
+//            //      mpinfo.add("moheft (" + MOHEFTSchedules.size() + ") " + (MOHEFTSchedules.optimizationTime_MS),
+//            //        MOHEFTSchedules.results);
+//            combined.addAll(MOHEFTSchedules);
+//            System.out.println("MOHEFT Done");
+//        }
+//
+//
+//        hhdsPlans.clear();
+//        hhdsPlans.addAll(MOHEFTSchedules.results);
 
         sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges()).append("\n");
         sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");

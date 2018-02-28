@@ -225,10 +225,10 @@ public class SolutionSpace implements Iterable<Plan> {
             {
                 Collections.sort(results, MultiParetoPlanComparator);
 
-                System.out.println("sorted as");
-
-                for (int i = 0; i < results.size(); i++)
-                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.partialUnfairness);
+//                System.out.println("sorted as");
+//
+//                for (int i = 0; i < results.size(); i++)
+//                    System.out.println(i + " " + results.get(i).stats.runtime_MS + " " + results.get(i).stats.money + " " + results.get(i).stats.partialUnfairness);
 
             }
             else {
@@ -1271,19 +1271,33 @@ public class SolutionSpace implements Iterable<Plan> {
 //               // }
 //               // else  return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
 
-                if (o1.stats.money  == o2.stats.money) {
-                    if (Math.abs(o1.stats.runtime_MS - o2.stats.runtime_MS) < RuntimeConstants.precisionError) {
+                if(multi) {
+                    if (o1.stats.money == o2.stats.money) {
+                        if (Math.abs(o1.stats.runtime_MS - o2.stats.runtime_MS) < RuntimeConstants.precisionError) {
 
-                        if (Math.abs(o1.stats.partialUnfairness - o2.stats.partialUnfairness) < RuntimeConstants.precisionError)
-                            return Double.compare(o1.stats.contUtilization, o2.stats.contUtilization);//leave it as it is;
-                        else if (o1.stats.partialUnfairness > o2.stats.partialUnfairness)
-                            return 1;
-                        else
-                            return -1;
+                            if (Math.abs(o1.stats.partialUnfairness - o2.stats.partialUnfairness) < RuntimeConstants.precisionError)
+                                return Double.compare(o1.stats.contUtilization, o2.stats.contUtilization);//leave it as it is;
+                            else if (o1.stats.partialUnfairness > o2.stats.partialUnfairness)
+                                return 1;
+                            else
+                                return -1;
+                        }
+                        return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+                    } else {
+                        return Double.compare(o1.stats.money, o2.stats.money);
                     }
-                    return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
-                } else {
-                    return Double.compare(o1.stats.money, o2.stats.money );
+                }
+                else{
+                    if (o1.stats.money  == o2.stats.money) {
+                        if (Math.abs(o1.stats.runtime_MS - o2.stats.runtime_MS) < RuntimeConstants.precisionError) {
+
+                            return Double.compare(o1.stats.contUtilization, o2.stats.contUtilization);//leave it as it is;
+
+                        }
+                        return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
+                    } else {
+                        return Double.compare(o1.stats.money, o2.stats.money );
+                    }
                 }
 
 
@@ -1485,6 +1499,14 @@ public class SolutionSpace implements Iterable<Plan> {
         double u12 = normalize(unfairRange, minUnfair, p2Stats.partialUnfairness) - normalize(unfairRange, minUnfair, p1Stats.partialUnfairness);
         if(!partialSolution)
             u12 = normalize(unfairRange, minUnfair, p2Stats.unfairness) - normalize(unfairRange, minUnfair, p1Stats.unfairness);
+
+
+
+        if(!multi)
+        {
+            u01=0.0;
+            u12=0.0;
+        }
 
 
         double theta01;
