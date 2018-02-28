@@ -1,0 +1,12 @@
+Running multiple  multipleFlows +sumdata:557 Pareto, Moheft
+  76333805 079.90 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.61) (0.97, 0.61, 1.00) #fs:  58  -- #Conts: 220 A(220) 
+  76910816 079.82 || noQ Q (Avg,Max,Min) (0.99, 1.00, 0.61) (0.97, 0.61, 1.00) #fs:  55  -- #Conts: 220 A(220) 
+  86242171 078.37 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.67) (0.97, 0.65, 1.00) #fs:  49  -- #Conts: 209 A(209) 
+  86572194 077.95 || noQ Q (Avg,Max,Min) (1.00, 1.02, 0.94) (0.97, 0.76, 1.00) #fs:  43  -- #Conts: 201 A(201) 
+  87381768 077.61 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.94) (0.97, 0.89, 1.00) #fs:  50  -- #Conts: 196 A(196) 
+  87800778 077.52 || noQ Q (Avg,Max,Min) (1.00, 1.00, 0.94) (0.98, 0.89, 1.00) #fs:  47  -- #Conts: 196 A(196) 
+/////////////////size: 6
+nodes 300 edges 684
+ multipleFlows +sumdata:557  sumDataGB 557
+pareto multiple time(sec) -> 391.991
+
