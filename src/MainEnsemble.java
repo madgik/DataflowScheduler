@@ -2,6 +2,7 @@ import Graph.DAG;
 import Graph.parsers.PegasusDaxParser;
 import Lattice.LatticeGenerator;
 import Scheduler.*;
+import Simulator.SimEnginge;
 import utils.*;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public class MainEnsemble {
     static String pathOut;
     static Boolean showOutput = false;
     static Boolean saveOutput = true;
-    static Boolean validate = false;
+    static Boolean validate = true;
     static boolean jar = false;
     static String jarpath ="";
 
@@ -229,6 +230,16 @@ public class MainEnsemble {
 
 
 
+        if(validate){
+            System.out.println("Running sims");
+            SimEnginge simeng = new SimEnginge();
+            for (Plan p:ensemblePlans){
+                simeng.execute(p);
+            }
+
+        }
+
+
         }
 
 
@@ -403,14 +414,14 @@ public class MainEnsemble {
 
         //plot.plotMultipleWithLine(combined, legendInfo, mpinfo, filesname, pathPlot, savePlot, showPlot);
 
-        //        if(validate){
-        //            System.out.println("Running sims");
-        //            SimEnginge simeng = new SimEnginge();
-        //            for (Plan p:solutions){
-        //                simeng.execute(p);
-        //            }
-        //
-        //        }
+//                if(validate){
+//                    System.out.println("Running sims");
+//                    SimEnginge simeng = new SimEnginge();
+//                    for (Plan p:solutions){
+//                        simeng.execute(p);
+//                    }
+//
+//                }
 
 
 

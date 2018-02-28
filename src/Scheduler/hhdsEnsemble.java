@@ -36,9 +36,10 @@ public class hhdsEnsemble implements Scheduler {
     public boolean backfillingUpgrade = false;
 
     public boolean heteroEnabled = true;
-    public boolean pruneEnabled = true;
+    public boolean pruneEnabled = false;
     public String PruneMethod = "";
-   // public boolean homotohetero = false;
+    public boolean homotohetero = false;
+    public boolean heteroStartEnabled = false;
 
     public boolean multi=false;
 
