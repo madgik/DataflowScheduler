@@ -1012,78 +1012,78 @@ public class hhdsEnsemble implements Scheduler {
     }
 
 
-    private SolutionSpace computeHomoSkyline(SolutionSpace skylinePlans) {
+//    private SolutionSpace computeHomoSkyline(SolutionSpace skylinePlans) {
+//
+//        SolutionSpace candidates = new SolutionSpace();
+//
+//        skylinePlans.sort(true, multi);
+//
+//        // Sort by time breaking exec time equality by sorting by money and then containers used
+//        candidates.sort(true, multi);
+//
+//        // Keep only the skyline
+//        SolutionSpace skyline = new SolutionSpace();
+//        Plan previous = null;
+//
+//
+//        for (Plan est : candidates) {
+//            // System.out.println("candidate "+est.estimator.getAssignments()+ est.estimator.activeContainersType);
+//            if (previous == null) {
+//                //    System.out.println("kept ");
+//                skyline.add(est);
+//                previous = est;
+//                continue;
+//            }
+//            if (previous.stats.runtime_MS == est.stats.runtime_MS){
+//                // Already sorted by money
+//                continue;
+//            }
+//            if (previous.stats.money > est.stats.money && Math.abs(previous.stats.money - est.stats.money)>0.000000001) {
+//                //   System.out.println("kept ");
+//                skyline.add(est);
+//                previous = est;
+//            }
+//        }
+//        return skyline;
+//    }
 
-        SolutionSpace candidates = new SolutionSpace();
-
-        skylinePlans.sort(true, multi);
-
-        // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true, multi);
-
-        // Keep only the skyline
-        SolutionSpace skyline = new SolutionSpace();
-        Plan previous = null;
-
-
-        for (Plan est : candidates) {
-            // System.out.println("candidate "+est.estimator.getAssignments()+ est.estimator.activeContainersType);
-            if (previous == null) {
-                //    System.out.println("kept ");
-                skyline.add(est);
-                previous = est;
-                continue;
-            }
-            if (previous.stats.runtime_MS == est.stats.runtime_MS){
-                // Already sorted by money
-                continue;
-            }
-            if (previous.stats.money > est.stats.money && Math.abs(previous.stats.money - est.stats.money)>0.000000001) {
-                //   System.out.println("kept ");
-                skyline.add(est);
-                previous = est;
-            }
-        }
-        return skyline;
-    }
-
-    private SolutionSpace computeNewSkyline(SolutionSpace skylinePlans, SolutionSpace skylinePlansNew) {
-
-        SolutionSpace candidates = new SolutionSpace();
-
-        candidates.addAll(skylinePlans);
-        candidates.addAll(skylinePlansNew);
-
-        // Sort by time breaking exec time equality by sorting by money and then containers used
-        candidates.sort(true, multi);
-
-        // Keep only the skyline
-        SolutionSpace skyline = new SolutionSpace();
-        Plan previous = null;
-
-
-        for (Plan est : candidates) {
-            // System.out.println("candidate "+est.estimator.getAssignments()+ est.estimator.activeContainersType);
-            if (previous == null) {
-                //    System.out.println("kept ");
-                skyline.add(est);
-                previous = est;
-                continue;
-            }
-            if (previous.stats.runtime_MS == est.stats.runtime_MS){
-                skylinePlansNew.results.remove(est);
-                // Already sorted by money
-                continue;
-            }
-            if (previous.stats.money > est.stats.money && Math.abs(previous.stats.money - est.stats.money)>0.000000001){                //   System.out.println("kept ");
-                skyline.add(est);
-                previous = est;
-            }
-            else
-                skylinePlansNew.results.remove(est);
-        }
-        return skyline;
-    }
+//    private SolutionSpace computeNewSkyline(SolutionSpace skylinePlans, SolutionSpace skylinePlansNew) {
+//
+//        SolutionSpace candidates = new SolutionSpace();
+//
+//        candidates.addAll(skylinePlans);
+//        candidates.addAll(skylinePlansNew);
+//
+//        // Sort by time breaking exec time equality by sorting by money and then containers used
+//        candidates.sort(true, multi);
+//
+//        // Keep only the skyline
+//        SolutionSpace skyline = new SolutionSpace();
+//        Plan previous = null;
+//
+//
+//        for (Plan est : candidates) {
+//            // System.out.println("candidate "+est.estimator.getAssignments()+ est.estimator.activeContainersType);
+//            if (previous == null) {
+//                //    System.out.println("kept ");
+//                skyline.add(est);
+//                previous = est;
+//                continue;
+//            }
+//            if (previous.stats.runtime_MS == est.stats.runtime_MS){
+//                skylinePlansNew.results.remove(est);
+//                // Already sorted by money
+//                continue;
+//            }
+//            if (previous.stats.money > est.stats.money && Math.abs(previous.stats.money - est.stats.money)>0.000000001){                //   System.out.println("kept ");
+//                skyline.add(est);
+//                previous = est;
+//            }
+//            else
+//                skylinePlansNew.results.remove(est);
+//        }
+//        return skyline;
+//    }
 
     private void computeRankings(){
         final HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
