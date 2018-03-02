@@ -205,27 +205,46 @@ public class MainEnsemble {
             ArrayList<Plan> ensemblePlans =new ArrayList<>();
             DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective);
 
-        outEnsemble.println("money\truntime_MS\tsubdagMeanMoneyFragment\tsubdagMeanResponseTime\tsubdagMinResponseTime\tsubdagMaxResponseTime\tunfairness\tsubdagMeanMakespan\tsubdagMinMakespan\tsubdagMaxMakespan");
+
+        outEnsemble.println("money\truntime_MS\tavgSlowdown\t\tavgStretch\tmaxStretch\tunfairness\tunfairnessNorm");
 
         for (int j = 0; j < ensemblePlans.size(); ++j) {
 
-                Plan p=ensemblePlans.get(j);
-                System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
-                //System.out.printf("%d %.1f %.1f %.1f %.1f\n", p.stats.runtime_MS,p.stats.money, p.stats.unfairness);
-                outPlanDetails.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
+            Plan p=ensemblePlans.get(j);
 
-                System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
+            outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanSlowdown + "\t" + p.stats.subdagMeanResponseTime+ "\t" + "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.unfairnessNorm);
 
-                outPlanDetails.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
 
-                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan);
+            System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
+            System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
 
-                for(Long dgId: p.stats.subdagFinishTime.keySet()) {
-                    System.out.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-                    outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId)/p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+            outPlanDetails.println("\nplan " + j + " runtime money unfairnessNorm ");
+            outPlanDetails.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairnessNorm);
+            for(Long dgId: p.stats.subdagFinishTime.keySet()) {
+                System.out.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+                outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId)/p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId) +" slowdown "+ p.stats.subdagSlowdown.get(dgId));
 
-                }
             }
+        }
+
+//        outEnsemble.println("money\truntime_MS\tsubdagMeanMoneyFragment\tsubdagMeanResponseTime\tsubdagMinResponseTime\tsubdagMaxResponseTime\tunfairness\tsubdagMeanMakespan\tsubdagMinMakespan\tsubdagMaxMakespan");
+//        for (int j = 0; j < ensemblePlans.size(); ++j) {
+//
+//                Plan p=ensemblePlans.get(j);
+//                System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
+//               outPlanDetails.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
+//
+//                System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
+//                outPlanDetails.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
+//
+//                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan);
+//
+//                for(Long dgId: p.stats.subdagFinishTime.keySet()) {
+//                    System.out.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+//                    outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId)/p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
+//
+//                }
+//            }
 
 
 

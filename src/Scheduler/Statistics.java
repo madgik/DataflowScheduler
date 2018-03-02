@@ -25,6 +25,7 @@ public class Statistics {
     public HashMap  <Long, Long> subdagMakespan = new HashMap<>();//dagId, time
     public Double subdagMeanMakespan=0.0;//dagId, time
     public Double unfairness;//dagId, time
+    public double unfairnessNorm=0.0;
     public Double subdagMaxMakespan=0.0;//dagId, time
     public Double subdagMinMakespan = Double.MAX_VALUE;//dagId, time
     public Double subdagMeanMoneyFragment;//dagId, time
@@ -32,7 +33,7 @@ public class Statistics {
     public HashMap  <Long, Long> subdagResponseTime = new HashMap<>();//dagId, time
     public Double subdagMeanResponseTime=0.0;//dagId, time
     public Double subdagMeanSlowdown=0.0;//dagId, time
-    public HashMap  <Long, Long> subdagSlowdown = new HashMap<>();//dagId, time
+    public HashMap  <Long, Double> subdagSlowdown = new HashMap<>();//dagId, time
 
 
     //   public Double subdagPartialMeanResponseTime=0.0;//dagId, time
@@ -54,6 +55,7 @@ public class Statistics {
 
         partialUnfairness = 0.0;
         unfairness=0.0;
+        unfairnessNorm=0.0;
 
 
         for(Container c:plan.cluster.containersList){
@@ -265,7 +267,7 @@ public class Statistics {
 
                 if(Math.abs(subdagFinishTime.get(dgId))>1e-12) {
                     meanSlowdown += plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) / (double) (subdagFinishTime.get(dgId) - 0);
-                    subdagSlowdown.put(dgId, subdagFinishTime.get(dgId));//for now TODO: change later by adding -submitTime
+                    subdagSlowdown.put(dgId, plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType})/(double) subdagFinishTime.get(dgId));//for now TODO: change later by adding -submitTime
                 }
 
                 //   System.out.println(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType));
@@ -287,8 +289,14 @@ public class Statistics {
             }
           //  partialUnfairness = subdagMaxResponseTime - subdagMinResponseTime;//or max - mean
             for(Long dgId: subdagResponseTime.keySet()) {
-                unfairness += Math.abs((double)subdagResponseTime.get(dgId)/(double)plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) -subdagMeanResponseTime);//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+                unfairness += Math.abs((double)subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) -subdagMeanResponseTime);//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
              }
+
+                        for(Long dgId: subdagResponseTime.keySet()) {
+                if(Math.abs(subdagResponseTime.get(dgId))>1e-12)
+                    unfairnessNorm += Math.abs(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType})/(double)subdagResponseTime.get(dgId)-subdagMeanSlowdown);//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
+            }
+
 //            for(Long dgId: subdagSlowdown.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
 //                if(Math.abs(subdagSlowdown.get(dgId))>1e-12)
 //                partialUnfairness += Math.abs(computePartialCP(plan.graph.superDAG.getSubDAG(dgId))/(double)subdagSlowdown.get(dgId) - subdagMeanSlowdown);
@@ -394,6 +402,7 @@ public class Statistics {
         this.meanContainersUsed = s.meanContainersUsed;
         this.partialUnfairness = s.partialUnfairness;
         this.unfairness = s.unfairness;//TODO is it required??
+        this.unfairnessNorm=s.unfairnessNorm;
 
 
 
