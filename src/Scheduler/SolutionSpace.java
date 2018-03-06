@@ -351,6 +351,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
         SolutionSpace skyline = new SolutionSpace();
 
+
         this.sort(true, multi); // Sort by time breaking equality by sorting by money
 
         System.out.println("\n\nsorted:");
@@ -504,7 +505,114 @@ public class SolutionSpace implements Iterable<Plan> {
 
     static int steps=0;
     static int aaa = 0;
-    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi, boolean partialSolution){
+
+    //computeSkylineIP: computation of skyband with k points with min unfairness:
+    public void computeSkylineIP(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi, boolean partialSolution) {
+
+
+        double bandSize = 0.05;
+
+//        System.out.println();
+//        for(int i=0; i<this.results.size(); i++)
+//            System.out.println("starting " + this.results.get(i).stats.money + " " + this.results.get(i).stats.runtime_MS + " " + this.results.get(i).stats.unfairness + " " + this.results.get(i).stats.partialUnfairness);
+
+
+        ArrayList<Plan> skylineCT = getSkyline(false, false);
+       // System.out.println("size is " + skylineCT.size());
+        ArrayList<Plan> skyBand = new ArrayList<Plan>();
+        this.sort(true, false);//may not be required
+        skyBand.addAll(this.results);//correct?
+
+//        for(int i=0; i<skyBand.size(); i++)
+//            System.out.println("skyband " + skyBand.get(i).stats.money + " " + skyBand.get(i).stats.runtime_MS + " " + skyBand.get(i).stats.unfairness + " " + skyBand.get(i).stats.partialUnfairness);
+
+//        for(int i=0; i<skylineCT.size(); i++)
+//            System.out.println("skylineCT are " +skylineCT.get(i).stats.money + " " + skylineCT.get(i).stats.runtime_MS + " " + skylineCT.get(i).stats.unfairness + " " + skylineCT.get(i).stats.partialUnfairness);
+
+
+        Iterator <Plan> skyBandIterator = skyBand.iterator();
+
+        Iterator <Plan> skylineCTIterator = skylineCT.iterator();
+
+
+
+        Plan nextSK = skylineCTIterator.next();
+        Plan prevSK =nextSK;
+
+        ArrayList<Plan> plans = new ArrayList<>();
+
+        int sps=1;
+        while(skyBandIterator.hasNext())
+        {
+            Plan nextSB = skyBandIterator.next();
+
+            double timeDif = Math.abs(nextSB.stats.runtime_MS- prevSK.stats.runtime_MS)/(double)prevSK.stats.runtime_MS;//correct?
+            double moneyDif = Math.abs(nextSB.stats.money- prevSK.stats.money)/(double)prevSK.stats.money;
+            double unfDif = Math.abs(nextSB.stats.unfairness- prevSK.stats.unfairness)/(double)prevSK.stats.unfairness;
+            if(partialSolution)
+                unfDif = Math.abs(nextSB.stats.partialUnfairness- prevSK.stats.partialUnfairness)/(double)prevSK.stats.partialUnfairness;
+
+//            System.out.println("compares sp " + prevSK.stats.money + " " +  prevSK.stats.runtime_MS + " " +  prevSK.stats.unfairness + " " +  prevSK.stats.partialUnfairness + " " );
+//
+//            System.out.println("with " + nextSB.stats.money + " " +  nextSB.stats.runtime_MS + " " +  nextSB.stats.unfairness + " " +  nextSB.stats.partialUnfairness + " " );
+
+            if(nextSB.equals(nextSK)) {//skylinePoint so keep it and continue
+
+               // System.out.println("changed sp " + sps + " " + skylineCT.size());
+                prevSK = nextSK;
+
+                plans.add(nextSB);
+
+                if(skylineCTIterator.hasNext()) {
+                    sps++;
+                    nextSK = skylineCTIterator.next();
+
+
+
+                }
+
+                continue;
+//                else
+//                    break;
+
+            }
+
+            if(timeDif<1e-12 && moneyDif<1e-12 && unfDif<1e-12)
+                continue;//skyBandIterator.remove(nextSB);//duplicate so remove it from the list
+            else
+            if(timeDif > bandSize || moneyDif > bandSize || unfDif > bandSize)
+                continue;//skyBandIterator.remove(nextSB);//not within the skyband range so remove it from the list
+
+           plans.add(nextSB);
+
+
+        }
+
+//sort by unfairness and keep first k
+        Collections.sort(plans, new Comparator<Plan>() {
+            @Override public int compare(Plan p1, Plan p2) {
+                if(partialSolution)
+                    return Double.compare(p1.stats.partialUnfairness, p2.stats.partialUnfairness);
+                else
+                return Double.compare(p1.stats.unfairness, p2.stats.unfairness);
+            }
+        });
+
+
+
+    if(k>plans.size())
+        this.results.addAll(plans);
+    else
+        for(int i=0; i<k; i++)
+            this.results.add(plans.get(i));
+
+
+//        for(int i=0; i<plans.size(); i++)
+//           System.out.println("kept " + plans.get(i).stats.money + " " + plans.get(i).stats.runtime_MS + " " + plans.get(i).stats.unfairness + " " +plans.get(i).stats.partialUnfairness);
+
+    }
+
+        public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi, boolean partialSolution){
 
         ArrayList<Plan> skyline = getSkyline(multi, partialSolution);
         if(!pruneEnabled){
