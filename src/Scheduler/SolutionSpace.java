@@ -539,6 +539,8 @@ public class SolutionSpace implements Iterable<Plan> {
         Plan nextSK = skylineCTIterator.next();
         Plan prevSK =nextSK;
 
+        Plan prevSB=null;
+
         ArrayList<Plan> plans = new ArrayList<>();
 
         int sps=1;
@@ -546,21 +548,22 @@ public class SolutionSpace implements Iterable<Plan> {
         {
             Plan nextSB = skyBandIterator.next();
 
+            if(prevSB!=null) {//if same as previously kept point remove it
+                double timeDif = Math.abs(prevSB.stats.runtime_MS- prevSB.stats.runtime_MS);
+                double moneyDif = Math.abs(prevSB.stats.money- prevSB.stats.money);
+                double unfDif = Math.abs(prevSB.stats.unfairness- prevSB.stats.unfairness);
+                if (timeDif<1e-12 && moneyDif<1e-12 && unfDif<1e-12)
+                    continue;
+            }
+
             double timeDif = Math.abs(nextSB.stats.runtime_MS- prevSK.stats.runtime_MS)/(double)prevSK.stats.runtime_MS;//correct?
             double moneyDif = Math.abs(nextSB.stats.money- prevSK.stats.money)/(double)prevSK.stats.money;
             double unfDif = Math.abs(nextSB.stats.unfairness- prevSK.stats.unfairness)/(double)prevSK.stats.unfairness;
             if(partialSolution)
                 unfDif = Math.abs(nextSB.stats.partialUnfairness- prevSK.stats.partialUnfairness)/(double)prevSK.stats.partialUnfairness;
 
-//            System.out.println("compares sp " + prevSK.stats.money + " " +  prevSK.stats.runtime_MS + " " +  prevSK.stats.unfairness + " " +  prevSK.stats.partialUnfairness + " " );
-//
-//            System.out.println("with " + nextSB.stats.money + " " +  nextSB.stats.runtime_MS + " " +  nextSB.stats.unfairness + " " +  nextSB.stats.partialUnfairness + " " );
-
             if(nextSB.equals(nextSK)) {//skylinePoint so keep it and continue
-
-               // System.out.println("changed sp " + sps + " " + skylineCT.size());
-                prevSK = nextSK;
-
+                 prevSK = nextSK;
                 plans.add(nextSB);
 
                 if(skylineCTIterator.hasNext()) {
@@ -572,9 +575,6 @@ public class SolutionSpace implements Iterable<Plan> {
                 }
 
                 continue;
-//                else
-//                    break;
-
             }
 
             if(timeDif<1e-12 && moneyDif<1e-12 && unfDif<1e-12)
@@ -585,6 +585,7 @@ public class SolutionSpace implements Iterable<Plan> {
 
            plans.add(nextSB);
 
+            prevSB =nextSB;
 
         }
 
