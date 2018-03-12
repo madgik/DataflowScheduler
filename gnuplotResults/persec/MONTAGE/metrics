@@ -1,8 +1,0 @@
-nodes 100 edges 234
-mulT: 1 mulD: 1  sumDataGB 1
-pareto MONTAGE.n.100.0.dax time(sec) -> 35.98
-moheft MONTAGE.n.100.0.dax time(sec) -> 13.914
-Jaccard from M to C 0.8285714285714285
-Jaccard from P to C 0.36111111111111116
-distance from M to C 1.5608333333333508
-distance from P to C 0.7469999999999927

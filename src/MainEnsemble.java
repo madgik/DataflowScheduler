@@ -25,19 +25,20 @@ public class MainEnsemble {
     static String pathOut;
     static Boolean showOutput = false;
     static Boolean saveOutput = true;
-    static Boolean validate = true;
+    static Boolean validate = false;
     static boolean jar = false;
-    static String jarpath ="";
+    static boolean runningAtServer = false;
+    static String jarpath ;
+    static String resourcePath = "";
 
  //   static Boolean useMoheft = false;
-
 
 
     public static void main(String[] args) {
 
 
-        if(jar)
-        jarpath = "/home/ilia/IdeaProjects/MyScheduler/runRemotely/";
+//        if(jar)
+//        jarpath = "/home/ilia/IdeaProjects/MyScheduler/runRemotely/";
         Integer ensembleSize =20;
         String newDir = "ensemblesDec2017/MixedEnsemble4Ligo100Montage50/dagMergeTrue/";
 
@@ -52,133 +53,65 @@ public class MainEnsemble {
             multiObjective = Boolean.valueOf(args[2]);
         }
 
-//        for (int i = 0; i<args.length; ) {
-//
-//            String arg = args[i++];
-//
-//            String next = args[i++];
-//
-//            if ("-ensembleSize".equals(arg)) {
-//                ensembleSize=Integer.parseInt(next);
-//                break;
-//            }
-//
-//            //	System.out.println("next is " + arg);
-//            if ("-app1".equals(arg)) {
-//
-//            }
-//        }
-
         String dir = newDir;//"ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/weightByDag/";//"ensemblesRankComparison/MixedEnsemble4Ligo50Montage100/slackByDag/";
 
 
-        //String dir = "ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/slackByDag/";
         pathPlot = dir;//"./ensembles/LigoEnsemble4MixedSizes/";//sizeBased
         pathOut = dir;// "./ensembles/LigoEnsemble4MixedSizes/";//userPref
 
-
         createDir(pathPlot, "");
-
-        //        System.out.print("specify with -D: flow d,b,mt,md,showOutput");
 
         if(savePlot){System.out.println("saving plots to "+ pathPlot);}
         if(saveOutput){System.out.println("saving output to "+ pathOut);}
         if (System.getProperty("user.name").equals("gsmyris")) {
             jar = true;
             jarpath = "/home/gsmyris/jc/";
+            resourcePath = "/home/gsmyris/jc2018/";
         }
         if (System.getProperty("user.name").equals("vaggelis")) {
             jar = true;
             jarpath = "/home/vaggelis/jc/";
+            resourcePath = "/home/vaggelis/jc2018/";
+
         }
 
+        ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
 
-//        String flow = System.getProperty("flow");
-//        if( flow != null){
-//            if(flow.equals("lattice")){
-//                String d = System.getProperty("d");
-//                String b = System.getProperty("b");
-//                runLattice(Integer.parseInt(d),Integer.parseInt(b));
-//            }else if(flow.contains("runMul")) {
-//                runOneMultipleEND(jar,jarpath+"MONTAGE.n.25.0.dax",100,400);
-//
-//
-//                runOneMultipleEND(jar,jarpath+"Example",10000,3000);
-//
-//                runOneMultipleEND(jar,jarpath+"LIGO.n.50.0.dax",100,400);
-//
-//                runOneMultipleEND(jar,jarpath+"LIGO.n.100.0.dax",100,400);
-//
-////                runOneMultipleHALF(jar,jarpath+"MONTAGE.50.0.n.dax",1,1);
-//            }else{
-//                String mt = System.getProperty("mt");
-//                String md = System.getProperty("md");
-//
-//                ArrayList<Plan> plans = new ArrayList<>();
-//                runDax(true,flow,Integer.parseInt(mt),Integer.parseInt(md), plans, rankMethod);
-//            }
-//        }else {
-////            runDax(jar,jarpath+"Example.dax",1000,3000);
-////
-////            runDax(jar,jarpath+"GENOME.n.50.0.dax",1000,100);
-////            runDax(jar,jarpath+"GENOME.n.100.0.dax",1000,100);
-//            //  runDax(jar,jarpath+"CYBERSHAKE.n.100.0.dax",1000,100);
-//
-//
-//            System.out.println("running single dataflows");
-            ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
-
-//            ArrayList <Long> minTimeSingle = new ArrayList<>();
-//            ArrayList <Double> minCostSingle = new ArrayList<>();
-
-
-            PrintWriter outEnsemble = null;
+        PrintWriter outEnsemble = null;
 
         PrintWriter outPlanDetails = null;
 
-            try {
+        try {
 
-                String fileName =
-                        "ensemble";
+            String fileName = "ensemble";
 
-                String filePlanDetails =
-                        "planDetails"; //+
-                //    (new java.util.Date()).toString().replace(" ","_");
+            String filePlanDetails =  "planDetails";
 
-                outEnsemble = new PrintWriter(pathOut + fileName + ".dat");
-                outPlanDetails = new PrintWriter(pathOut + filePlanDetails + ".txt");
+            outEnsemble = new PrintWriter(pathOut + fileName + ".dat");
+            outPlanDetails = new PrintWriter(pathOut + filePlanDetails + ".txt");
 
-                // System.out.println("writes at " + );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if(args.length>1) {
+            for (int i = 4; i < 4 + 2 * ensembleSize; i += 2) {
+
+                String appName = "MONTAGE";
+                Integer randomSize = random.randomInRange(2, 0);
+                //Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
+                //Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
+                Integer size = 100;
+
+
+                appName = args[i];//"LIGO";
+                size = Integer.parseInt(args[i + 1]);//sizesMontage[randomSize];
+
+                flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
+
             }
 
-
-            //   out.println(sbOut.toString());
-
-
-            if(args.length>1) {
-
-
-
-                for (int i = 4; i < 4 + 2 * ensembleSize; i += 2) {
-
-                    String appName = "MONTAGE";
-                    Integer randomSize = random.randomInRange(2, 0);
-                    //Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
-                    //Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
-                    Integer size = 100;
-
-
-                    appName = args[i];//"LIGO";
-                    size = Integer.parseInt(args[i + 1]);//sizesMontage[randomSize];
-
-                    flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
-
-                }
-
-            } else
-            {
+        } else {
             for (int i = 1; i <= ensembleSize; i ++) {
 
                 String appName = "MONTAGE";
@@ -198,12 +131,12 @@ public class MainEnsemble {
                 flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
 
             }
-
         }
-            System.out.println("running multiple dataflows");
 
-            ArrayList<Plan> ensemblePlans =new ArrayList<>();
-            DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective);
+        System.out.println("running multiple dataflows");
+
+        ArrayList<Plan> ensemblePlans =new ArrayList<>();
+        DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective);
 
 
         outEnsemble.println("money\truntime_MS\tavgSlowdown\t\tavgStretch\tmaxStretch\tunfairness\tunfairnessNorm");
@@ -227,30 +160,9 @@ public class MainEnsemble {
             }
         }
 
-//        outEnsemble.println("money\truntime_MS\tsubdagMeanMoneyFragment\tsubdagMeanResponseTime\tsubdagMinResponseTime\tsubdagMaxResponseTime\tunfairness\tsubdagMeanMakespan\tsubdagMinMakespan\tsubdagMaxMakespan");
-//        for (int j = 0; j < ensemblePlans.size(); ++j) {
-//
-//                Plan p=ensemblePlans.get(j);
-//                System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
-//               outPlanDetails.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
-//
-//                System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
-//                outPlanDetails.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
-//
-//                outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanMoneyFragment + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan);
-//
-//                for(Long dgId: p.stats.subdagFinishTime.keySet()) {
-//                    System.out.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-//                    outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId)/p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-//
-//                }
-//            }
 
-
-
-            outEnsemble.close();
+        outEnsemble.close();
         outPlanDetails.close();
-
 
 
         if(validate){
