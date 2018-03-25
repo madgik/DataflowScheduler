@@ -386,10 +386,10 @@ public class SolutionSpace implements Iterable<Plan> {
 
         this.sort(true, multi); // Sort by time breaking equality by sorting by money
 
-        System.out.println("\n\nsorted:");
-        for(Plan e: results)
-            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
-        System.out.println(" \n");
+//        System.out.println("\n\nsorted:");
+//        for(Plan e: results)
+//            System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness );
+//        System.out.println(" \n");
 
 
 
@@ -512,9 +512,9 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         }
 
-        System.out.println("skyline is:");
-        for(Plan e: skyline)
-        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness + " " + e.stats.unfairness);
+//        System.out.println("skyline is:");
+//        for(Plan e: skyline)
+//        System.out.println(e.stats.money+ " " + e.stats.runtime_MS+ " " + e.stats.partialUnfairness + " " + e.stats.unfairness);
 
      return skyline.results;
 
@@ -833,13 +833,13 @@ public class SolutionSpace implements Iterable<Plan> {
             }
         }
 
-        System.out.println("\n\nafter pruning:");
-        for(Plan e: results) {
-            System.out.println(e.stats.money + " " + e.stats.runtime_MS + " " + e.stats.partialUnfairness + " " + e.stats.unfairness);
+//        System.out.println("\n\nafter pruning:");
+//        for(Plan e: results) {
+//            System.out.println(e.stats.money + " " + e.stats.runtime_MS + " " + e.stats.partialUnfairness + " " + e.stats.unfairness);
 
-        }
-
-        System.out.println(" \n");
+//        }
+//
+//        System.out.println(" \n");
 
     }
 
