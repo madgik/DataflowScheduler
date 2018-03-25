@@ -28,7 +28,7 @@ public class MainEnsemble {
     static Boolean validate = false;
     static boolean jar = false;
     static boolean runningAtServer = false;
-    static String jarpath ;
+    static String jarpath="";
     static String resourcePath = "";
 
  //   static Boolean useMoheft = false;
