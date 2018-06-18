@@ -209,8 +209,9 @@ public class MainEnsemble {
         //  if(type.equals("multiple"))
        // int pruning_k = 10;
         //method="moheft";
-        if(method.equals("moheft"))
+        if(rankMethod.equals("moheft")) {
             sched = new Moheft(graph, cluster, pruning_k);
+        }
         else
         sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective, pruning_k);//"dagMerge";//commonEntry:default, perDag, dagMerge
         //  else
