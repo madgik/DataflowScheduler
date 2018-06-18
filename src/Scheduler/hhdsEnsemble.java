@@ -45,7 +45,7 @@ public class hhdsEnsemble implements Scheduler {
 
     private HashMap<Long, Integer> opLevel;
 
-    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod, Boolean multi){
+    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod, Boolean multi, int pruning_k){
         this.rankingMethod = rankingMethod;
         this.pruneEnabled = prune;
         space = new SolutionSpace();
@@ -55,6 +55,7 @@ public class hhdsEnsemble implements Scheduler {
         opLevel = new HashMap<>();
         this.PruneMethod = PruneMethod;
         this.multi=multi;
+        this.pruneSkylineSize=pruning_k;
        // this.newDir = dir;
     }
 

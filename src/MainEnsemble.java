@@ -40,6 +40,7 @@ public class MainEnsemble {
 //        if(jar)
 //        jarpath = "/home/ilia/IdeaProjects/MyScheduler/runRemotely/";
         Integer ensembleSize =20;
+        Integer pruning_k =10;
         String newDir = "ensemblesDec2017/MixedEnsemble4Ligo100Montage50/dagMergeTrue/";
 
 
@@ -51,6 +52,13 @@ public class MainEnsemble {
             rankMethod = args[0];
             newDir = args[1];
             multiObjective = Boolean.valueOf(args[2]);
+            if(args[4].equals("perHour"))
+            RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
+            else//perSec
+                RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
+
+            pruning_k = Integer.parseInt(args[5]);
+
         }
 
         String dir = newDir;//"ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/weightByDag/";//"ensemblesRankComparison/MixedEnsemble4Ligo50Montage100/slackByDag/";
@@ -68,13 +76,18 @@ public class MainEnsemble {
             jarpath = "/home/gsmyris/jc/";
             resourcePath = "/home/gsmyris/jc2018/";
         }
+        if (System.getProperty("user.name").equals("chronis")) {
+            jar = true;
+            jarpath = "/home/chronis/jc/";
+            resourcePath = "/home/chronis/jc2018/";
+
+        }
         if (System.getProperty("user.name").equals("vaggelis")) {
             jar = true;
             jarpath = "/home/vaggelis/jc/";
             resourcePath = "/home/vaggelis/jc2018/";
 
         }
-
         ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
 
         PrintWriter outEnsemble = null;
@@ -95,7 +108,7 @@ public class MainEnsemble {
         }
 
         if(args.length>1) {
-            for (int i = 4; i < 4 + 2 * ensembleSize; i += 2) {
+            for (int i = 6; i < 6 + 2 * ensembleSize; i += 2) {
 
                 String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2, 0);
@@ -107,36 +120,40 @@ public class MainEnsemble {
                 appName = args[i];//"LIGO";
                 size = Integer.parseInt(args[i + 1]);//sizesMontage[randomSize];
 
+                if(RuntimeConstants.quantum_MS == RuntimeConstants.OneHour_MS)
                 flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
+                else
+                    flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1, 1));
 
             }
 
-        } else {
-            for (int i = 1; i <= ensembleSize; i ++) {
-
-                String appName = "MONTAGE";
-                Integer randomSize = random.randomInRange(2, 0);
-                Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
-                Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
-                Integer size = 100;
-
-                if (i % 2 == 1) {
-                    appName = "LIGO";//
-                    size = sizesLigo[randomSize];
-                } else {
-                    appName = "MONTAGE";//"LIGO"; //
-                    size = sizesMontage[randomSize];
-                }
-
-                flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
-
-            }
         }
+// else {
+//            for (int i = 1; i <= ensembleSize; i ++) {
+//
+//                String appName = "MONTAGE";
+//                Integer randomSize = random.randomInRange(2, 0);
+//                Integer sizesMontage[] = {50, 50, 50};//{100, 100, 100};//{25, 25, 25};//
+//                Integer sizesLigo[] = {100, 100, 100};//{50, 50, 50};//{25, 25, 25};//
+//                Integer size = 100;
+//
+//                if (i % 2 == 1) {
+//                    appName = "LIGO";//
+//                    size = sizesLigo[randomSize];
+//                } else {
+//                    appName = "MONTAGE";//"LIGO"; //
+//                    size = sizesMontage[randomSize];
+//                }
+//
+//                flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
+//
+//            }
+//        }
 
         System.out.println("running multiple dataflows");
 
         ArrayList<Plan> ensemblePlans =new ArrayList<>();
-        DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective);
+        DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective, pruning_k);
 
 
         outEnsemble.println("money\truntime_MS\tavgSlowdown\t\tavgStretch\tmaxStretch\tunfairness\tunfairnessNorm");
@@ -183,14 +200,19 @@ public class MainEnsemble {
    // }
 
 
-    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type, Boolean multiObjective){
+    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type, Boolean multiObjective, Integer pruning_k){
         SolutionSpace space = new SolutionSpace();
 
         Cluster cluster = new Cluster();
 
         Scheduler sched;
         //  if(type.equals("multiple"))
-        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective);//"dagMerge";//commonEntry:default, perDag, dagMerge
+       // int pruning_k = 10;
+        //method="moheft";
+        if(method.equals("moheft"))
+            sched = new Moheft(graph, cluster, pruning_k);
+        else
+        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective, pruning_k);//"dagMerge";//commonEntry:default, perDag, dagMerge
         //  else
         //    sched = new hhds(graph,cluster,prune,method);
 
@@ -208,7 +230,7 @@ public class MainEnsemble {
     }
 
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans, String rankMethod, boolean multiObjective)
+    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans, String rankMethod, boolean multiObjective, Integer pruning_k)
     {
 
         StringBuilder sbOut = new StringBuilder();
@@ -218,7 +240,7 @@ public class MainEnsemble {
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
-        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero", sbOut,combined, type, multiObjective);
+        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero", sbOut,combined, type, multiObjective, pruning_k);
 
         hhdsPlans.addAll(paretoToCompare.results);
 
@@ -226,7 +248,7 @@ public class MainEnsemble {
 
         String addToFilename = "_NPRUNE_";
 
-        boolean moheft = false;
+//        boolean moheft = false;
 
 
         System.out.println("paretoDone");
@@ -283,7 +305,7 @@ public class MainEnsemble {
         ArrayList<Pair<String, Double>> legendInfo = new ArrayList<>();
 
 
-        try {
+//        try {
 
 //        if(moheft) {
 //            addImprovementsToLegend(solutionsM, paretoToCompare, legendInfo);
@@ -332,11 +354,11 @@ public class MainEnsemble {
 //            legendInfo.add(new Pair<String, Double>("OverHeadAvg", (double) (Math.round(diffF * 10000) / 100)));
 //            legendInfo.add(new Pair<String, Double>("Moheft-pareto (+) OptTime MS", (double) (solutionsM.optimizationTime_MS - paretoToCompare.optimizationTime_MS)));
 //        }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         double ccr = graph.computeCCR();
 
@@ -552,34 +574,34 @@ public class MainEnsemble {
         return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
     }
 
-    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans, String rankMethod, boolean multiObjective) {
-
-        System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
-
-        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
-
-        DAG graph = null;
-        try {
-            if(jar){
-                graph = parser.parseDax(file, 0L);
-            }else {
-                graph = parser.parseDax(MainEnsemble.class.getResource(file).getFile(), 0L);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String flowname;
-        if(file.contains("/")) {
-            flowname = file.substring(file.lastIndexOf("/"), file.length());
-        }else{
-            flowname = file;
-        }
-
-        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans, rankMethod, multiObjective);
-
-        return graph;
-    }
+//    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans, String rankMethod, boolean multiObjective) {
+//
+//        System.out.println("Running "+file+" mt "+mulTime+" md: "+mulData + " Pareto, Moheft");
+//
+//        PegasusDaxParser parser = new PegasusDaxParser(mulTime, mulData);
+//
+//        DAG graph = null;
+//        try {
+//            if(jar){
+//                graph = parser.parseDax(file, 0L);
+//            }else {
+//                graph = parser.parseDax(MainEnsemble.class.getResource(file).getFile(), 0L);
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        String flowname;
+//        if(file.contains("/")) {
+//            flowname = file.substring(file.lastIndexOf("/"), file.length());
+//        }else{
+//            flowname = file;
+//        }
+//
+//        runDAG(graph,"mulT: "+mulTime+" mulD: "+mulData,flowname, plans, rankMethod, multiObjective);
+//
+//        return graph;
+//    }
 
 //    private static void runLattice(int d, int b) {
 //
@@ -998,7 +1020,7 @@ public class MainEnsemble {
 
 
 
-    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans, String rankMethod, boolean multiObjective){
+    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans, String rankMethod, boolean multiObjective, int pruning_k){
 
         System.out.println("runinng multFLow");
         for(Triple<String,Integer,Integer> tr: flowsandParasms){
@@ -1053,7 +1075,7 @@ public class MainEnsemble {
 
 
 
-        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod, multiObjective);
+        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod, multiObjective, pruning_k);
 
 //            ArrayList <Long> minTime = new ArrayList<>();
 //        ArrayList <Double> minCost = new ArrayList<>();
