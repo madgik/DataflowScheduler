@@ -80,12 +80,11 @@ public class MainEnsemble {
             jar = true;
             jarpath = "/home/chronis/jc/";
             resourcePath = "/home/chronis/jc2018/";
-
         }
         if (System.getProperty("user.name").equals("vaggelis")) {
             jar = true;
-            jarpath = "/home/vaggelis/jc/";
-            resourcePath = "/home/vaggelis/jc2018/";
+            jarpath = "/home/vaggelis/jcfiles/jc/";
+            resourcePath = "/home/vaggelis/jcfiles/jc2018/";
 
         }
         ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
