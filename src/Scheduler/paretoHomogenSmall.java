@@ -238,7 +238,7 @@ public class paretoHomogenSmall implements Scheduler {
 
         paretoPlans.addAll(skylinePlans.results);
 
-        paretoPlans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false);
+        paretoPlans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false, 0, 0.0, 0L);
 
 
         //        for(Plan p:paretoPlans){
@@ -315,7 +315,7 @@ public class paretoHomogenSmall implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false);
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false, 0, 0.0, 0L);
         return space;
 
     }
@@ -595,7 +595,7 @@ public class paretoHomogenSmall implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi, false);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi, false, 0, 0.0, 0L);
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
@@ -779,7 +779,7 @@ public class paretoHomogenSmall implements Scheduler {
             //            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi,false);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi,false, 0, 0.0, 0L);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);

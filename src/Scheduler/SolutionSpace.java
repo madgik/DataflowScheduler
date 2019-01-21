@@ -101,29 +101,61 @@ public class SolutionSpace implements Iterable<Plan> {
         return tp;
     }
 
-    public double getMinUnfairness(boolean partialSolution){
+    public Plan getMinUnfairnessPlan(boolean partialSolution){
         double unfairness=Double.MAX_VALUE;
+        Plan temp = null;
         for(Plan p:results){
-
             if(partialSolution)
-                unfairness = Math.min(unfairness,p.stats.partialUnfairness);
+                if (p.stats.partialUnfairness < unfairness) {
+                    unfairness = p.stats.partialUnfairness;
+                    temp = p;
+                }
             else
-                unfairness = Math.min(unfairness,p.stats.unfairness);
-
-
+                if (p.stats.unfairness < unfairness) {
+                    unfairness = p.stats.unfairness;
+                    temp = p;
+                }
         }
-        return unfairness;
+        return temp;
     }
 
-    public double getMaxUnfairness(boolean partialSolution){
+    public Plan getMaxUnfairnessPlan(boolean partialSolution){
         double unfairness=Double.MIN_VALUE;
+        Plan temp = null;
         for(Plan p:results){
             if(partialSolution)
-                unfairness = Math.max(unfairness,p.stats.partialUnfairness);
+                if (p.stats.partialUnfairness > unfairness) {
+                    unfairness = p.stats.partialUnfairness;
+                    temp = p;
+                }
                 else
-            unfairness = Math.max(unfairness,p.stats.unfairness);
+                if (p.stats.unfairness > unfairness) {
+                    unfairness = p.stats.unfairness;
+                    temp = p;
+                }
         }
-        return unfairness;
+        return temp;
+    }
+
+    public double getMinUnfairness(boolean partialSolution) {
+        Plan p = getMinUnfairnessPlan(partialSolution);
+        if (partialSolution) {
+            return p.stats.partialUnfairness;
+        }
+        else{
+                return p.stats.unfairness;
+            }
+    }
+
+
+    public double getMaxUnfairness(boolean partialSolution){
+        Plan p = getMaxUnfairnessPlan(partialSolution);
+        if (partialSolution) {
+            return p.stats.partialUnfairness;
+        }
+        else{
+            return p.stats.unfairness;
+        }
     }
 
 
@@ -736,9 +768,38 @@ public class SolutionSpace implements Iterable<Plan> {
 
     }
 
-    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi, boolean partialSolution){
+    public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi,
+                               boolean partialSolution, int constraint_mode, double money_constraint, long time_constraint ){
 
         ArrayList<Plan> skyline = getSkyline(multi, partialSolution);
+        Plan maxFairnessBeforeConstrains = getMinUnfairnessPlan(partialSolution);
+        if (constraint_mode == 1) {
+            // return the schedule that maximizes fairness given the constraints.
+            // If no such plan exists then the maximum fairness plan is returned.
+            HashSet<Plan> retset  = new HashSet<>();
+            keepPlanWithinConstraints(money_constraint, time_constraint);
+            if (results.size() < 1) {
+                // if no plan statisfies the constraints then add the max fairness plan.
+                retset.add(maxFairnessBeforeConstrains);
+            } else {
+                retset.add(getMinUnfairnessPlan(partialSolution));
+            }
+            this.results.clear();
+            this.results.addAll(retset);
+            return;
+        } else if (constraint_mode == 2) {
+            // find all plans that statisfy the constratins and then use pruning.
+            // if no plan satisfies the constraint the  maximum fairness plan is returned.
+            HashSet<Plan> retset  = new HashSet<>();
+            keepPlanWithinConstraints(money_constraint, time_constraint);
+            if (results.size() < 1) {
+                // if no plan statisfies the constraints then add the max fairness plan.
+                retset.add(maxFairnessBeforeConstrains);
+            }
+            this.results.clear();
+            this.results.addAll(retset);
+        }
+
         if(!pruneEnabled){
 
             System.out.println("pruneEnabled false");
@@ -1899,6 +1960,18 @@ public class SolutionSpace implements Iterable<Plan> {
 
 
         return theta2P1;
+    }
+
+
+    public void keepPlanWithinConstraints(double money_constraint, long time_constraint) {
+        HashSet<Plan> retset  = new HashSet<>();
+        for(Plan p : results) {
+            if (p.stats.money <= money_constraint && p.stats.runtime_MS <= time_constraint) {
+                retset.add(p);
+            }
+        }
+        this.results.clear();
+        this.results.addAll(retset);
     }
 
 

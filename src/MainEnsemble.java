@@ -42,7 +42,14 @@ public class MainEnsemble {
         Integer ensembleSize =20;
         Integer pruning_k =10;
         String newDir = "ensemblesDec2017/MixedEnsemble4Ligo100Montage50/dagMergeTrue/";
-
+        // arguments for revision
+        Integer constraint_mode = 0;
+        // constraing modes
+        // 0 -> no constraints
+        // 1 -> keep one plan after every scheduling step. This plan maximizes fairness and satisfies the money and time constraints
+        // 2 -> keep one plan after scheduling is completed. At every intermediate step all the plan that satisfy the constraints are preserved.
+        Double money_constraint = 0.0;
+        Long time_constraint = 0L;
 
        String rankMethod="dagMerge";
        boolean multiObjective = true;
@@ -58,7 +65,9 @@ public class MainEnsemble {
                 RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
 
             pruning_k = Integer.parseInt(args[5]);
-
+            constraint_mode = Integer.parseInt(args[6]);
+            money_constraint = Double.parseDouble(args[7]);
+            time_constraint = Long.parseLong(args[8]);
         }
 
         String dir = newDir;//"ensemblesRankComparison/MixedEnsemble4Ligo100Montage50/weightByDag/";//"ensemblesRankComparison/MixedEnsemble4Ligo50Montage100/slackByDag/";
@@ -108,7 +117,7 @@ public class MainEnsemble {
         }
 
         if(args.length>1) {
-            for (int i = 6; i < 6 + 2 * ensembleSize; i += 2) {
+            for (int i = 9; i < 6 + 2 * ensembleSize; i += 2) {
 
                 String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2, 0);
@@ -153,7 +162,8 @@ public class MainEnsemble {
         System.out.println("running multiple dataflows");
 
         ArrayList<Plan> ensemblePlans =new ArrayList<>();
-        DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective, pruning_k);
+        DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective, pruning_k,
+                constraint_mode, money_constraint, time_constraint);
 
 
         outEnsemble.println("money\truntime_MS\tavgSlowdown\t\tavgStretch\tmaxStretch\tunfairness\tunfairnessNorm");
@@ -200,7 +210,10 @@ public class MainEnsemble {
    // }
 
 
-    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod, MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut, SolutionSpace combined, String type, Boolean multiObjective, Integer pruning_k){
+    public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod,
+                                        MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut,
+                                        SolutionSpace combined, String type, Boolean multiObjective, Integer pruning_k,
+                                        int constraint_mode, double money_constraint, long time_constraint){
         SolutionSpace space = new SolutionSpace();
 
         Cluster cluster = new Cluster();
@@ -213,7 +226,8 @@ public class MainEnsemble {
             sched = new Moheft(graph, cluster, pruning_k);
         }
         else
-        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective, pruning_k);//"dagMerge";//commonEntry:default, perDag, dagMerge
+        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective, pruning_k, constraint_mode,
+        money_constraint, time_constraint);//"dagMerge";//commonEntry:default, perDag, dagMerge
         //  else
         //    sched = new hhds(graph,cluster,prune,method);
 
@@ -231,7 +245,9 @@ public class MainEnsemble {
     }
 
 
-    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans, String rankMethod, boolean multiObjective, Integer pruning_k)
+    public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans,
+                              String rankMethod, boolean multiObjective, Integer pruning_k, int constraint_mode,
+                              double money_constraint, long time_constraint)
     {
 
         StringBuilder sbOut = new StringBuilder();
@@ -241,7 +257,8 @@ public class MainEnsemble {
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
-        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero", sbOut,combined, type, multiObjective, pruning_k);
+        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero",
+                sbOut,combined, type, multiObjective, pruning_k, constraint_mode, money_constraint, time_constraint);
 
         hhdsPlans.addAll(paretoToCompare.results);
 
@@ -1021,7 +1038,9 @@ public class MainEnsemble {
 
 
 
-    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans, String rankMethod, boolean multiObjective, int pruning_k){
+    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans,
+                                        String rankMethod, boolean multiObjective, int pruning_k, int constraint_mode,
+                                        double money_constraint, long time_constraint){
 
         System.out.println("runinng multFLow");
         for(Triple<String,Integer,Integer> tr: flowsandParasms){
@@ -1076,7 +1095,8 @@ public class MainEnsemble {
 
 
 
-        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans, rankMethod, multiObjective, pruning_k);
+        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans,
+                rankMethod, multiObjective, pruning_k, constraint_mode, money_constraint, time_constraint);
 
 //            ArrayList <Long> minTime = new ArrayList<>();
 //        ArrayList <Double> minCost = new ArrayList<>();

@@ -180,7 +180,7 @@ public class hhds implements Scheduler {
 
         paretoPlans.addAll(skylinePlans.results);
 
-        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, false,false);
+        paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, false,false, 0, 0.0, 0L);
 
         mpinfo.add("pareto",paretoPlans.results);
 
@@ -223,7 +223,7 @@ public class hhds implements Scheduler {
 
         mpinfo.add("final space",space.results);
 
-        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, false,false);
+        space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, false,false, 0, 0.0, 0L);
         return space;
 
     }
@@ -503,7 +503,7 @@ double s2;
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, false,false);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, false,false, 0, 0.0, 0L);
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
@@ -687,7 +687,7 @@ double s2;
 //            plans = computeSkyline(allCandidates);
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, false, false);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, false, false, 0, 0.0, 0L);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);

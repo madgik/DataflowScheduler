@@ -45,7 +45,12 @@ public class hhdsEnsemble implements Scheduler {
 
     private HashMap<Long, Integer> opLevel;
 
-    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod, Boolean multi, int pruning_k){
+    int constraint_mode;
+    double money_constraint;
+    long time_constraint;
+
+    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod, Boolean multi,
+                        int pruning_k, int constraint_mode, double money_constraint, long time_constraint){
         this.rankingMethod = rankingMethod;
         this.pruneEnabled = prune;
         space = new SolutionSpace();
@@ -56,6 +61,9 @@ public class hhdsEnsemble implements Scheduler {
         this.PruneMethod = PruneMethod;
         this.multi=multi;
         this.pruneSkylineSize=pruning_k;
+        this.constraint_mode = constraint_mode;
+        this.money_constraint = money_constraint;
+        this.time_constraint = time_constraint;
        // this.newDir = dir;
     }
 
@@ -146,7 +154,10 @@ public class hhdsEnsemble implements Scheduler {
 
             paretoPlans.addAll(skylinePlans.results);
 
-            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false,PruneMethod, multi, false);
+        // keep constraint mode to 0 here? that way all plans are kept at this point and only inside
+        // homotohetero one plan is kep
+            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false, PruneMethod, multi,
+                    false, 0, money_constraint, time_constraint);
 
             mpinfo.add("pareto",paretoPlans.results);
 
@@ -188,7 +199,15 @@ public class hhdsEnsemble implements Scheduler {
 
             mpinfo.add("final space",space.results);
 
-            space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false);
+            if (constraint_mode == 1 || constraint_mode == 2) {
+                // by fixing constraint mode to 1 only one plan is returned. This happens only when constraints are applied.
+                space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false,
+                        1, money_constraint, time_constraint);
+            } else {
+                space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false,
+                        constraint_mode, money_constraint, time_constraint);
+            }
+
             return space;
 
         }
@@ -513,7 +532,8 @@ public class hhdsEnsemble implements Scheduler {
 
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi, false);
+            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi,
+                    false, constraint_mode, money_constraint, time_constraint);
 
             plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
 
@@ -674,7 +694,8 @@ public class hhdsEnsemble implements Scheduler {
 
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, true);
+            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, true, constraint_mode,
+                    money_constraint, time_constraint);
 
 
             findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
