@@ -27,8 +27,9 @@ public class hhdsEnsemble implements Scheduler {
 
     public LinkedList<Long> opsSorted ;
 
-    public int homoPlanstoKeep = 80;//80;
     public int pruneSkylineSize = 10;//20;
+    public int homoPlanstoKeep = 10;//80;
+
 
     public int maxContainers = 100000000;
 
@@ -401,14 +402,16 @@ public class hhdsEnsemble implements Scheduler {
 
         int updateSkyline = 1;
 
+        int loop=0;
+
         while (updateSkyline == 1) {
-
+loop++;
             updateSkyline = 0;
-
+            int innerloop=0;
             for (final Plan plan : plansInner) {                                                                         //for every plan
-
+innerloop++;
                 LinkedList<Long> planContainersTobeModified = new LinkedList<>();
-
+                System.out.println(loop +": plan" + innerloop);
                 ArrayList<Long> opSortedBySlack = new ArrayList<>();
                 //compute avg slack per container/VM
 
@@ -676,7 +679,7 @@ public class hhdsEnsemble implements Scheduler {
             // Get the most expensive operator from the ready ones
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
-
+            System.out.println(cTypes.get(0).name+". Next:" + nextOpID + ". Assigned " +opsAssigned + " ops");
 //               System.out.println("scheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
