@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 //java -jar MyScheduler.jar dagMerge ensemblesRankComparison/example/weightByDag/ 10 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 MONTAGE 100 LIGO 100 LIGO 100 LIGO 100 LIGO 100
 
+//arguments for a small example: dagMerge ensemble20SMontageLigoSecConstraints/ true 2 perSec 10 1 13500 60000 MONTAGE 50 LIGO 100
 
 public class MainEnsemble {
 
@@ -116,7 +117,7 @@ public class MainEnsemble {
         }
 
         if(args.length>1) {
-            for (int i = 9; i < 6 + 2 * ensembleSize; i += 2) {
+            for (int i = 9; i < 9 + 2 * ensembleSize; i += 2) {
 
                 String appName = "MONTAGE";
                 Integer randomSize = random.randomInRange(2, 0);
