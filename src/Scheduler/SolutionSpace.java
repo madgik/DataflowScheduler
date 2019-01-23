@@ -101,38 +101,48 @@ public class SolutionSpace implements Iterable<Plan> {
         return tp;
     }
 
-    public Plan getMinUnfairnessPlan(boolean partialSolution){
-        double unfairness=Double.MAX_VALUE;
-        Plan temp = null;
-        for(Plan p:results){
-            if(partialSolution)
-                if (p.stats.partialUnfairness < unfairness) {
-                    unfairness = p.stats.partialUnfairness;
-                    temp = p;
-                }
-            else
-                if (p.stats.unfairness < unfairness) {
-                    unfairness = p.stats.unfairness;
-                    temp = p;
-                }
-        }
-        return temp;
-    }
-
     public Plan getMaxUnfairnessPlan(boolean partialSolution){
         double unfairness=Double.MIN_VALUE;
         Plan temp = null;
         for(Plan p:results){
-            if(partialSolution)
+            if(partialSolution) {
                 if (p.stats.partialUnfairness > unfairness) {
                     unfairness = p.stats.partialUnfairness;
                     temp = p;
-                }
-                else
+                } }
+                else {
                 if (p.stats.unfairness > unfairness) {
                     unfairness = p.stats.unfairness;
                     temp = p;
-                }
+                } }
+        }
+        return temp;
+    }
+
+    public double getMaxUnfairness(boolean partialSolution){
+        Plan p = getMaxUnfairnessPlan(partialSolution);
+        if (partialSolution) {
+            return p.stats.partialUnfairness;
+        }
+        else{
+            return p.stats.unfairness;
+        }
+    }
+
+    public Plan getMinUnfairnessPlan(boolean partialSolution){
+        double unfairness=Double.MAX_VALUE;
+        Plan temp = null;
+        for(Plan p:results){
+            if(partialSolution) {
+                if (p.stats.partialUnfairness < unfairness) {
+                    unfairness = p.stats.partialUnfairness;
+                    temp = p;
+                } }
+            else {
+                if (p.stats.unfairness < unfairness) {
+                    unfairness = p.stats.unfairness;
+                    temp = p;
+                } }
         }
         return temp;
     }
@@ -148,15 +158,38 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
 
-    public double getMaxUnfairness(boolean partialSolution){
-        Plan p = getMaxUnfairnessPlan(partialSolution);
-        if (partialSolution) {
-            return p.stats.partialUnfairness;
-        }
-        else{
-            return p.stats.unfairness;
-        }
-    }
+
+
+
+
+//    public double getMinUnfairness(boolean partialSolution){
+//        double unfairness=Double.MAX_VALUE;
+//        for(Plan p:results){
+//
+//            if(partialSolution)
+//                unfairness = Math.min(unfairness,p.stats.partialUnfairness);
+//            else
+//                unfairness = Math.min(unfairness,p.stats.unfairness);
+//
+//
+//        }
+//        if(unfairness==Double.MAX_VALUE)
+//            System.out.println("it is 1");
+//        return unfairness;
+//    }
+//
+//    public double getMaxUnfairness(boolean partialSolution){
+//        double unfairness=Double.MIN_VALUE;
+//        for(Plan p:results){
+//            if(partialSolution)
+//                unfairness = Math.max(unfairness,p.stats.partialUnfairness);
+//            else
+//                unfairness = Math.max(unfairness,p.stats.unfairness);
+//        }
+//        if(unfairness==Double.MIN_VALUE)
+//            System.out.println("it is 2");
+//        return unfairness;
+//    }
 
 
     public void print() {
@@ -771,6 +804,11 @@ public class SolutionSpace implements Iterable<Plan> {
     public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi,
                                boolean partialSolution, int constraint_mode, double money_constraint, long time_constraint ){
 
+//        Plan maxFairnessBeforeConstrains = getMinUnfairnessPlan(partialSolution);
+        //before skyline, first remove the plans that do not meet the constraints in case of mode 1 or 2
+//        if(constraint_mode==1 || constraint_mode==2)
+//            keepPlanWithinConstraints(money_constraint, time_constraint);
+
         ArrayList<Plan> skyline = getSkyline(multi, partialSolution);
         Plan maxFairnessBeforeConstrains = getMinUnfairnessPlan(partialSolution);
         if (constraint_mode == 1) {
@@ -868,9 +906,20 @@ public class SolutionSpace implements Iterable<Plan> {
                 this.results.addAll(retset);
             }
             else if (method.equals("Knee")) {
-                Knee(skyline, k , retset, multi,partialSolution);
-                this.results.clear();
-                this.results.addAll(retset);
+             //   if(skyline.size()>k) {
+                    //System.out.println("skyline size is more than k " + skyline.toString());
+                    Knee(skyline, k, retset, multi, partialSolution);
+                    this.results.clear();
+                    this.results.addAll(retset);
+                    //System.out.println("results are" + this.results.toString());
+
+            //    }
+            //    else {
+                    //for(int j=0; j<skyline.size(); j++)
+                  //  System.out.println("skyline size is less than k " + skyline.get(j).);
+                    //for(int j=0; j<skyline.size(); j++)
+                    //    System.out.println("results are" + this.results.get(j));
+            //    }
             }
             else if (method.equals("newall2")){
                 crowdingDistanceScoreNormalized(skyline,k/2,retset);
@@ -1472,7 +1521,7 @@ public class SolutionSpace implements Iterable<Plan> {
     public HashSet<Plan> Knee(ArrayList<Plan> donotchange,int k,HashSet<Plan> ret, boolean multi, boolean partialSolution){//TODO: if plans number > k then keep all plans
 
         addExtremes(donotchange,ret);
-        
+
 //        Collections.sort(donotchange, new Comparator<Plan>() {
 //            @Override public int compare(Plan o1, Plan o2) {
 //                return Long.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
