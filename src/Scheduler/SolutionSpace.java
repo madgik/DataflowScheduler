@@ -830,6 +830,7 @@ public class SolutionSpace implements Iterable<Plan> {
             // if no plan satisfies the constraint the  maximum fairness plan is returned.
             HashSet<Plan> retset  = new HashSet<>();
             keepPlanWithinConstraints(money_constraint, time_constraint);
+            retset.addAll(this.results);
             if (results.size() < 1) {
                 // if no plan statisfies the constraints then add the max fairness plan.
                 retset.add(maxFairnessBeforeConstrains);
