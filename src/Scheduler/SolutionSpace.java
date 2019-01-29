@@ -818,6 +818,7 @@ public class SolutionSpace implements Iterable<Plan> {
         } else if (constraint_mode == 2) {
             // find all plans that satisfy the constraints and then use pruning.
             HashSet<Plan> retset  = new HashSet<>();
+            if(!partialSolution)
             keepPlanWithinConstraints(money_constraint, time_constraint);
         }
         // the rest of the code works on the skyline
