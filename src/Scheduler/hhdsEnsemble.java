@@ -50,8 +50,8 @@ public class hhdsEnsemble implements Scheduler {
     double money_constraint;
     long time_constraint;
 
-    public hhdsEnsemble(DAG graph,Cluster cl,boolean prune,String PruneMethod, String rankingMethod, Boolean multi,
-                        int pruning_k, int constraint_mode, double money_constraint, long time_constraint){
+    public hhdsEnsemble(DAG graph, Cluster cl, boolean prune, String PruneMethod, String rankingMethod, Boolean multi,
+                        int pruning_k, int constraint_mode, double money_constraint, long time_constraint) {
         this.rankingMethod = rankingMethod;
         this.pruneEnabled = prune;
         space = new SolutionSpace();
@@ -60,161 +60,154 @@ public class hhdsEnsemble implements Scheduler {
         this.opsSorted = new LinkedList<>();
         opLevel = new HashMap<>();
         this.PruneMethod = PruneMethod;
-        this.multi=multi;
-        this.pruneSkylineSize=pruning_k;
+        this.multi = multi;
+        this.pruneSkylineSize = pruning_k;
         this.constraint_mode = constraint_mode;
         this.money_constraint = money_constraint;
         this.time_constraint = time_constraint;
-       // this.newDir = dir;
+        // this.newDir = dir;
     }
 
     @Override
-    public SolutionSpace schedule(){
-            long startCPU_MS = System.currentTimeMillis();
-            MultiplePlotInfo mpinfo = new MultiplePlotInfo();
-            SolutionSpace skylinePlans = new SolutionSpace();
+    public SolutionSpace schedule() {
+        long startCPU_MS = System.currentTimeMillis();
+        MultiplePlotInfo mpinfo = new MultiplePlotInfo();
+        SolutionSpace skylinePlans = new SolutionSpace();
 
-            SolutionSpace skylinePlans_INC = new SolutionSpace();
-            SolutionSpace skylinePlans_DEC = new SolutionSpace();
-            SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
+        SolutionSpace skylinePlans_INC = new SolutionSpace();
+        SolutionSpace skylinePlans_DEC = new SolutionSpace();
+        SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
 
-            SolutionSpace paretoPlans = new SolutionSpace();
+        SolutionSpace paretoPlans = new SolutionSpace();
 
-            computeRankings();
+        computeRankings();
 
-            skylinePlans.clear();
+        skylinePlans.clear();
 
-            if (heteroEnabled ){
+        if (heteroEnabled){
 
-                for (containerType cType : containerType.values()) {
+            for (containerType cType : containerType.values()) {
 
-                    if (maxContainers == 1) {
-                        skylinePlans.add(onlyOneContainer());
-                    } else {
-                            ////INC DEC/////
-//                    System.out.println("calc "+cType.name);
-                            if (cType.equals(containerType.getLargest())) {
-                                ArrayList<containerType> cTypes = new ArrayList<>();
-                                cTypes.add(cType);
-
-                                skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
-                                //                    plotPlans("dec",skylinePlans);
-                                //                    System.out.println("s1 "+skylinePlans.size());
-
-                            } else if (cType.equals(containerType.getSmallest())) {
-                                ArrayList<containerType> cTypes = new ArrayList<>();
-                                cTypes.add(cType);
-
-                                skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
-                                //                    plotPlans("inc",skylinePlans);
-                                //                    System.out.println("s2 "+skylinePlans.size());
-                            } else {
-                                ArrayList<containerType> cTypes = new ArrayList<>();
-                                cTypes.add(cType);
-
-
-                                skylinePlans_INCDEC
-                                        .addAll(this.createAssignments("increasing/decreasing", cTypes));
-                                //                    plotPlans("inc,dec",skylinePlans);
-                                //                    System.out.println("s3 "+skylinePlans.size());
-                            }
-
-                    }
-
-                }
-
-                skylinePlans.addAll(skylinePlans_DEC.results);
-                skylinePlans.addAll(skylinePlans_INC.results);
-                skylinePlans.addAll(skylinePlans_INCDEC.results);
-
-
-            }
-            else
-            {
-
-               // for (containerType cType : containerType.values()) {
-
-                    containerType cType = containerType.getSmallest();
-                    if (maxContainers == 1) {
-                        skylinePlans.add(onlyOneContainer());
-                    } else {
-
-                            ArrayList<containerType> cTypes = new ArrayList<>();
-                            cTypes.add(cType);
-
-                            skylinePlans_INCDEC.addAll(this.createAssignments("increasing", cTypes));
-
-                    }
-
-               // }
-                skylinePlans.addAll(skylinePlans_INCDEC.results);
-
-
-            }
-
-
-            paretoPlans.addAll(skylinePlans.results);
-
-        // keep constraint mode to 0 here? that way all plans are kept at this point and only inside
-        // homotohetero one plan is kep
-            paretoPlans.computeSkyline(pruneEnabled,homoPlanstoKeep,false, PruneMethod, multi,
-                    false, 0, money_constraint, time_constraint);
-
-            mpinfo.add("pareto",paretoPlans.results);
-
-            long homoEnd = System.currentTimeMillis();
-            System.out.println("Pare homoEnd: "+(homoEnd-startCPU_MS));
-
-            skylinePlans.clear();
-
-            for(Plan pp: paretoPlans.results) {
-                if (pp.vmUpgrading.equals("increasing/decreasing")) {
-
-                    pp.vmUpgrading = "increasing";
-                    skylinePlans.add(pp);
-
-                    Plan newpp = new Plan(pp);
-                    newpp.vmUpgrading="decreasing";
-                    skylinePlans.add(newpp);
+                if (maxContainers == 1) {
+                    skylinePlans.add(onlyOneContainer());
                 } else {
-                    skylinePlans.add(pp);
+                    ////INC DEC/////
+ //                    System.out.println("calc "+cType.name);
+                    if (cType.equals(containerType.getLargest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
+                        //                    plotPlans("dec",skylinePlans);
+                        //                    System.out.println("s1 "+skylinePlans.size());
+
+                    } else if (cType.equals(containerType.getSmallest())) {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+                        //                    plotPlans("inc",skylinePlans);
+                        //                    System.out.println("s2 "+skylinePlans.size());
+                    } else {
+                        ArrayList<containerType> cTypes = new ArrayList<>();
+                        cTypes.add(cType);
+
+
+                        skylinePlans_INCDEC
+                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
+                        //                    plotPlans("inc,dec",skylinePlans);
+                        //                    System.out.println("s3 "+skylinePlans.size());
+                    }
+
                 }
+
             }
 
-            paretoPlans.clear();
+            skylinePlans.addAll(skylinePlans_DEC.results);
+            skylinePlans.addAll(skylinePlans_INC.results);
+            skylinePlans.addAll(skylinePlans_INCDEC.results);
 
 
-        if (heteroEnabled)
-            paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+        } else{
 
-            System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
+            // for (containerType cType : containerType.values()) {
 
-            paretoPlans.addAll(skylinePlans);
-
-            space.addAll(paretoPlans);
-
-
-            long endCPU_MS = System.currentTimeMillis();
-            space.setOptimizationTime(endCPU_MS - startCPU_MS);
-
-
-            mpinfo.add("final space",space.results);
-
-            if (constraint_mode == 1 || constraint_mode == 2) {
-                // by fixing constraint mode to 1 only one plan is returned. This happens only when constraints are applied.
-                space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false,
-                        1, money_constraint, time_constraint);
+            containerType cType = containerType.getSmallest();
+            if (maxContainers == 1) {
+                skylinePlans.add(onlyOneContainer());
             } else {
-                space.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, false,
-                        constraint_mode, money_constraint, time_constraint);
+
+                ArrayList<containerType> cTypes = new ArrayList<>();
+                cTypes.add(cType);
+
+                skylinePlans_INCDEC.addAll(this.createAssignments("increasing", cTypes));
+
             }
 
-            return space;
+            // }
+            skylinePlans.addAll(skylinePlans_INCDEC.results);
+
 
         }
 
 
+        paretoPlans.addAll(skylinePlans.results);
 
+        // compute the skyline for all the homogeneous plans
+        paretoPlans.computeSkyline(pruneEnabled, homoPlanstoKeep, false, PruneMethod, multi,
+                false, constraint_mode, money_constraint, time_constraint);
+
+        mpinfo.add("pareto", paretoPlans.results);
+
+        long homoEnd = System.currentTimeMillis();
+        System.out.println("Pare homoEnd: " + (homoEnd - startCPU_MS));
+
+        skylinePlans.clear();
+
+        for (Plan pp : paretoPlans.results) {
+            if (pp.vmUpgrading.equals("increasing/decreasing")) {
+
+                pp.vmUpgrading = "increasing";
+                skylinePlans.add(pp);
+
+                Plan newpp = new Plan(pp);
+                newpp.vmUpgrading = "decreasing";
+                skylinePlans.add(newpp);
+            } else {
+                skylinePlans.add(pp);
+            }
+        }
+
+        paretoPlans.clear();
+
+        if (heteroEnabled)
+            paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+
+        System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
+
+        paretoPlans.addAll(skylinePlans);
+
+        space.addAll(paretoPlans);
+
+
+        long endCPU_MS = System.currentTimeMillis();
+        space.setOptimizationTime(endCPU_MS - startCPU_MS);
+
+
+        mpinfo.add("final space", space.results);
+
+        if (constraint_mode == 1 || constraint_mode == 2) {
+            // by fixing constraint mode to 1 only one plan is returned. This happens only when constraints are applied.
+            space.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, false,
+                    1, money_constraint, time_constraint);
+        } else {
+            space.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, false,
+                    0, money_constraint, time_constraint);
+        }
+
+        return space;
+
+    }
 //    @Override
 //    public SolutionSpace schedule() {
 //
@@ -350,7 +343,7 @@ public class hhdsEnsemble implements Scheduler {
 
     //input plan
     //output contSlack, contOps, opSlack
-    private void computeSlack(Plan plan,HashMap<Long, Double> contSlack, HashMap<Long, Integer> contOps,HashMap<Long, Long> opSlack, ArrayList<Long> opSortedBySlack){
+    private void computeSlack(Plan plan,HashMap<Long, Double> contSlack, HashMap<Long, Integer> contOps, HashMap<Long, Long> opSlack, ArrayList<Long> opSortedBySlack) {
         contSlack.clear();
         contOps.clear();
         opSlack.clear();
@@ -362,9 +355,8 @@ public class hhdsEnsemble implements Scheduler {
             double slackPerCont = opSlack.get(opId);
             long opContID = plan.assignments.get(opId);
             int opsPerCont = 1;
-            if(contOps.containsKey(opContID))
-            {
-                slackPerCont+= contSlack.get(opContID);
+            if(contOps.containsKey(opContID)){
+                slackPerCont += contSlack.get(opContID);
                 opsPerCont = contOps.get(opContID)+1;
             }
 
@@ -378,19 +370,19 @@ public class hhdsEnsemble implements Scheduler {
         }
 
 
-
     }
 
     private SolutionSpace homoToHetero(SolutionSpace plans) {
+        if( plans.isEmpty() ) { return plans; }
 
         SolutionSpace plansInner = new SolutionSpace();//deepcopy of input
-        for(Plan p:plans.results){
+        for (Plan p : plans.results) {
             plansInner.add(new Plan(p));
         }
 
         SolutionSpace result = new SolutionSpace();//keeps all the solutions at the current pareto
 
-        for(Plan p:plans){
+        for (Plan p : plans) {
             result.add(new Plan(p));
         }
         //look at each plan and upgrade one by one the LARGE containers
@@ -402,26 +394,26 @@ public class hhdsEnsemble implements Scheduler {
 
         int updateSkyline = 1;
 
-        int loop=0;
+        int loop = 0;
 
         while (updateSkyline == 1) {
-loop++;
+            loop++;
             updateSkyline = 0;
-            int innerloop=0;
+            int innerloop = 0;
             for (final Plan plan : plansInner) {                                                                         //for every plan
-innerloop++;
+                innerloop++;
                 LinkedList<Long> planContainersTobeModified = new LinkedList<>();
-                System.out.println(loop +": plan" + innerloop);
+                System.out.println(loop + ": plan" + innerloop);
                 ArrayList<Long> opSortedBySlack = new ArrayList<>();
                 //compute avg slack per container/VM
 
-                HashMap<Long, Double> contSlack=new HashMap<>();
-                HashMap<Long, Integer> contOps=new HashMap<>();
+                HashMap<Long, Double> contSlack = new HashMap<>();
+                HashMap<Long, Integer> contOps = new HashMap<>();
 
-                computeSlack(plan,contSlack,contOps,opSlack, opSortedBySlack);
+                computeSlack(plan, contSlack, contOps, opSlack, opSortedBySlack);
 
-                for (Long i: plan.cluster.containers.keySet()) {                                                           // for each cont change it
-                    Container cont  = plan.cluster.getContainer(i);
+                for (Long i : plan.cluster.containers.keySet()) {                                                           // for each cont change it
+                    Container cont = plan.cluster.getContainer(i);
 
                     if (plan.vmUpgrading == null) {
                         System.out.println("bug line 254");
@@ -448,15 +440,15 @@ innerloop++;
                     public int compare(Long vm1, Long vm2) {
                         double s1;
                         double s2;
-                        if(!contSlack.containsKey(vm1)){
+                        if (!contSlack.containsKey(vm1)) {
                             s1 = Double.MAX_VALUE;
-                        }else {
+                        } else {
                             s1 = contSlack.get(vm1);///(double)contOps.get(vm1);
                         }
 
-                        if(!contSlack.containsKey(vm2)){
+                        if (!contSlack.containsKey(vm2)) {
                             s2 = Double.MAX_VALUE;//TODO check asap
-                        }else {
+                        } else {
                             s2 = contSlack.get(vm2);///(double)contOps.get(vm1);
                         }
                         if (s1 > s2)//TODO: add precision error
@@ -468,24 +460,23 @@ innerloop++;
                     }
                 };
 
-                if(plan.vmUpgrading.contains("decreasing")) {
+                if (plan.vmUpgrading.contains("decreasing")) {
 //                    System.out.println("ss " + planContainersTobeModified.size()+" "+planContainersTobeModified);
                     Collections.sort(planContainersTobeModified, contSlackComparator);
-                }
-                else Collections.sort(planContainersTobeModified, Collections.reverseOrder(contSlackComparator));
+                } else Collections.sort(planContainersTobeModified, Collections.reverseOrder(contSlackComparator));
 
                 Plan newPlan = null;
 
-                for (Long k: planContainersTobeModified) {            //for every cont that can be modified, create a new plan
+                for (Long k : planContainersTobeModified) {            //for every cont that can be modified, create a new plan
 
                     if (plan.vmUpgrading == null) {
                         System.out.println("bug line 297");
                         break;
                     }
 
-                    newPlan = new Plan(graph,new Cluster());
+                    newPlan = new Plan(graph, new Cluster());
                     newPlan.vmUpgrading = plan.vmUpgrading;
-                    for(Container contcont : plan.cluster.containersList){
+                    for (Container contcont : plan.cluster.containersList) {
                         newPlan.cluster.addContainer(contcont.contType);
                     }
 
@@ -493,32 +484,31 @@ innerloop++;
                     Container cont = newPlan.cluster.containers.get(k);
 
                     if (plan.vmUpgrading.equals("increasing"))                                      //modify the container -- TODO check if we could add all smaller and bigger conts
-                        newPlan.cluster.update(cont.id,containerType.getNextLarger(cont.contType));
+                        newPlan.cluster.update(cont.id, containerType.getNextLarger(cont.contType));
                     else
-                        newPlan.cluster.update(cont.id,containerType.getNextSmaller(cont.contType));
+                        newPlan.cluster.update(cont.id, containerType.getNextSmaller(cont.contType));
 
 
-
-                    int opsAssigned=0;                                                              //assign all the ops again to the new plan
+                    int opsAssigned = 0;                                                              //assign all the ops again to the new plan
                     HashSet<Long> opsAssignedSet = new HashSet<>();
                     HashSet<Long> readyOps = new HashSet<>();
 
                     findRoots(readyOps);
 
-                    while ( readyOps.size() > 0) {//iterate on the ready to schedule ops
+                    while (readyOps.size() > 0) {//iterate on the ready to schedule ops
 
                         opsAssigned++;
                         long nextOpID = nextOperator(readyOps);
                         Operator nextOp = graph.getOperator(nextOpID);
 //                        System.out.println("\nHomoToHetero scheduling "+nextOpID + " "+readyOps.toString());
 
-                        newPlan.assignOperator(nextOpID,plan.assignments.get(nextOpID),backfillingUpgrade);
+                        newPlan.assignOperator(nextOpID, plan.assignments.get(nextOpID), backfillingUpgrade);
 
-                        findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
+                        findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
                     }
 
                     //use Double.compare
-                    if(newPlan.stats.money >= plan.stats.money && newPlan.stats.runtime_MS >= plan.stats.runtime_MS)//we could use a threshold. e.g. if savings less than 0.1%
+                    if (newPlan.stats.money >= plan.stats.money && newPlan.stats.runtime_MS >= plan.stats.runtime_MS)//we could use a threshold. e.g. if savings less than 0.1%
                     {
                         break; //no more containers for this plan are going to be modified. it breaks
                     }
@@ -531,14 +521,12 @@ innerloop++;
             plansInner.addAll(result.results);
 
 
-
-
             plansInner.addAll(skylinePlansNew);
 
-            plansInner.computeSkyline(pruneEnabled,pruneSkylineSize,true,PruneMethod, multi,
+            plansInner.computeSkyline(pruneEnabled, pruneSkylineSize, true, PruneMethod, multi,
                     false, constraint_mode, money_constraint, time_constraint);
 
-            plansInner.retainAllAndKeep(skylinePlansNew,pruneSkylineSize);
+            plansInner.retainAllAndKeep(skylinePlansNew, pruneSkylineSize);
 
             result.addAll(plansInner);
 
@@ -582,15 +570,15 @@ innerloop++;
         return result;
     }
 
-    private void findRoots(HashSet<Long> readyOps){
-        for(Long opid:graph.operators.keySet()){
-            if( graph.getParents(opid).size()==0){
+    private void findRoots(HashSet<Long> readyOps) {
+        for (Long opid : graph.operators.keySet()) {
+            if (graph.getParents(opid).size() == 0) {
                 readyOps.add(opid);
             }
         }
     }
 
-    private void findNextReadyOps(HashSet<Long> readyOps,HashSet<Long> opsAssignedSet, Long justScheduledOpId ){
+    private void findNextReadyOps(HashSet<Long> readyOps, HashSet<Long> opsAssignedSet, Long justScheduledOpId) {
         Boolean allAssigned;               //find new readyops
         readyOps.remove(justScheduledOpId);
         opsAssignedSet.add(justScheduledOpId);
@@ -609,15 +597,15 @@ innerloop++;
         }
     }
 
-    private void findNextReadyOps(HashSet<Long> readyOps,HashSet<Long> readyOpsInner,HashSet<Long> opsAssignedSet, Plan plan ){
+    private void findNextReadyOps(HashSet<Long> readyOps, HashSet<Long> readyOpsInner, HashSet<Long> opsAssignedSet, Plan plan) {
 
 
         plan.calculateOrderingofOperatorsInContainers();
 
-        if(readyOps.size() == 0){
+        if (readyOps.size() == 0) {
             findRoots(readyOpsInner);
-        }else {
-            for(Long opId: readyOps){
+        } else {
+            for (Long opId : readyOps) {
                 opsAssignedSet.add(opId);
                 findNextReadyOps(readyOpsInner, opsAssignedSet, opId);
             }
@@ -626,27 +614,26 @@ innerloop++;
         //find the ready operators from plan container ordering
 
 
-
         ArrayList<Long> firstUnscheduledOp = new ArrayList<>();
 
-        for(Stack<Long> s: plan.contIdToSortedOps.values()){ //update the sorted operators
-            if(s.size()>0) {
+        for (Stack<Long> s : plan.contIdToSortedOps.values()) { //update the sorted operators
+            if (s.size() > 0) {
                 if (opsAssignedSet.contains(s.peek())) {
                     s.pop();
                 }
             }
         }
         //find the ready operators from plan container ordering
-        for(Stack<Long> s: plan.contIdToSortedOps.values()){ //update the sorted operators
-            if(s.size()>0) {
+        for (Stack<Long> s : plan.contIdToSortedOps.values()) { //update the sorted operators
+            if (s.size() > 0) {
                 firstUnscheduledOp.add(s.peek());
             }
         }
 
         //intersect firsUnscheduled with readyOps
 
-        for(Long opId: firstUnscheduledOp){
-            if(readyOpsInner.contains(opId)){
+        for (Long opId : firstUnscheduledOp) {
+            if (readyOpsInner.contains(opId)) {
                 readyOps.add(opId);
             }
         }
@@ -663,23 +650,23 @@ innerloop++;
         SolutionSpace plans = new SolutionSpace();
         plans.add(firstPlan);
 
-        int opsAssigned=0;
+        int opsAssigned = 0;
 
         HashSet<Long> opsAssignedSet = new HashSet<>();
         HashSet<Long> readyOps = new HashSet<>();
 
         findRoots(readyOps);
 
-        int prevPrune=-1;
+        int prevPrune = -1;
 
-        while ( readyOps.size() > 0) {
+        while (readyOps.size() > 0) {
 
             opsAssigned++;
 
             // Get the most expensive operator from the ready ones
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
-            System.out.println(cTypes.get(0).name+". Next:" + nextOpID + ". Assigned " +opsAssigned + " ops");
+            System.out.println(cTypes.get(0).name + ". Next:" + nextOpID + ". Assigned " + opsAssigned + " ops");
 //               System.out.println("scheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
@@ -690,18 +677,18 @@ innerloop++;
                 }
 
 //                System.out.println("\nnewly created plans");
-                scheduleToCandidateContainers(nextOpID, plan, cTypes,allCandidates);//allCanditates is an out param
+                scheduleToCandidateContainers(nextOpID, plan, cTypes, allCandidates);//allCanditates is an out param
 
             }
             plans.clear();
 
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
-            plans.computeSkyline(pruneEnabled,pruneSkylineSize,false,PruneMethod, multi, true, constraint_mode,
-                    money_constraint, time_constraint);
+            plans.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, true,
+                    constraint_mode, money_constraint, time_constraint);
+            if (plans.isEmpty()) { return plans; }
 
-
-            findNextReadyOps(readyOps,opsAssignedSet,nextOpID);
+            findNextReadyOps(readyOps, opsAssignedSet, nextOpID);
 
         }
 //        System.out.println("createass end");
@@ -709,16 +696,16 @@ innerloop++;
         return plans;
     }
 
-    private void scheduleToCandidateContainers(Long opId , Plan plan,  ArrayList<containerType> contTypes,SolutionSpace planEstimations){
+    private void scheduleToCandidateContainers(Long opId, Plan plan, ArrayList<containerType> contTypes, SolutionSpace planEstimations) {
         //assume that not empty containers exist
 
-        for(Long contId: plan.cluster.containers.keySet()){ //add to every existing container
+        for (Long contId : plan.cluster.containers.keySet()) { //add to every existing container
             Plan newPlan = new Plan(plan);
-            newPlan.assignOperator(opId, contId,backfilling);
+            newPlan.assignOperator(opId, contId, backfilling);
             planEstimations.add(newPlan);
         }
-        if(plan.cluster.contUsed.size()<maxContainers){  //add a nwe container of contType and assign the op to that
-            for(containerType contType: contTypes) {//uncomment to add every ctype
+        if (plan.cluster.contUsed.size() < maxContainers) {  //add a nwe container of contType and assign the op to that
+            for (containerType contType : contTypes) {//uncomment to add every ctype
                 Plan newPlan = new Plan(plan);
                 Long newContId = newPlan.cluster.addContainer(contType);
                 newPlan.assignOperator(opId, newContId, backfilling);
@@ -730,8 +717,8 @@ innerloop++;
     }
 
     public Plan onlyOneContainer() {
-        containerType contType= containerType.getSmallest();//maybe check for every container later
-        Plan plan = new Plan(graph,cluster);
+        containerType contType = containerType.getSmallest();//maybe check for every container later
+        Plan plan = new Plan(graph, cluster);
 
         plan.cluster.addContainer(contType.getSmallest());
         plan.vmUpgrading = "increasing";
@@ -739,7 +726,7 @@ innerloop++;
         cluster.addContainer(contType);
 
         for (Operator op : graph.getOperators()) {
-            plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id,backfilling);
+            plan.assignOperator(op.getId(), plan.cluster.getContainer(0L).id, backfilling);
         }
         //  plan.printAssignments();
         return plan;
@@ -761,18 +748,18 @@ innerloop++;
     }
 
 
-    public SolutionSpace ComputeOnePerNumberofVmsSkyline(SolutionSpace plans){
+    public SolutionSpace ComputeOnePerNumberofVmsSkyline(SolutionSpace plans) {
         SolutionSpace skyline = new SolutionSpace();
 
-        HashMap<Integer,Plan> vmCountToFastestPlan = new HashMap<>();
+        HashMap<Integer, Plan> vmCountToFastestPlan = new HashMap<>();
 
-        for(Plan p:plans){
+        for (Plan p : plans) {
             int numberofConts = p.cluster.contUsed.size();
             Plan tplan = p;
-            if(vmCountToFastestPlan.containsKey(numberofConts)){
-                tplan = getFastest(tplan,vmCountToFastestPlan.get(numberofConts));
+            if (vmCountToFastestPlan.containsKey(numberofConts)) {
+                tplan = getFastest(tplan, vmCountToFastestPlan.get(numberofConts));
             }
-            vmCountToFastestPlan.put(numberofConts,tplan);
+            vmCountToFastestPlan.put(numberofConts, tplan);
 
         }
 
@@ -782,57 +769,52 @@ innerloop++;
     }
 
 
-    public Plan getFastest(Plan p1, Plan p2){
-        if(p1.stats.runtime_MS == p2.stats.runtime_MS){
-            if(p1.stats.money == p2.stats.money){
-                if(p1.cluster.contUsed.size() < p1.cluster.contUsed.size()){
+    public Plan getFastest(Plan p1, Plan p2) {
+        if (p1.stats.runtime_MS == p2.stats.runtime_MS) {
+            if (p1.stats.money == p2.stats.money) {
+                if (p1.cluster.contUsed.size() < p1.cluster.contUsed.size()) {
                     return p1;
-                }else{
+                } else {
                     return p2;
                 }
-            }else if(p1.stats.money < p2.stats.money){
+            } else if (p1.stats.money < p2.stats.money) {
                 return p1;
-            }else{
+            } else {
                 return p2;
             }
-        }else{
-            if(p1.stats.runtime_MS < p2.stats.runtime_MS){
+        } else {
+            if (p1.stats.runtime_MS < p2.stats.runtime_MS) {
                 return p1;
-            }else{
+            } else {
                 return p2;
             }
         }
     }
 
 
-    public void findDominanceRelations(ArrayList<Plan> plans, HashMap<Plan, ArrayList <Plan>> dominatedSet, HashMap<Plan, ArrayList <Plan>> dominanceSet, ArrayList <Plan> skyline) {
-        for(int cur = 0; cur<plans.size(); cur++) {
+    public void findDominanceRelations(ArrayList<Plan> plans, HashMap<Plan, ArrayList<Plan>> dominatedSet, HashMap<Plan, ArrayList<Plan>> dominanceSet, ArrayList<Plan> skyline) {
+        for (int cur = 0; cur < plans.size(); cur++) {
             Plan curPlan = plans.get(cur);
 
             //finding dominatedSet
-            for(int next=cur+1;next<plans.size(); next++)
-            {
+            for (int next = cur + 1; next < plans.size(); next++) {
                 Plan nextPlan = plans.get(next);
-                if(nextPlan.stats.runtime_MS > curPlan.stats.runtime_MS && nextPlan.stats.money < curPlan.stats.money) {
+                if (nextPlan.stats.runtime_MS > curPlan.stats.runtime_MS && nextPlan.stats.money < curPlan.stats.money) {
                     dominatedSet.get(curPlan).add(nextPlan);
 
 
-
-                }
-                else
+                } else
                     break;
             }
 
             //finding dominanceSet
-            for(int previous=cur-1;previous>=0; previous--)
-            {
+            for (int previous = cur - 1; previous >= 0; previous--) {
 
                 Plan previousPlan = plans.get(previous);
-                if(previousPlan.stats.runtime_MS <= curPlan.stats.runtime_MS && previousPlan.stats.money <= curPlan.stats.money) {
-                    if(skyline.contains(previousPlan))
+                if (previousPlan.stats.runtime_MS <= curPlan.stats.runtime_MS && previousPlan.stats.money <= curPlan.stats.money) {
+                    if (skyline.contains(previousPlan))
                         dominanceSet.get(curPlan).add(previousPlan);
-                }
-                else
+                } else
                     break;
 
             }
@@ -841,13 +823,13 @@ innerloop++;
     }
 
 
-    public HashMap<Plan, Double> computeDominanceScore(ArrayList<Plan> plans, HashMap<Plan, ArrayList <Plan>> dominatedSet, HashMap<Plan, ArrayList <Plan>> dominanceSet, ArrayList <Plan> skyline) {
+    public HashMap<Plan, Double> computeDominanceScore(ArrayList<Plan> plans, HashMap<Plan, ArrayList<Plan>> dominatedSet, HashMap<Plan, ArrayList<Plan>> dominanceSet, ArrayList<Plan> skyline) {
         //dominatedSet: set of plans dominated by the key plan
         //dominanceSet: set of skyline plans the key plan is dominated by
 
         HashMap<Plan, Double> dominanceScore = new HashMap<>();
 
-        for(int curPlan = 0; curPlan<skyline.size(); curPlan++) {//for(int curPlan = 0; curPlan<plans.size(); curPlan++) {
+        for (int curPlan = 0; curPlan < skyline.size(); curPlan++) {//for(int curPlan = 0; curPlan<plans.size(); curPlan++) {
             Double domScore = 0.0;
             if (dominatedSet.containsKey(skyline.get(curPlan))) {//if (dominatedSet.containsKey(plans.get(curPlan))) {
                 //     System.out.println("not empty");
@@ -855,10 +837,10 @@ innerloop++;
                     //     System.out.println(dominatedSet.get(p).size() + " " + dominanceSet.get(p).size());
 
                     Double dp_p_sp = 1.0 / dominatedSet.get(plans.get(curPlan)).size();//Double dp_p_sp = 1.0 / dominatedSet.get(p).size();
-                    if(dominatedSet.get(plans.get(curPlan)).size()==0)
+                    if (dominatedSet.get(plans.get(curPlan)).size() == 0)
                         dp_p_sp = Double.MAX_VALUE;
                     Double idp_p = Math.log((double) skyline.size() / (double) dominanceSet.get(p).size());
-                    if(dominanceSet.get(p).size()==0)
+                    if (dominanceSet.get(p).size() == 0)
                         idp_p = Double.MAX_VALUE;
                     domScore += (dp_p_sp * idp_p);
 
@@ -919,7 +901,7 @@ innerloop++;
 
         SolutionSpace skylineNew = new SolutionSpace();
 
-        int skylinePlansToKeep=20;
+        int skylinePlansToKeep = 20;
 
         if (skylinePlans.size() > skylinePlansToKeep) {
             // Keep only some schedules in the skyline according to their crowding distance
@@ -928,19 +910,22 @@ innerloop++;
             final HashMap<Plan, Double> planDistance = new HashMap<>();
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                @Override public int compare(Plan o1, Plan o2) {
+                @Override
+                public int compare(Plan o1, Plan o2) {
                     return Double.compare(o1.stats.runtime_MS, o2.stats.quanta);
                 }
             });
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                @Override public int compare(Plan o1, Plan o2) {
+                @Override
+                public int compare(Plan o1, Plan o2) {
                     return Double.compare(o1.stats.money, o2.stats.money);
                 }
             });
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                @Override public int compare(Plan o1, Plan o2) {
+                @Override
+                public int compare(Plan o1, Plan o2) {
                     return Double.compare(domScore.get(o1),
                             domScore.get(o2));
                 }
@@ -956,7 +941,7 @@ innerloop++;
             Check.True(schedulesKept <= skylinePlansToKeep + 1,
                     "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
         }
-        for(Plan p: skylinePlans) {
+        for (Plan p : skylinePlans) {
             if (p != null)
                 skylineNew.add(p);
         }
@@ -965,12 +950,11 @@ innerloop++;
     }
 
 
-
     private SolutionSpace pruneSkylineByCrowdDist(SolutionSpace skylinePlans) {
 
         SolutionSpace skylineNew = new SolutionSpace();
 
-        int skylinePlansToKeep=20;
+        int skylinePlansToKeep = 20;
 
         if (skylinePlans.size() > skylinePlansToKeep) {
             // Keep only some schedules in the skyline according to their crowding distance
@@ -979,7 +963,8 @@ innerloop++;
             final HashMap<Plan, Double> planDistance = new HashMap<>();
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                @Override public int compare(Plan o1, Plan o2) {
+                @Override
+                public int compare(Plan o1, Plan o2) {
                     return Double.compare(o1.stats.runtime_MS, o2.stats.runtime_MS);
                 }
             });
@@ -995,7 +980,8 @@ innerloop++;
             }
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                @Override public int compare(Plan o1, Plan o2) {
+                @Override
+                public int compare(Plan o1, Plan o2) {
                     return Double.compare(o1.stats.money, o2.stats.money);
                 }
             });
@@ -1012,7 +998,8 @@ innerloop++;
             }
 
             Collections.sort(skylinePlans.results, new Comparator<Plan>() {
-                @Override public int compare(Plan o1, Plan o2) {
+                @Override
+                public int compare(Plan o1, Plan o2) {
                     return Double.compare(Math.sqrt(planDistance.get(o1)),
                             Math.sqrt(planDistance.get(o2)));
                 }
@@ -1028,7 +1015,7 @@ innerloop++;
             Check.True(schedulesKept <= skylinePlansToKeep + 1,
                     "Error. Schedules kept: " + schedulesKept + " / " + skylinePlansToKeep);
         }
-        for(Plan p: skylinePlans) {
+        for (Plan p : skylinePlans) {
             if (p != null)
                 skylineNew.add(p);
         }
@@ -1110,40 +1097,40 @@ innerloop++;
 //        return skyline;
 //    }
 
-    private void computeRankings(){
+    private void computeRankings() {
         final HashMap<Long, Double> b_rank = new HashMap<>(); //opidTobRank
         final HashMap<Long, Double> t_rank = new HashMap<>();
         final HashMap<Long, Double> w_mean = new HashMap<>();
         final HashMap<Long, Double> sum_rank = new HashMap<>();
         // final HashMap<Long, Double> slacktime = new HashMap<>();
-        final  LinkedList<Long> opsSumRankSorted = new LinkedList<>();
+        final LinkedList<Long> opsSumRankSorted = new LinkedList<>();
         final LinkedList<Long> opsBySlack = new LinkedList<>();
 ///   private HashMap<Long, Double> opSlack = new HashMap<>();
 
         final TopologicalSorting topOrder = new TopologicalSorting(graph);
 
-        HashMap<Integer, Integer> opLevelperLevel = new HashMap <>();
-        HashMap<Integer,ArrayList<Long>> opLevelList = new HashMap<>();
+        HashMap<Integer, Integer> opLevelperLevel = new HashMap<>();
+        HashMap<Integer, ArrayList<Long>> opLevelList = new HashMap<>();
 
 
         //TODO:initalize b_rank and t_rank!!
 
-        int numLevels=0;
-        for(int i=0;i<20;++i){
-            opLevelList.put(i,new ArrayList<Long>());
+        int numLevels = 0;
+        for (int i = 0; i < 20; ++i) {
+            opLevelList.put(i, new ArrayList<Long>());
         }
 
         for (Long opId : topOrder.iterator()) {
-            int level=0;
-            for (Edge parentEdge: graph.getParents(opId)) {
+            int level = 0;
+            for (Edge parentEdge : graph.getParents(opId)) {
 
-                Integer plevel=opLevel.get(parentEdge.from);
-                level=Math.max(plevel+1, level);
+                Integer plevel = opLevel.get(parentEdge.from);
+                level = Math.max(plevel + 1, level);
             }
             opLevel.put(opId, level);
-            numLevels=Math.max(level+1, numLevels);
-            if(opLevelperLevel.containsKey(level))
-                opLevelperLevel.put(level, opLevelperLevel.get(level)+1);
+            numLevels = Math.max(level + 1, numLevels);
+            if (opLevelperLevel.containsKey(level))
+                opLevelperLevel.put(level, opLevelperLevel.get(level) + 1);
             else
                 opLevelperLevel.put(level, 1);
 
@@ -1156,43 +1143,43 @@ innerloop++;
 
         //Double crPathLength=0.0;
         for (Long opId : topOrder.iteratorReverse()) {
-            double maxRankChild=0.0;
-            for (Edge childEdge: graph.getChildren(opId)) {
+            double maxRankChild = 0.0;
+            for (Edge childEdge : graph.getChildren(opId)) {
                 double comCostChild = 0.0;
-                for(Edge parentofChildEdge: graph.getParents(childEdge.to)) {
-                    if(parentofChildEdge.from.equals(opId)) {// if((long)parentofChildEdge.from==(long)opId) {//
+                for (Edge parentofChildEdge : graph.getParents(childEdge.to)) {
+                    if (parentofChildEdge.from.equals(opId)) {// if((long)parentofChildEdge.from==(long)opId) {//
                         comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
                     }
                 }
                 //assumptions for output data and communication cost
-                maxRankChild = Math.max(maxRankChild, comCostChild+b_rank.get(childEdge.to));
+                maxRankChild = Math.max(maxRankChild, comCostChild + b_rank.get(childEdge.to));
             }
 
-            double wcur=0.0;
-            for(containerType contType: containerType.values())
-                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
-            int types= containerType.values().length;
-            double w=wcur/(double)types;//average execution cost for operator op
-            b_rank.put(opId, (w+maxRankChild));//b_rank.put(opId, (w+maxRankChild));
+            double wcur = 0.0;
+            for (containerType contType : containerType.values())
+                wcur += graph.getOperator(opId).getRunTime_MS() / contType.container_CPU; //TODO ji check if S or MS
+            int types = containerType.values().length;
+            double w = wcur / (double) types;//average execution cost for operator op
+            b_rank.put(opId, (w + maxRankChild));//b_rank.put(opId, (w+maxRankChild));
             w_mean.put(opId, w);
 
         }
 
         for (Long opId : topOrder.iterator()) {
-            double maxRankParent=0.0;
-            for (Edge inLink: graph.getParents(opId)) {
+            double maxRankParent = 0.0;
+            for (Edge inLink : graph.getParents(opId)) {
 //                Operator opParent=graph.getOperator(inLink.from.getopID());
                 double comCostParent = Math.ceil(inLink.data.size_B / RuntimeConstants.network_speed_B_MS);
-                maxRankParent = Math.max(maxRankParent, comCostParent+t_rank.get(inLink.from)+w_mean.get(inLink.from));
+                maxRankParent = Math.max(maxRankParent, comCostParent + t_rank.get(inLink.from) + w_mean.get(inLink.from));
             }
 
-            double wcur=0.0;
-            for(containerType contType: containerType.values())
-                wcur+=graph.getOperator(opId).getRunTime_MS()/contType.container_CPU;
-            int types= containerType.values().length;
-            double w=wcur/(double)types;//average execution cost for operator op
+            double wcur = 0.0;
+            for (containerType contType : containerType.values())
+                wcur += graph.getOperator(opId).getRunTime_MS() / contType.container_CPU;
+            int types = containerType.values().length;
+            double w = wcur / (double) types;//average execution cost for operator op
             t_rank.put(opId, (maxRankParent));
-            Double opRank=b_rank.get(opId) + t_rank.get(opId);// -w;
+            Double opRank = b_rank.get(opId) + t_rank.get(opId);// -w;
             sum_rank.put(opId, opRank);
             //  crPathLength =Math.max(crPathLength, opRank);
         }
@@ -1200,7 +1187,7 @@ innerloop++;
         for (Long op : topOrder.iterator()) {
             opsSumRankSorted.add(op);
             opsBySlack.add(op);
-            Double opRank=sum_rank.get(op);
+            Double opRank = sum_rank.get(op);
             //  double opSlacktime = crPathLength - opRank;
             //  slacktime.put(op, opSlacktime);
         }
@@ -1209,31 +1196,29 @@ innerloop++;
 
         for (Long opId : topOrder.iteratorReverse()) {
 
-            double maxRankChild=0.0;
-            for (Edge outLink: graph.getChildren(opId)) {
+            double maxRankChild = 0.0;
+            for (Edge outLink : graph.getChildren(opId)) {
                 double comCostChild = Math.ceil(outLink.data.size_B / RuntimeConstants.network_speed_B_MS);
                 //assumptions for output data and communication cost
-                maxRankChild = Math.max(maxRankChild, comCostChild+rankU.get(outLink.to));
+                maxRankChild = Math.max(maxRankChild, comCostChild + rankU.get(outLink.to));
             }
 
-            double wcur=0.0;
-            for(containerType contType: containerType.values()) {
+            double wcur = 0.0;
+            for (containerType contType : containerType.values()) {
                 long mst = graph.getOperator(opId).getRunTime_MS();
                 double cput = contType.container_CPU;
                 wcur += graph.getOperator(opId).getRunTime_MS() / contType.container_CPU;
             }
-            int types= containerType.values().length;
-            double w=wcur/(double)types;//average execution cost for operator op
-            rankU.put(opId, (w+maxRankChild));
+            int types = containerType.values().length;
+            double w = wcur / (double) types;//average execution cost for operator op
+            rankU.put(opId, (w + maxRankChild));
 
         }
 
         for (Long op : topOrder.iterator()) {
-       //     System.out.println(op + " sumrank " +  sum_rank.get(op));
+            //     System.out.println(op + " sumrank " +  sum_rank.get(op));
             opsSorted.add(op);
         }
-
-
 
 
 //        Comparator<Long> rankComparator = new Comparator<Long>() {
@@ -1272,7 +1257,7 @@ innerloop++;
             public int compare(Long op1, Long op2) {
                 double r1 = opLevel.get(op1);
                 double r2 = opLevel.get(op2);
-                if (r1 < r2 )//TODO: add precision error
+                if (r1 < r2)//TODO: add precision error
                     return -1;
                 else if (r1 > r2)
                     return 1;
@@ -1298,12 +1283,11 @@ innerloop++;
         };
 
         //default: commonentry which has by slack and level
-        if(rankingMethod.equals("perDag"))
+        if (rankingMethod.equals("perDag"))
             Collections.sort(opsSorted, dagIdComparator);
 
 
-
-        if(rankingMethod.equals("dagMerge")) {
+        if (rankingMethod.equals("dagMerge")) {
 
             Comparator<Long> subdagComparator = new Comparator<Long>() {
                 @Override
@@ -1352,44 +1336,42 @@ innerloop++;
                 for (long opnext : subdagNext.values()) {
 
                     //long opId= subdagNext.get()
-                //    System.out.println("opnext" + " " + opnext + " "+ graph.getOperator(opnext).dagID + " " + graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).dagId);
+                    //    System.out.println("opnext" + " " + opnext + " "+ graph.getOperator(opnext).dagID + " " + graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).dagId);
                     double crPathLength = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeCrPathLength(containerType.values());
 
-                    HashMap<Long, Double> pathToExit= graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePathToExit(containerType.values());
-                    HashMap<Long, Double> maxPath= graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePath(containerType.values());
+                    HashMap<Long, Double> pathToExit = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePathToExit(containerType.values());
+                    HashMap<Long, Double> maxPath = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computePath(containerType.values());
                     Double cpSubdag = graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).computeMaxPath(containerType.values());
 
 
-
-
                     Long idsub = graph.superDAG.dagToSubdagOpIds.get(opnext);
-                            //graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).g(opnext);
+                    //graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).g(opnext);
                     ////   subdagOpsList.get(graph.getOperator(opnext).dagID);
 
-                   // Long idsub= graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).get(opnext);
+                    // Long idsub= graph.superDAG.subdagToDagOpIds.get(graph.getOperator(opnext).dagID).get(opnext);
 //               System.out.println("looks for: " + opnext + " pathToExit " + pathToExit.get(idsub) + " " +idsub);
 
-                    double tasksScheduledPerc =(iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()+1)/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
-                    double taskWeight = w_mean.get(opnext)/crPathLength;
+                    double tasksScheduledPerc = (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / (double) graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+                    double taskWeight = w_mean.get(opnext) / crPathLength;
                     double taskSlack = crPathLength - sum_rank.get(opnext);//only slack based
 
-                    double tasksUnScheduledPerc =((double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size()-iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex())/(double)graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
+                    double tasksUnScheduledPerc = ((double) graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size() - iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex()) / (double) graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
 
 
                     // double c=crPathLength/sum_rank.get(opnext);//tasksScheduledPerc;//taskSlack*tasksScheduledPerc;///taskWeight;
 //add level/levels per subdag?
 
-               //     double c =taskSlack/(w_mean.get(opnext)/crPathLength);//(w_mean.get(opnext)*taskSlack)
-                   //  double c =(w_mean.get(opnext)*taskSlack)/crPathLength*tasksScheduledPerc;
+                    //     double c =taskSlack/(w_mean.get(opnext)/crPathLength);//(w_mean.get(opnext)*taskSlack)
+                    //  double c =(w_mean.get(opnext)*taskSlack)/crPathLength*tasksScheduledPerc;
                     //  double c = (sum_rank.get(opnext) / crPathLength) * (iteratorPerSubdag.get(graph.getOperator(opnext).dagID).previousIndex() + 1) / graph.superDAG.getSubDAG(graph.getOperator(opnext).dagID).getOperators().size();
 
-                  //  double c = crPathLength - sum_rank.get(opnext);//only slack based
+                    //  double c = crPathLength - sum_rank.get(opnext);//only slack based
 
-                //    double c =taskSlack*tasksScheduledPerc;
+                    //    double c =taskSlack*tasksScheduledPerc;
 
-               //     double c =taskSlack*tasksScheduledPerc/taskWeight;
+                    //     double c =taskSlack*tasksScheduledPerc/taskWeight;
 
-                 //   double c =taskSlack/tasksUnScheduledPerc;
+                    //   double c =taskSlack/tasksUnScheduledPerc;
 
 
 //                    taskSlack = cpSubdag - maxPath.get(graph.superDAG.dagToSubdagOpIds.get(opnext));//only slack based
@@ -1404,16 +1386,14 @@ innerloop++;
 
 
                     double br = pathToExit.get(graph.superDAG.dagToSubdagOpIds.get(opnext));
-                    double c =(br/crPathLength)*tasksUnScheduledPerc;
+                    double c = (br / crPathLength) * tasksUnScheduledPerc;
 
-                if(c>=maxPriority)
-                {
-                    //if equal select hte one with the smallest level
-                    nextToAdd = opnext;
-                    maxPriority = c;
+                    if (c >= maxPriority) {
+                        //if equal select hte one with the smallest level
+                        nextToAdd = opnext;
+                        maxPriority = c;
 
-                }
-
+                    }
 
 
                 }
@@ -1459,9 +1439,6 @@ innerloop++;
     }
 
 
-
-
-
     //                if(sum_rank.get(opnext)>maxSumrank)
 //                {
 //                    nextToAdd = opnext;
@@ -1502,9 +1479,9 @@ innerloop++;
 
     public HashMap<Long, Long> computeLST(Plan plan) {
 
-        HashMap <Long, Long> opLST = new HashMap<>();
+        HashMap<Long, Long> opLST = new HashMap<>();
 
-        for(Long opId: opsSortedReversed()) {
+        for (Long opId : opsSortedReversed()) {
             Long lst = Long.MAX_VALUE;
 
 
@@ -1514,33 +1491,33 @@ innerloop++;
             Long succId = null;
             Long contId = plan.assignments.get(opId);
 //            plan.printInfo();
-            for(Long nextOpId: plan.contAssignments.get(contId)) {
-                if(plan.opIdtoStartEndProcessing_MS.get(nextOpId).a<succStartTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
+            for (Long nextOpId : plan.contAssignments.get(contId)) {
+                if (plan.opIdtoStartEndProcessing_MS.get(nextOpId).a < succStartTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).a > plan.opIdtoStartEndProcessing_MS.get(opId).a) {
                     succStartTime = plan.opIdtoStartEndProcessing_MS.get(nextOpId).a;
 
-                    templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
+                    templst = succStartTime - (plan.calculateDelayDistributedStorage(opId, succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
                     succId = nextOpId;
                 }
             }
 
-            if(succId!=null)
-                lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId,succId)  - plan.opIdToProcessingTime_MS.get(opId), lst);//lst = Math.min(lst, templst - plan.opIdToBeforeDTDuration_MS.get(succId));
+            if (succId != null)
+                lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId, succId) - plan.opIdToProcessingTime_MS.get(opId), lst);//lst = Math.min(lst, templst - plan.opIdToBeforeDTDuration_MS.get(succId));
 
 
             if (graph.getChildren(opId).isEmpty()) { //if exit node
 //                System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId));
 
                 lst = plan.stats.runtime_MS - plan.opIdToProcessingTime_MS.get(opId);
-            }else {
+            } else {
                 for (Edge outEdge : graph.getChildren(opId)) {
                     succId = outEdge.to;
 
-                    succStartTime =  plan.opIdtoStartEndProcessing_MS.get(succId).a;
+                    succStartTime = plan.opIdtoStartEndProcessing_MS.get(succId).a;
 
-                    templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
+                    templst = succStartTime - (plan.calculateDelayDistributedStorage(opId, succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
 
 //TODO: add somewhere +1 for data transfer? It starts at the next interval every time...
-                    lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId,succId)  - plan.opIdToProcessingTime_MS.get(opId), lst);
+                    lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId, succId) - plan.opIdToProcessingTime_MS.get(opId), lst);
                 }
             }
 
@@ -1553,30 +1530,30 @@ innerloop++;
 
     public HashMap<Long, Long> computeLST(Plan plan, Long opToAssignId) {
 
-        HashMap <Long, Long> opLST = new HashMap<>();
+        HashMap<Long, Long> opLST = new HashMap<>();
 
-        for(Long opId: opsSortedReversed()) {
+        for (Long opId : opsSortedReversed()) {
 
 
-            if(opToAssignId==opId)
+            if (opToAssignId == opId)
                 break;
             Long lst = Long.MAX_VALUE;
             if (graph.getChildren(opId).isEmpty()) { //if exit node
 //                System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId));
 
                 lst = plan.stats.runtime_MS - plan.opIdToProcessingTime_MS.get(opId);
-            }else {
+            } else {
                 for (Edge outEdge : graph.getChildren(opId)) {
                     Long succId = outEdge.to;
 
-                    Long succStartTime =  plan.opIdtoStartEndProcessing_MS.get(succId).a;
+                    Long succStartTime = plan.opIdtoStartEndProcessing_MS.get(succId).a;
 
-                    long templst = succStartTime - (plan.calculateDelayDistributedStorage(opId,succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
+                    long templst = succStartTime - (plan.calculateDelayDistributedStorage(opId, succId));//plan.opIdToBeforeDTDuration_MS.get(succId);
 
 //                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + succId + " dt after op: " + plan.opIdToAfterDTDuration_MS.get(opId) + " dt before succ: " + plan.opIdToBeforeDTDuration_MS.get(succId) + " starting at " + succStartTime);
 
 //TODO: add somewhere +1 for data transfer? It starts at the next interval every time...
-                    lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId,succId)  - plan.opIdToProcessingTime_MS.get(opId), lst);
+                    lst = Math.min(templst - plan.calculateDelayDistributedStorage(opId, succId) - plan.opIdToProcessingTime_MS.get(opId), lst);
                     //lst = Math.min(succStartTime - plan.opIdToAfterDTDuration_MS.get(opId) - plan.opIdToProcessingTime_MS.get(opId), lst);
                 }
             }
@@ -1586,18 +1563,16 @@ innerloop++;
             opLST.put(opId, lst);
 
 
-
         }
 
         return opLST;
     }
 
-    public HashMap<Long,Long> computeEST(Plan plan, Long opToAssignId){//TODO: when predID and opID at same container do not include dataTransfer time from predID to opID opIdToBeforeDTDuration_MS.get(predId)?
-        HashMap <Long, Long> opEST = new HashMap<>();
+    public HashMap<Long, Long> computeEST(Plan plan, Long opToAssignId) {//TODO: when predID and opID at same container do not include dataTransfer time from predID to opID opIdToBeforeDTDuration_MS.get(predId)?
+        HashMap<Long, Long> opEST = new HashMap<>();
 
 
-        for(Long opId: opsSorted){
-
+        for (Long opId : opsSorted) {
 
 
             Long est = Long.MIN_VALUE;
@@ -1607,92 +1582,92 @@ innerloop++;
             long predEndTime = Long.MIN_VALUE;
             Long predId = null;
             Long contId = plan.assignments.get(opId);
-            for(Long nextOpId: plan.contAssignments.get(contId)) {
-                if(plan.opIdtoStartEndProcessing_MS.get(nextOpId).b>predEndTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).b <= plan.opIdtoStartEndProcessing_MS.get(opId).a) {
-                    predEndTime = plan.opIdtoStartEndProcessing_MS.get(nextOpId).b + 2*(plan.calculateDelayDistributedStorage(predId,opId,plan.assignments.get(opId)));;
+            for (Long nextOpId : plan.contAssignments.get(contId)) {
+                if (plan.opIdtoStartEndProcessing_MS.get(nextOpId).b > predEndTime && plan.opIdtoStartEndProcessing_MS.get(nextOpId).b <= plan.opIdtoStartEndProcessing_MS.get(opId).a) {
+                    predEndTime = plan.opIdtoStartEndProcessing_MS.get(nextOpId).b + 2 * (plan.calculateDelayDistributedStorage(predId, opId, plan.assignments.get(opId)));
+                    ;
                     predId = nextOpId;
                 }
 
             }
 
-            if(predId!=null)
-                est = Math.max(est, predEndTime );//+ plan.opIdToBeforeDTDuration_MS.get(contId));
+            if (predId != null)
+                est = Math.max(est, predEndTime);//+ plan.opIdToBeforeDTDuration_MS.get(contId));
 
-            if(graph.getParents(opId).isEmpty()){
+            if (graph.getParents(opId).isEmpty()) {
                 est = 0L;
-            }else{
-                for(Edge inEdge:graph.getParents(opId)){
+            } else {
+                for (Edge inEdge : graph.getParents(opId)) {
                     predId = inEdge.from;
 //TODO: remove 2* and add after/before once. calculateDelay returns 0 if not parent child
                     predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
                             //opIdToAfterDTDuration_MS.get(predId) +//This dt is computed only for parents not vm pred even if it was to be included
-                            2*(plan.calculateDelayDistributedStorage(predId,opId,plan.assignments.get(opId)));//plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: do we need any +/-1?
+                            2 * (plan.calculateDelayDistributedStorage(predId, opId, plan.assignments.get(opId)));//plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: do we need any +/-1?
 
 
 //                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + predId + " dt after pred: " + plan.opIdToAfterDTDuration_MS.get(predId) + " finishing at " + predEndTime);
 
-                    est = Math.max(predEndTime,est);
+                    est = Math.max(predEndTime, est);
                 }
             }
-            opEST.put(opId,est);
+            opEST.put(opId, est);
 //            System.out.println(opId + " est " + est);
 
-            if(opToAssignId==opId)
+            if (opToAssignId == opId)
                 break;
         }
         return opEST;
     }
 
 
-    public HashMap<Long,Long> computeEST(Plan plan){//TODO: when predID and opID at same container do not include dataTransfer time from predID to opID opIdToBeforeDTDuration_MS.get(predId)?
-        HashMap <Long, Long> opEST = new HashMap<>();
+    public HashMap<Long, Long> computeEST(Plan plan) {//TODO: when predID and opID at same container do not include dataTransfer time from predID to opID opIdToBeforeDTDuration_MS.get(predId)?
+        HashMap<Long, Long> opEST = new HashMap<>();
 
-        for(Long opId: opsSorted){
+        for (Long opId : opsSorted) {
             Long est = Long.MIN_VALUE;
-            if(graph.getParents(opId).isEmpty()){
+            if (graph.getParents(opId).isEmpty()) {
                 est = 0L;
-            }else{
-                for(Edge inEdge:graph.getParents(opId)){
+            } else {
+                for (Edge inEdge : graph.getParents(opId)) {
                     Long predId = inEdge.from;
 
                     Long predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
                             //opIdToAfterDTDuration_MS.get(predId) +//This dt is computed only for parents not vm pred even if it was to be included
-                            2*(plan.calculateDelayDistributedStorage(predId,opId,plan.assignments.get(opId)));//plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: do we need any +/-1?
+                            2 * (plan.calculateDelayDistributedStorage(predId, opId, plan.assignments.get(opId)));//plan.opIdToBeforeDTDuration_MS.get(opId);//TODO: do we need any +/-1?
 
 
 //                    System.out.println(opId + " runtime " + plan.opIdToProcessingTime_MS.get(opId) + " dt from " + opId + " to " + predId + " dt after pred: " + plan.opIdToAfterDTDuration_MS.get(predId) + " finishing at " + predEndTime);
 
-                    est = Math.max(predEndTime,est);
+                    est = Math.max(predEndTime, est);
                 }
             }
-            opEST.put(opId,est);
+            opEST.put(opId, est);
 //            System.out.println(opId + " est " + est);
         }
         return opEST;
     }
 
     //output opSlack,opSortedBySlack
-    public HashMap<Long, Long> computeSlackOps(Plan plan, final HashMap<Long,Long> opSlack,ArrayList<Long> opSortedBySlack){
+    public HashMap<Long, Long> computeSlackOps(Plan plan, final HashMap<Long, Long> opSlack, ArrayList<Long> opSortedBySlack) {
         HashMap<Long, Long> opLST = computeLST(plan);
         HashMap<Long, Long> opEST = computeEST(plan);
 
-        for(Long opId : graph.operators.keySet()){
+        for (Long opId : graph.operators.keySet()) {
             Long LST = opLST.get(opId);
             Long EST = opEST.get(opId);
-            opSlack.put(opId,LST-EST);
+            opSlack.put(opId, LST - EST);
             opSortedBySlack.add(opId);
             //  System.out.println(opId + " slack " + (LST-EST));
         }
 
         Collections.sort(opSortedBySlack, new Comparator<Long>() {
-            @Override public int compare(Long o1, Long o2) {
+            @Override
+            public int compare(Long o1, Long o2) {
                 return (int) (opSlack.get(o1) - opSlack.get(o2));
             }
         });
         return opEST;
     }
-
-
 
 
     public Iterable<Long> opsSortedReversed() {
@@ -1719,13 +1694,13 @@ innerloop++;
 
         //keep the plans with min cost/time
         planDerivative.put(p0, Double.MAX_VALUE);
-        planDerivative.put(skylinePlans.get(skylinePlans.size()-1), Double.MAX_VALUE);
+        planDerivative.put(skylinePlans.get(skylinePlans.size() - 1), Double.MAX_VALUE);
 
         // System.out.println( " ");
-        for (int i = 1; i < skylinePlans.size()-1; ++i) {
+        for (int i = 1; i < skylinePlans.size() - 1; ++i) {
             Plan p1 = skylinePlans.get(i);
 
-            Plan p2 = skylinePlans.get(i+1);
+            Plan p2 = skylinePlans.get(i + 1);
 
             Statistics p0Stats = p0.stats;
             Statistics p1Stats = p1.stats;
@@ -1736,12 +1711,12 @@ innerloop++;
             double aL = p2Stats.money - p1Stats.money;
             double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
 
-            double aLR = (p2Stats.runtime_MS - p0Stats.runtime_MS)/2.0;
+            double aLR = (p2Stats.runtime_MS - p0Stats.runtime_MS) / 2.0;
             // double aLR=1.0;
-            double thetaL = bR/aR;
-            double thetaR = bL/aL;
-            double theta2P1 = Math.abs(thetaL - thetaR)/(Math.abs(aL-aR)/2);
-            planDerivative.put(p1, theta2P1/aLR);
+            double thetaL = bR / aR;
+            double thetaR = bL / aL;
+            double theta2P1 = Math.abs(thetaL - thetaR) / (Math.abs(aL - aR) / 2);
+            planDerivative.put(p1, theta2P1 / aLR);
             p0 = p1;
 
         }
@@ -1772,13 +1747,13 @@ innerloop++;
 
         //keep the plans with min cost/time
         planDerivative.put(p0, Double.MAX_VALUE);
-        planDerivative.put(skylinePlans.get(skylinePlans.size()-1), Double.MAX_VALUE);
+        planDerivative.put(skylinePlans.get(skylinePlans.size() - 1), Double.MAX_VALUE);
 
         // System.out.println( " ");
-        for (int i = 1; i < skylinePlans.size()-1; ++i) {
+        for (int i = 1; i < skylinePlans.size() - 1; ++i) {
             Plan p1 = skylinePlans.get(i);
 
-            Plan p2 = skylinePlans.get(i+1);
+            Plan p2 = skylinePlans.get(i + 1);
 
             Statistics p0Stats = p0.stats;
             Statistics p1Stats = p1.stats;
@@ -1789,12 +1764,12 @@ innerloop++;
             double aL = p2Stats.money - p1Stats.money;
             double bL = p2Stats.runtime_MS - p1Stats.runtime_MS;
 
-            double aLR = (p2Stats.runtime_MS - p0Stats.runtime_MS)/2.0;//double aLR = (p2Stats.money - p0Stats.money)/2.0;//
+            double aLR = (p2Stats.runtime_MS - p0Stats.runtime_MS) / 2.0;//double aLR = (p2Stats.money - p0Stats.money)/2.0;//
             // double aLR=1.0;
-            double thetaL = bR/aR;
-            double thetaR = bL/aL;
-            double theta2P1 = Math.abs(thetaL - thetaR)/(Math.abs(aL-aR)/2);
-            planDerivative.put(p1, theta2P1/aLR);
+            double thetaL = bR / aR;
+            double thetaR = bL / aL;
+            double theta2P1 = Math.abs(thetaL - thetaR) / (Math.abs(aL - aR) / 2);
+            planDerivative.put(p1, theta2P1 / aLR);
             p0 = p1;
 
         }
@@ -1810,7 +1785,6 @@ innerloop++;
         });
 
     }
-
 
 
 }

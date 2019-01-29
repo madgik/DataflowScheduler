@@ -29,10 +29,10 @@ public class MainEnsemble {
     static Boolean validate = false;
     static boolean jar = false;
     static boolean runningAtServer = false;
-    static String jarpath="";
+    static String jarpath = "";
     static String resourcePath = "";
 
- //   static Boolean useMoheft = false;
+    //   static Boolean useMoheft = false;
 
 
     public static void main(String[] args) {
@@ -40,8 +40,8 @@ public class MainEnsemble {
 
 //        if(jar)
 //        jarpath = "/home/ilia/IdeaProjects/MyScheduler/runRemotely/";
-        Integer ensembleSize =20;
-        Integer pruning_k =10;
+        Integer ensembleSize = 20;
+        Integer pruning_k = 10;
         String newDir = "ensemblesDec2017/MixedEnsemble4Ligo100Montage50/dagMergeTrue/";
         // arguments for revision
         Integer constraint_mode = 0;
@@ -52,16 +52,16 @@ public class MainEnsemble {
         Double money_constraint = 0.0;
         Long time_constraint = 0L;
 
-       String rankMethod="dagMerge";
-       boolean multiObjective = true;
+        String rankMethod = "dagMerge";
+        boolean multiObjective = true;
 
-        if(args.length>1) {
+        if (args.length > 1) {
             ensembleSize = Integer.parseInt(args[3]);
             rankMethod = args[0];
             newDir = args[1];
             multiObjective = Boolean.valueOf(args[2]);
-            if(args[4].equals("perHour"))
-            RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
+            if (args[4].equals("perHour"))
+                RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
             else//perSec
                 RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
 
@@ -79,8 +79,12 @@ public class MainEnsemble {
 
         createDir(pathPlot, "");
 
-        if(savePlot){System.out.println("saving plots to "+ pathPlot);}
-        if(saveOutput){System.out.println("saving output to "+ pathOut);}
+        if (savePlot) {
+            System.out.println("saving plots to " + pathPlot);
+        }
+        if (saveOutput) {
+            System.out.println("saving output to " + pathOut);
+        }
         if (System.getProperty("user.name").equals("gsmyris")) {
             jar = true;
             jarpath = "/home/gsmyris/jc/";
@@ -107,7 +111,7 @@ public class MainEnsemble {
 
             String fileName = "ensemble";
 
-            String filePlanDetails =  "planDetails";
+            String filePlanDetails = "planDetails";
 
             outEnsemble = new PrintWriter(pathOut + fileName + ".dat");
             outPlanDetails = new PrintWriter(pathOut + filePlanDetails + ".txt");
@@ -116,7 +120,7 @@ public class MainEnsemble {
             e.printStackTrace();
         }
 
-        if(args.length>1) {
+        if (args.length > 1) {
             for (int i = 9; i < 9 + 2 * ensembleSize; i += 2) {
 
                 String appName = "MONTAGE";
@@ -129,8 +133,8 @@ public class MainEnsemble {
                 appName = args[i];//"LIGO";
                 size = Integer.parseInt(args[i + 1]);//sizesMontage[randomSize];
 
-                if(RuntimeConstants.quantum_MS == RuntimeConstants.OneHour_MS)
-                flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
+                if (RuntimeConstants.quantum_MS == RuntimeConstants.OneHour_MS)
+                    flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1000, 100));
                 else
                     flowsandParasms.add(new Triple(jarpath + appName + ".n." + size + ".0.dax", 1, 1));
 
@@ -161,8 +165,8 @@ public class MainEnsemble {
 
         System.out.println("running multiple dataflows");
 
-        ArrayList<Plan> ensemblePlans =new ArrayList<>();
-        DAG graph = runMultipleFlows(jar,flowsandParasms, ensemblePlans, rankMethod, multiObjective, pruning_k,
+        ArrayList<Plan> ensemblePlans = new ArrayList<>();
+        DAG graph = runMultipleFlows(jar, flowsandParasms, ensemblePlans, rankMethod, multiObjective, pruning_k,
                 constraint_mode, money_constraint, time_constraint);
 
 
@@ -170,19 +174,19 @@ public class MainEnsemble {
 
         for (int j = 0; j < ensemblePlans.size(); ++j) {
 
-            Plan p=ensemblePlans.get(j);
+            Plan p = ensemblePlans.get(j);
 
-            outEnsemble.println(p.stats.money  + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanSlowdown + "\t" + p.stats.subdagMeanResponseTime+ "\t" + "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.unfairnessNorm);
+            outEnsemble.println(p.stats.money + "\t" + p.stats.runtime_MS + "\t" + p.stats.subdagMeanSlowdown + "\t" + p.stats.subdagMeanResponseTime + "\t" + "\t" + p.stats.subdagMaxResponseTime + " \t" + p.stats.unfairness + "\t" + p.stats.unfairnessNorm);
 
 
             System.out.println("\nplan " + j + " runtime money unfairness meanResponse minResponse maxResponse meanMakespan minMakespan maxMakespan: ");
-            System.out.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime+ "\t" + p.stats.subdagMinResponseTime+ "\t" + p.stats.subdagMaxResponseTime+ "\t" + p.stats.subdagMeanMakespan+ "\t" + p.stats.subdagMinMakespan+ "\t" + p.stats.subdagMaxMakespan );
+            System.out.println(" " + p.stats.runtime_MS + "\t" + p.stats.money + "\t" + p.stats.unfairness + "\t" + p.stats.subdagMeanResponseTime + "\t" + p.stats.subdagMinResponseTime + "\t" + p.stats.subdagMaxResponseTime + "\t" + p.stats.subdagMeanMakespan + "\t" + p.stats.subdagMinMakespan + "\t" + p.stats.subdagMaxMakespan);
 
             outPlanDetails.println("\nplan " + j + " runtime money unfairnessNorm ");
-            outPlanDetails.println(" " + p.stats.runtime_MS  + "\t" + p.stats.money + "\t" + p.stats.unfairnessNorm);
-            for(Long dgId: p.stats.subdagFinishTime.keySet()) {
+            outPlanDetails.println(" " + p.stats.runtime_MS + "\t" + p.stats.money + "\t" + p.stats.unfairnessNorm);
+            for (Long dgId : p.stats.subdagFinishTime.keySet()) {
                 System.out.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId));
-                outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId)/p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId) +" slowdown "+ p.stats.subdagSlowdown.get(dgId));
+                outPlanDetails.println("dag " + dgId + " responseTime " + p.stats.subdagResponseTime.get(dgId) / p.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{p.cluster.containersList.get(0).contType}) + " makespan " + p.stats.subdagMakespan.get(dgId) + " starts " + p.stats.subdagStartTime.get(dgId) + " ends " + p.stats.subdagFinishTime.get(dgId) + " slowdown " + p.stats.subdagSlowdown.get(dgId));
 
             }
         }
@@ -192,42 +196,40 @@ public class MainEnsemble {
         outPlanDetails.close();
 
 
-        if(validate){
+        if (validate) {
             System.out.println("Running sims");
             SimEnginge simeng = new SimEnginge();
-            for (Plan p:ensemblePlans){
+            for (Plan p : ensemblePlans) {
                 simeng.execute(p);
             }
 
         }
 
 
-        }
+    }
 
 
-
-        //TODO: Run the simulation to validate the results for the space of solutions
-   // }
+    //TODO: Run the simulation to validate the results for the space of solutions
+    // }
 
 
     public static SolutionSpace execute(DAG graph, boolean prune, String method, String rankMethod,
                                         MultiplePlotInfo mpinfo, String toprint, StringBuilder sbOut,
                                         SolutionSpace combined, String type, Boolean multiObjective, Integer pruning_k,
-                                        int constraint_mode, double money_constraint, long time_constraint){
+                                        int constraint_mode, double money_constraint, long time_constraint) {
         SolutionSpace space = new SolutionSpace();
 
         Cluster cluster = new Cluster();
 
         Scheduler sched;
         //  if(type.equals("multiple"))
-       // int pruning_k = 10;
+        // int pruning_k = 10;
         //method="moheft";
-        if(rankMethod.equals("moheft")) {
+        if (rankMethod.equals("moheft")) {
             sched = new Moheft(graph, cluster, pruning_k);
-        }
-        else
-        sched = new hhdsEnsemble(graph,cluster,prune,method, rankMethod, multiObjective, pruning_k, constraint_mode,
-        money_constraint, time_constraint);//"dagMerge";//commonEntry:default, perDag, dagMerge
+        } else
+            sched = new hhdsEnsemble(graph, cluster, prune, method, rankMethod, multiObjective, pruning_k, constraint_mode,
+                    money_constraint, time_constraint);//"dagMerge";//commonEntry:default, perDag, dagMerge
         //  else
         //    sched = new hhds(graph,cluster,prune,method);
 
@@ -247,21 +249,19 @@ public class MainEnsemble {
 
     public static void runDAG(DAG graph, String paremetersToPrint, String type, ArrayList<Plan> hhdsPlans,
                               String rankMethod, boolean multiObjective, Integer pruning_k, int constraint_mode,
-                              double money_constraint, long time_constraint)
-    {
+                              double money_constraint, long time_constraint) {
 
         StringBuilder sbOut = new StringBuilder();
 
-        sbOut.append("Running "+type+" "+paremetersToPrint+ " Pareto, Moheft").append("\n");
+        sbOut.append("Running " + type + " " + paremetersToPrint + " Pareto, Moheft").append("\n");
 
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
 
         SolutionSpace combined = new SolutionSpace();
-        SolutionSpace paretoToCompare = execute(graph,true,"Knee", rankMethod, mpinfo,"Hetero",
-                sbOut,combined, type, multiObjective, pruning_k, constraint_mode, money_constraint, time_constraint);
+        SolutionSpace paretoToCompare = execute(graph, true, "Knee", rankMethod, mpinfo, "Hetero",
+                sbOut, combined, type, multiObjective, pruning_k, constraint_mode, money_constraint, time_constraint);
 
         hhdsPlans.addAll(paretoToCompare.results);
-
 
 
         String addToFilename = "_NPRUNE_";
@@ -271,11 +271,11 @@ public class MainEnsemble {
 
         System.out.println("paretoDone");
 
-  //      Cluster clusterM = new Cluster();
+        //      Cluster clusterM = new Cluster();
 
         // Scheduler schedM = new Moheft(graph, clusterM);
 
-   //     SolutionSpace solutionsM = new SolutionSpace();
+        //     SolutionSpace solutionsM = new SolutionSpace();
 
 //        if(moheft) {
 //
@@ -310,9 +310,8 @@ public class MainEnsemble {
 
         sbOut.append("nodes " + graph.getOperators().size() + " edges " + graph.sumEdges()).append("\n");
         sbOut.append(paremetersToPrint + "  sumDataGB " + (graph.sumdata_B / 1073741824)).append("\n");
-        sbOut.append("pareto " + type + " time(sec) -> " + paretoToCompare.optimizationTime_MS/1000).append("\n");
+        sbOut.append("pareto " + type + " time(sec) -> " + paretoToCompare.optimizationTime_MS / 1000).append("\n");
         //  sbOut.append("moheft " + type + " time(sec) -> " + solutionsM.optimizationTime_MS / 1000).append("\n");
-
 
 
 //    combined.computeSkyline(false);
@@ -381,10 +380,10 @@ public class MainEnsemble {
         double ccr = graph.computeCCR();
 
         String filesname =
-                type +addToFilename+
-                        "___"+paremetersToPrint.replace(" ","_")+
-                        "_sumDataGB_"+ (graph.sumdata_B / 1073741824)+"_ccr_"+ccr+"__"+
-                        (new java.util.Date()).toString().replace(" ","_");
+                type + addToFilename +
+                        "___" + paremetersToPrint.replace(" ", "_") +
+                        "_sumDataGB_" + (graph.sumdata_B / 1073741824) + "_ccr_" + ccr + "__" +
+                        (new java.util.Date()).toString().replace(" ", "_");
 
 
         legendInfo.add(new Pair<String, Double>("data/comp (ccr)", ccr));
@@ -416,7 +415,6 @@ public class MainEnsemble {
 //                }
 
 
-
     }
 
     private static void executeHS(DAG graph, boolean prune, String method, MultiplePlotInfo mpinfo,
@@ -426,13 +424,13 @@ public class MainEnsemble {
 
         Cluster cluster = new Cluster();
 
-        Scheduler sched = new paretoHomogenSmall(graph,cluster,prune,method);
+        Scheduler sched = new paretoHomogenSmall(graph, cluster, prune, method);
 
         space = sched.schedule();
 
         sbOut.append(space.toString());
 
-        mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+        mpinfo.add(toprint + "(" + space.size() + ") " + space.optimizationTime_MS, space.results);
 
         combined.addAll(space);
 
@@ -445,44 +443,46 @@ public class MainEnsemble {
 
         Cluster cluster = new Cluster();
 
-        Scheduler sched = new paretoHomogenLarge(graph,cluster,prune,method);
+        Scheduler sched = new paretoHomogenLarge(graph, cluster, prune, method);
 
         space = sched.schedule();
 
         sbOut.append(space.toString());
 
-        mpinfo.add(toprint+"("+space.size()+") "+space.optimizationTime_MS,space.results);
+        mpinfo.add(toprint + "(" + space.size() + ") " + space.optimizationTime_MS, space.results);
 
         combined.addAll(space);
 
 
     }
 
-    private static void addDistanceToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare,ArrayList<Pair<String, Double>> legendInfo) {
+    private static void addDistanceToLegend(SolutionSpace solutionsM, SolutionSpace paretoToCompare, ArrayList<Pair<String, Double>> legendInfo) {
 
         double disM = calculateRangeDistance(solutionsM);
         double disP = calculateRangeDistance(paretoToCompare);
-        legendInfo.add(new Pair<String,Double>("disRangeMoheft",disM));
-        legendInfo.add(new Pair<String,Double>("disRangePareto",disP));
-        legendInfo.add(new Pair<String,Double>("disRangeComparison (+)",disM-disP));
+        legendInfo.add(new Pair<String, Double>("disRangeMoheft", disM));
+        legendInfo.add(new Pair<String, Double>("disRangePareto", disP));
+        legendInfo.add(new Pair<String, Double>("disRangeComparison (+)", disM - disP));
 
     }
+
     private static double calculateRangeDistance(SolutionSpace space) {
-        double range = calculateEuclidean(space.getMaxCostPlan(),space.getMinCostPlan());
+        double range = calculateEuclidean(space.getMaxCostPlan(), space.getMinCostPlan());
         double sum = 0.0;
         Collections.sort(space.results, new Comparator<Plan>() {
-            @Override public int compare(Plan o1, Plan o2) {
-                return Double.compare(o1.stats.money,o2.stats.money);
+            @Override
+            public int compare(Plan o1, Plan o2) {
+                return Double.compare(o1.stats.money, o2.stats.money);
             }
         });
-        for(int i=0;i<space.size()-1;++i){
-            sum += calculateEuclidean(space.results.get(i+1), space.results.get(i));
+        for (int i = 0; i < space.size() - 1; ++i) {
+            sum += calculateEuclidean(space.results.get(i + 1), space.results.get(i));
         }
-        double avg = sum/(space.size()-1);
+        double avg = sum / (space.size() - 1);
 
         sum = 0.0;
-        for(int i=0;i<space.size()-1;++i){
-            sum += ( Math.abs( calculateEuclidean(space.results.get(i+1), space.results.get(i))  - avg))/range;
+        for (int i = 0; i < space.size() - 1; ++i) {
+            sum += (Math.abs(calculateEuclidean(space.results.get(i + 1), space.results.get(i)) - avg)) / range;
         }
 
         return sum;
@@ -586,10 +586,10 @@ public class MainEnsemble {
 //
 //    }
 
-    public static double calculateEuclidean(Plan a,Plan b){
+    public static double calculateEuclidean(Plan a, Plan b) {
         double x = a.stats.runtime_MS - b.stats.runtime_MS;
         double y = a.stats.money - b.stats.money;
-        return Math.sqrt((x*x)+(y*y));//or Math.pow(x, 2)+ Math.pow(y, 2)
+        return Math.sqrt((x * x) + (y * y));//or Math.pow(x, 2)+ Math.pow(y, 2)
     }
 
 //    private static DAG runDax(boolean jar, String file, int mulTime, int mulData, ArrayList<Plan> plans, String rankMethod, boolean multiObjective) {
@@ -978,7 +978,6 @@ public class MainEnsemble {
 //    }
 
 
-
 //    private static void runOneMultipleHALF(boolean jar,String file, int mt, int md){
 //        DAG graph = new DAG();
 //        DAG tmpGraph = null;
@@ -1035,16 +1034,13 @@ public class MainEnsemble {
 //    }
 
 
-
-
-
-    private static DAG runMultipleFlows(boolean jar,ArrayList<Triple<String,Integer,Integer>> flowsandParasms, ArrayList<Plan> plans,
+    private static DAG runMultipleFlows(boolean jar, ArrayList<Triple<String, Integer, Integer>> flowsandParasms, ArrayList<Plan> plans,
                                         String rankMethod, boolean multiObjective, int pruning_k, int constraint_mode,
-                                        double money_constraint, long time_constraint){
+                                        double money_constraint, long time_constraint) {
 
         System.out.println("runinng multFLow");
-        for(Triple<String,Integer,Integer> tr: flowsandParasms){
-            System.out.println(tr.a+" "+tr.b+" "+tr.c);
+        for (Triple<String, Integer, Integer> tr : flowsandParasms) {
+            System.out.println(tr.a + " " + tr.b + " " + tr.c);
         }
 
         DAG graph = new DAG();
@@ -1052,26 +1048,26 @@ public class MainEnsemble {
         ArrayList<DAG> graphs = new ArrayList<>();
 
         try {
-            int ensembleSize=flowsandParasms.size();
-            Long dagId=0L;
-            int did=0;
-            for(Triple<String,Integer,Integer> p: flowsandParasms) {
+            int ensembleSize = flowsandParasms.size();
+            Long dagId = 0L;
+            int did = 0;
+            for (Triple<String, Integer, Integer> p : flowsandParasms) {
                 dagId++;
                 did++;
-                if(p.a.contains("lattice") || p.a.contains("Lattice")){
+                if (p.a.contains("lattice") || p.a.contains("Lattice")) {
 
                     double z = 1.0;
                     double randType = 0.0;
-                    double[] runTime = {0.2,0.4,0.6,0.8,1.0};
+                    double[] runTime = {0.2, 0.4, 0.6, 0.8, 1.0};
                     double[] cpuUtil = {1.0};
                     double[] memory = {0.3};
-                    double[] dataout = {0.2,0.4,0.6,0.8,1.0};
+                    double[] dataout = {0.2, 0.4, 0.6, 0.8, 1.0};
 
                     RandomParameters
                             params = new RandomParameters(z, randType, runTime, cpuUtil, memory, dataout);
 
-                    graphs.add(LatticeGenerator.createLatticeGraph(p.b,p.c,params,0, RuntimeConstants.quantum_MS));
-                }else {
+                    graphs.add(LatticeGenerator.createLatticeGraph(p.b, p.c, params, 0, RuntimeConstants.quantum_MS));
+                } else {
 
                     PegasusDaxParser parser = new PegasusDaxParser(p.b, p.c);
                     if (jar) {
@@ -1086,16 +1082,15 @@ public class MainEnsemble {
             e.printStackTrace();
         }
 
-        for(DAG g:graphs){
-            HashMap<Long,Long> OldIdToNewId = new HashMap<>();
+        for (DAG g : graphs) {
+            HashMap<Long, Long> OldIdToNewId = new HashMap<>();
             graph.add(g, OldIdToNewId);
             graph.superDAG.addSubDAG(g, OldIdToNewId);
             //graphMerged.addSubDAG(g);
         }
 
 
-
-        runDAG(graph," multipleFlows +sumdata:"+graph.sumdata_B /1073741824,"multiple", plans,
+        runDAG(graph, " multipleFlows +sumdata:" + graph.sumdata_B / 1073741824, "multiple", plans,
                 rankMethod, multiObjective, pruning_k, constraint_mode, money_constraint, time_constraint);
 
 //            ArrayList <Long> minTime = new ArrayList<>();
@@ -1117,15 +1112,13 @@ public class MainEnsemble {
     }
 
 
-
-
     private static String createDir(String basePath, String dirName) {
         File dir = new File(basePath, dirName);
         if (!dir.mkdirs()) {
-            System.out.print("existing DIR "+basePath+ " "+dirName);
+            System.out.print("existing DIR " + basePath + " " + dirName);
             //System.exit(1);
         }
-        return dir.getAbsolutePath()+"/";
+        return dir.getAbsolutePath() + "/";
     }
 
 }

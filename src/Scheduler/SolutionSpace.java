@@ -804,40 +804,24 @@ public class SolutionSpace implements Iterable<Plan> {
     public void computeSkyline(boolean pruneEnabled, int k, boolean keepWhole, String method, boolean multi,
                                boolean partialSolution, int constraint_mode, double money_constraint, long time_constraint ){
 
-//        Plan maxFairnessBeforeConstrains = getMinUnfairnessPlan(partialSolution);
-        //before skyline, first remove the plans that do not meet the constraints in case of mode 1 or 2
-//        if(constraint_mode==1 || constraint_mode==2)
-//            keepPlanWithinConstraints(money_constraint, time_constraint);
-
-        ArrayList<Plan> skyline = getSkyline(multi, partialSolution);
-        Plan maxFairnessBeforeConstrains = getMinUnfairnessPlan(partialSolution);
+        ArrayList<Plan> skyline = new ArrayList<>();
         if (constraint_mode == 1) {
             // return the schedule that maximizes fairness given the constraints.
-            // If no such plan exists then the maximum fairness plan is returned.
             HashSet<Plan> retset  = new HashSet<>();
             keepPlanWithinConstraints(money_constraint, time_constraint);
-            if (results.size() < 1) {
-                // if no plan statisfies the constraints then add the max fairness plan.
-                retset.add(maxFairnessBeforeConstrains);
-            } else {
+            if (results.size() > 0) {
                 retset.add(getMinUnfairnessPlan(partialSolution));
             }
             this.results.clear();
             this.results.addAll(retset);
             return;
         } else if (constraint_mode == 2) {
-            // find all plans that statisfy the constratins and then use pruning.
-            // if no plan satisfies the constraint the  maximum fairness plan is returned.
+            // find all plans that satisfy the constraints and then use pruning.
             HashSet<Plan> retset  = new HashSet<>();
             keepPlanWithinConstraints(money_constraint, time_constraint);
-            retset.addAll(this.results);
-            if (results.size() < 1) {
-                // if no plan statisfies the constraints then add the max fairness plan.
-                retset.add(maxFairnessBeforeConstrains);
-            }
-            this.results.clear();
-            this.results.addAll(retset);
         }
+        // the rest of the code works on the skyline
+        skyline = getSkyline(multi, partialSolution);
 
         if(!pruneEnabled){
 
