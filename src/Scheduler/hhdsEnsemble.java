@@ -97,7 +97,7 @@ public class hhdsEnsemble implements Scheduler {
                         ArrayList<containerType> cTypes = new ArrayList<>();
                         cTypes.add(cType);
 
-                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes));
+                        skylinePlans_DEC.addAll(this.createAssignments("decreasing", cTypes, true));
                         //                    plotPlans("dec",skylinePlans);
                         //                    System.out.println("s1 "+skylinePlans.size());
 
@@ -105,7 +105,7 @@ public class hhdsEnsemble implements Scheduler {
                         ArrayList<containerType> cTypes = new ArrayList<>();
                         cTypes.add(cType);
 
-                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes));
+                        skylinePlans_INC.addAll(this.createAssignments("increasing", cTypes, true));
                         //                    plotPlans("inc",skylinePlans);
                         //                    System.out.println("s2 "+skylinePlans.size());
                     } else {
@@ -114,7 +114,7 @@ public class hhdsEnsemble implements Scheduler {
 
 
                         skylinePlans_INCDEC
-                                .addAll(this.createAssignments("increasing/decreasing", cTypes));
+                                .addAll(this.createAssignments("increasing/decreasing", cTypes, true));
                         //                    plotPlans("inc,dec",skylinePlans);
                         //                    System.out.println("s3 "+skylinePlans.size());
                     }
@@ -140,7 +140,7 @@ public class hhdsEnsemble implements Scheduler {
                 ArrayList<containerType> cTypes = new ArrayList<>();
                 cTypes.add(cType);
 
-                skylinePlans_INCDEC.addAll(this.createAssignments("increasing", cTypes));
+                skylinePlans_INCDEC.addAll(this.createAssignments("increasing", cTypes, true));
 
             }
 
@@ -154,9 +154,10 @@ public class hhdsEnsemble implements Scheduler {
         paretoPlans.addAll(skylinePlans.results);
 
         // compute the skyline for all the homogeneous plans
+        System.out.println("After homo: " + paretoPlans.size());
         paretoPlans.computeSkyline(pruneEnabled, homoPlanstoKeep, false, PruneMethod, multi,
-                false, constraint_mode, money_constraint, time_constraint);
-
+                false, 0, money_constraint, time_constraint);
+        System.out.println("After homo+computeskyline: " + paretoPlans.size());
         mpinfo.add("pareto", paretoPlans.results);
 
         long homoEnd = System.currentTimeMillis();
@@ -179,24 +180,34 @@ public class hhdsEnsemble implements Scheduler {
         }
 
         paretoPlans.clear();
+        space.smallPrint();
 
-        if (heteroEnabled)
+        if (heteroEnabled) {
             paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
+            System.out.println("After hetero: " + paretoPlans.size());
+        }
 
-        System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
+//        System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
 
         paretoPlans.addAll(skylinePlans);
 
         space.addAll(paretoPlans);
 
-
         long endCPU_MS = System.currentTimeMillis();
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
-
         mpinfo.add("final space", space.results);
 
-        if (constraint_mode == 1 || constraint_mode == 2) {
+        System.out.println("before final computeSkyline: " + space.size());
+        System.out.println("minmoney: "+space.getMinCostPlan().stats.money + " "+ space.getMinCostPlan().stats.runtime_MS);
+        System.out.println("mintime: "+space.getMinRuntimePlan().stats.runtime_MS + " " + space.getMinRuntimePlan().stats.money);
+
+        System.out.println("money_constraint: "+money_constraint);
+        System.out.println("time_constraint: "+time_constraint );
+
+        space.smallPrint();
+
+        if (constraint_mode == 1 || constraint_mode == 2  || constraint_mode == 3) {
             // by fixing constraint mode to 1 only one plan is returned. This happens only when constraints are applied.
             space.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, false,
                     1, money_constraint, time_constraint);
@@ -204,7 +215,8 @@ public class hhdsEnsemble implements Scheduler {
             space.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, false,
                     0, money_constraint, time_constraint);
         }
-
+        System.out.println("After final computeSkyline: " + space.size());
+        space.smallPrint();
         return space;
 
     }
@@ -403,7 +415,7 @@ public class hhdsEnsemble implements Scheduler {
             for (final Plan plan : plansInner) {                                                                         //for every plan
                 innerloop++;
                 LinkedList<Long> planContainersTobeModified = new LinkedList<>();
-                System.out.println(loop + ": plan" + innerloop);
+//                System.out.println(loop + ": plan" + innerloop);
                 ArrayList<Long> opSortedBySlack = new ArrayList<>();
                 //compute avg slack per container/VM
 
@@ -640,8 +652,10 @@ public class hhdsEnsemble implements Scheduler {
 
     }
 
-    private SolutionSpace createAssignments(String vmUpgrading, ArrayList<containerType> cTypes) {
+    private SolutionSpace createAssignments(String vmUpgrading, ArrayList<containerType> cTypes, boolean homo) {
 
+        int constraint_mode_local = constraint_mode;
+        if (homo) { constraint_mode_local = 0; }
 //        System.out.println("createass start");
         Plan firstPlan = new Plan(graph, cluster);
         firstPlan.vmUpgrading = vmUpgrading;
@@ -666,7 +680,7 @@ public class hhdsEnsemble implements Scheduler {
             // Get the most expensive operator from the ready ones
             long nextOpID = nextOperator(readyOps);
             Operator nextOp = graph.getOperator(nextOpID);
-            System.out.println(cTypes.get(0).name + ". Next:" + nextOpID + ". Assigned " + opsAssigned + " ops");
+//            System.out.println(cTypes.get(0).name + ". Next:" + nextOpID + ". Assigned " + opsAssigned + " ops");
 //               System.out.println("scheduling "+nextOpID + " "+readyOps.toString());
 
             allCandidates.clear();
@@ -685,7 +699,7 @@ public class hhdsEnsemble implements Scheduler {
             plans = new SolutionSpace();
             plans.addAll(allCandidates.results);
             plans.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, true,
-                    constraint_mode, money_constraint, time_constraint);
+                    0, money_constraint, time_constraint);
             if (plans.isEmpty()) { return plans; }
 
             findNextReadyOps(readyOps, opsAssignedSet, nextOpID);

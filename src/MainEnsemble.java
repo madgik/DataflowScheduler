@@ -49,6 +49,7 @@ public class MainEnsemble {
         // 0 -> no constraints
         // 1 -> keep one plan after every scheduling step. This plan maximizes fairness and satisfies the money and time constraints
         // 2 -> keep one plan after scheduling is completed. At every intermediate step all the plan that satisfy the constraints are preserved.
+        // 3 -> work as mode zero but in the last step after hetero plans are produced return one plan
         Double money_constraint = 0.0;
         Long time_constraint = 0L;
 
@@ -78,7 +79,7 @@ public class MainEnsemble {
         pathOut = dir;// "./ensembles/LigoEnsemble4MixedSizes/";//userPref
 
         createDir(pathPlot, "");
-
+        String OS = System.getProperty("os.name").toLowerCase();
         if (savePlot) {
             System.out.println("saving plots to " + pathPlot);
         }
@@ -101,6 +102,12 @@ public class MainEnsemble {
             resourcePath = "/home/vaggelis/jcfiles/jc2018/";
 
         }
+        if (OS.indexOf("mac") >= 0) {
+            jar = true;
+            jarpath = "/Users/chronis/code/MyScheduler/resources/";
+            resourcePath = "/Users/chronis/code/MyScheduler/resources/";
+        }
+
         ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
 
         PrintWriter outEnsemble = null;

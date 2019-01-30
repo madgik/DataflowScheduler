@@ -1,6 +1,7 @@
 package Scheduler;
 
 import utils.Pair;
+import utils.Triple;
 
 import java.util.*;
 
@@ -83,6 +84,20 @@ public class SolutionSpace implements Iterable<Plan> {
         return cost;
     }
 
+
+
+    public Plan getMinRuntimePlan(){
+        long runtime=Long.MAX_VALUE;
+        Plan pp = null;
+        for(Plan p:results){
+            if (p.stats.runtime_MS < runtime) {
+                runtime = p.stats.runtime_MS;
+                pp = p;
+            }
+        }
+        return pp;
+    }
+
     public Plan getSlowest(){
         this.sort(true, false);
         return results.get(results.size()-1);
@@ -158,10 +173,6 @@ public class SolutionSpace implements Iterable<Plan> {
     }
 
 
-
-
-
-
 //    public double getMinUnfairness(boolean partialSolution){
 //        double unfairness=Double.MAX_VALUE;
 //        for(Plan p:results){
@@ -191,9 +202,27 @@ public class SolutionSpace implements Iterable<Plan> {
 //        return unfairness;
 //    }
 
-
     public void print() {
         System.out.println(this.toString());
+    }
+
+    public void smallPrint() {
+        ArrayList<Triple<Long, Double, Double>> mtpairs = new ArrayList<>();
+        for (Plan p: results){
+            mtpairs.add(new Triple<>(p.stats.runtime_MS, p.stats.money, p.stats.unfairness));
+        }
+        Collections.sort(mtpairs, new Comparator<Triple<Long, Double, Double>>() {
+            @Override
+            public int compare(Triple<Long, Double, Double> o1, Triple<Long, Double, Double> o2) {
+                return Long.compare(o1.a, o2.a);
+            }
+        });
+        System.out.println("----------------");
+        System.out.println(" Time  ----   Money");
+        for (Triple<Long,Double, Double> p : mtpairs){
+            System.out.println(p.a + " -- " + p.b + " --- " + p.c);
+        }
+        System.out.println("----------------");
     }
 
 
