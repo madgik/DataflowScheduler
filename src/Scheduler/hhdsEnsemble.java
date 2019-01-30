@@ -150,8 +150,8 @@ public class hhdsEnsemble implements Scheduler {
 
         }
 
-        for(int pc=0; pc<skylinePlans.results.size(); pc++)
-            System.out.println("plan " + skylinePlans.results.get(pc).stats.money+" "+skylinePlans.results.get(pc).stats.runtime_MS );
+//        for(int pc=0; pc<skylinePlans.results.size(); pc++)
+//            System.out.println("plan " + skylinePlans.results.get(pc).stats.money+" "+skylinePlans.results.get(pc).stats.runtime_MS );
 
         paretoPlans.addAll(skylinePlans.results);
 
