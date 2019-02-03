@@ -3,10 +3,7 @@
  */
 package utils;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.util.Properties;
 
 /**
  *
@@ -44,76 +41,6 @@ public class RandomParameters implements Serializable {
         this.memoryDist = new Zipf(this.memory.length, z);
         this.dataoutDist = new Zipf(this.dataout.length, z);
 
-        //        log.debug("runTime");
-        //        for(double n : runTime) {
-        //            log.debug(n);
-        //        }
-        //
-        //        log.debug("cpuUtil");
-        //        for(double n : cpuUtil) {
-        //            log.debug(n);
-        //        }
-        //
-        //        log.debug("memory");
-        //        for(double n : memory) {
-        //            log.debug(n);
-        //        }
-        //
-        //        log.debug("dataout");
-        //        for(double n : dataout) {
-        //            log.debug(n);
-        //        }
     }
 
-    public void resetRandom(long seed) {
-        this.runTimeDist = new Zipf(this.runTime.length, z, seed);
-        this.cpuUtilDist = new Zipf(this.cpuUtil.length, z, seed);
-        this.memoryDist = new Zipf(this.memory.length, z, seed);
-        this.dataoutDist = new Zipf(this.dataout.length, z, seed);
-    }
-
-    @SuppressWarnings("static-access")
-    public static RandomParameters parseFile(String url)
-        throws IOException {
-        Properties properties = new Properties();
-        properties.load(new URL(url).openStream());
-
-        //        for(Object prop : properties.keySet()) {
-        //            log.debug(prop);
-        //        }
-
-        double z = Double.parseDouble(properties.getProperty("z"));
-        double operatorType = Double.parseDouble(properties.getProperty("type"));
-
-        String[] runtimeStr = properties.getProperty("time").split(",");
-        double[] runTime = new double[runtimeStr.length];
-        for (int i = 0; i < runTime.length; i++) {
-            runTime[i] = Double.parseDouble(runtimeStr[i]);
-        }
-
-        String[] cpuUtilStr = properties.getProperty("cpu").split(",");
-        double[] cpuUtil = new double[cpuUtilStr.length];
-        for (int i = 0; i < cpuUtil.length; i++) {
-            cpuUtil[i] = Double.parseDouble(cpuUtilStr[i]);
-        }
-
-        String[] memoryStr = properties.getProperty("mem").split(",");
-        double[] memory = new double[memoryStr.length];
-        for (int i = 0; i < memory.length; i++) {
-            memory[i] = Double.parseDouble(memoryStr[i]);
-        }
-
-        String[] dataoutStr = properties.getProperty("data").split(",");
-        double[] dataout = new double[dataoutStr.length];
-        for (int i = 0; i < dataout.length; i++) {
-            dataout[i] = Double.parseDouble(dataoutStr[i]);
-        }
-
-        RandomParameters parameters = new RandomParameters(
-            z, operatorType,
-            runTime, cpuUtil,
-            memory, dataout);
-
-        return parameters;
-    }
 }

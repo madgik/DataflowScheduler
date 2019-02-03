@@ -14,11 +14,4 @@ public class Edge {
         data =f;
     }
 
-//    public Edge(long fr,long t,String fn){
-//        from=fr;
-//        to=t;
-//        filename=fn;
-//    }
-
-
 }

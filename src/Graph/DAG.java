@@ -7,8 +7,6 @@ import Scheduler.containerType;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static utils.random.randomInRange;
-
 
 /**
  * Created by johnchronis on 2/18/17.
@@ -40,12 +38,6 @@ public class DAG {
 
     public DAGmerged superDAG;
 
-  //  public Double crPathLength;
-
-//    public  HashMap<String,Data> nameToFile;
-//    public  HashMap<String,Long> filenameToFromOpId;
-
-
     public DAG(){
         dagId = 0L;
         name="";
@@ -53,10 +45,8 @@ public class DAG {
         edges = new HashMap<>();
         reverseEdges = new HashMap<>();
         edgesMap = new HashMap<>();
-//        nameToFile = new HashMap<>();
         nextId = 0L;
         operatorsList = new ArrayList<>();
-//        filenameToFromOpId = new HashMap<>();
         sumdata_B = 0;
         superDAG = new DAGmerged();
     }
@@ -67,10 +57,8 @@ public class DAG {
         edges = new HashMap<>();
         reverseEdges = new HashMap<>();
         edgesMap = new HashMap<>();
-//        nameToFile = new HashMap<>();
         nextId = 0L;
         operatorsList = new ArrayList<>();
-//        filenameToFromOpId = new HashMap<>();
         sumdata_B = 0;
         dagId = id;
         superDAG = new DAGmerged();
@@ -81,7 +69,6 @@ public class DAG {
 
 
     public Long addOperator(Operator op){
-//        System.out.println("opccreated "+nextId+" "+op.resourcesRequirements.runtime_MS);
 
         op.setId(nextId);
         operators.put(nextId,op);
@@ -103,15 +90,9 @@ public class DAG {
     }
 
     public void addEdge(Edge e){
-//        if(!edges.containsKey(from)){
-//            edges.put(from,new ArrayList<Long>());
-//        }
+
         edges.get(e.from).add(e);
         edgesMap.get(e.from).put(e.to,e);
-
-//        if(!reverseEdges.containsKey(to)){
-//            reverseEdges.put(to,new ArrayList<Long>());
-//        }
         reverseEdges.get(e.to).add(e);
 
     }
@@ -170,7 +151,6 @@ public class DAG {
     }
 
     public DAG add(DAG g, HashMap<Long,Long> OldIdToNewId){
-       // HashMap<Long,Long> OldIdToNewId = new HashMap<>();
 
         Long oldid,newid;
         for(Operator op:g.getOperators()){
@@ -179,13 +159,10 @@ public class DAG {
             newop.setDAGId(g.dagId);
             newid = this.addOperator(newop);
             OldIdToNewId.put(oldid,newid);
-           // System.out.println("added op " +oldid + " as " + newid);
         }
 
         for(ArrayList<Edge> ae: g.edges.values()){
             for(Edge e:ae){
-
-         //       System.out.println("added edge " +e.from + " " + e.to + " as" + OldIdToNewId.get(e.from) + " to " + OldIdToNewId.get(e.to));
                 this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
             }
         }
@@ -195,120 +172,6 @@ public class DAG {
     }
 
     long midPoint = -1;
-
-    public DAG addHalfPoint(DAG g) {
-
-        long minOldIdNewG;
-
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
-
-        Long oldid,newid;
-        for(Operator op:g.getOperators()){
-            oldid = op.getId();
-            newid = this.addOperator(op);
-            Operator newop = new Operator(op.name,op.resourcesRequirements);
-            newid = this.addOperator(newop);        }
-
-        for(ArrayList<Edge> ae: g.edges.values()){
-            for(Edge e:ae){
-                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
-            }
-        }
-
-        if(midPoint != -1) {
-            midPoint = OldIdToNewId.get(g.operatorsList.size() / 2);
-            Data d = new Data("", 0);
-            this.addEdge(new Edge(midPoint, OldIdToNewId.get(0), d));
-        }
-        this.sumdata_B +=g.sumdata_B;
-        return this;
-
-    }
-
-    public DAG addRandomPoint(DAG g) {
-        long randomId = randomInRange(0,Math.toIntExact(g.nextId-1));
-        long random = g.operators.get(randomId).getId();
-
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
-
-        Long oldid,newid;
-        for(Operator op:g.getOperators()){
-            oldid = op.getId();
-            Operator newop = new Operator(op.name,op.resourcesRequirements);
-            newid = this.addOperator(newop);
-            OldIdToNewId.put(oldid,newid);
-        }
-
-        for(ArrayList<Edge> ae: g.edges.values()){
-            for(Edge e:ae){
-                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
-            }
-        }
-
-        if(midPoint != -1) {
-            Data d = new Data("", 0);
-            this.addEdge(new Edge(random, OldIdToNewId.get(0), d));
-        }
-        this.sumdata_B +=g.sumdata_B;
-        return this;
-    }
-
-    public DAG addPoisson(DAG g) {
-
-
-
-        long randomId = randomInRange(0,Math.toIntExact(g.nextId-1));
-        long random = g.operators.get(randomId).getId();
-
-        HashMap<Long,Long> OldIdToNewId = new HashMap<>();
-
-        Long oldid,newid;
-        for(Operator op:g.getOperators()){
-            oldid = op.getId();
-            Operator newop = new Operator(op.name,op.resourcesRequirements);
-            newid = this.addOperator(newop);
-            OldIdToNewId.put(oldid,newid);
-        }
-
-        for(ArrayList<Edge> ae: g.edges.values()){
-            for(Edge e:ae){
-                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
-            }
-        }
-
-        if(midPoint != -1) {
-            Data d = new Data("", 0);
-            this.addEdge(new Edge(random, OldIdToNewId.get(0), d));
-        }
-        this.sumdata_B +=g.sumdata_B;
-        return this;
-
-    }
-
-    public DAG addEnd(DAG g, HashMap<Long,Long>  OldIdToNewId) {
-        long endPrev = g.nextId-1;
-        //HashMap<Long,Long> OldIdToNewId = new HashMap<>();
-
-        Long oldid,newid;
-        for(Operator op:g.getOperators()){
-            oldid = op.getId();
-            Operator newop = new Operator(op.name,op.resourcesRequirements);
-            newid = this.addOperator(newop);
-            OldIdToNewId.put(oldid,newid);
-        }
-
-        for(ArrayList<Edge> ae: g.edges.values()){
-            for(Edge e:ae){
-                this.addEdge(new Edge(OldIdToNewId.get(e.from),OldIdToNewId.get(e.to),e.data));
-            }
-        }
-
-        Data d = new Data("", 0);
-        this.addEdge(new Edge(endPrev, OldIdToNewId.get(0L), d));
-
-        this.sumdata_B +=g.sumdata_B;
-        return this;
-    }
 
 
     public double computeCrPathLength(containerType contTypes[]) {
@@ -320,14 +183,6 @@ public class DAG {
         TopologicalSorting topOrder = new TopologicalSorting(this);
 
         HashMap<Long, Double> rank = new HashMap<>();
-
-
-//        double wcur=0.0;
-//        for(containerType contType: contTypes)//contType.values();
-//            wcur+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
-//        int types= containerType.values().length;
-//        double w=wcur/(double)types;//average execution cost for operator op
-//
 
         int types= containerType.values().length;
 
@@ -345,9 +200,6 @@ public class DAG {
 
             crPathLength =Math.max(crPathLength, opRank);
         }
-
-    //    this.crPathLength = crPathLength;
-
         return crPathLength;
     }
 
@@ -364,7 +216,7 @@ public class DAG {
             for (Edge childEdge: this.getChildren(opId)) {
                 double comCostChild = 0.0;
                 for(Edge parentofChildEdge: this.getParents(childEdge.to)) {
-                    if(parentofChildEdge.from.equals(opId)) {// if((long)parentofChildEdge.from==(long)opId) {//
+                    if(parentofChildEdge.from.equals(opId)) {
                         comCostChild = Math.ceil(parentofChildEdge.data.size_B / RuntimeConstants.network_speed_B_MS);
                     }
                 }
@@ -377,7 +229,7 @@ public class DAG {
                 wcur+=this.getOperator(opId).getRunTime_MS()/contType.container_CPU; //TODO ji check if S or MS
             int types= containerType.values().length;
             double w=wcur/(double)types;//average execution cost for operator op
-            b_rank.put(opId, (w+maxRankChild));//b_rank.put(opId, (w+maxRankChild));
+            b_rank.put(opId, (w+maxRankChild));
             w_mean.put(opId, w);
 
         }

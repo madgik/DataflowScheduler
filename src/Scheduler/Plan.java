@@ -3,7 +3,6 @@ package Scheduler;
 import Graph.DAG;
 import Graph.Edge;
 import Graph.Operator;
-import org.apache.commons.math.stat.descriptive.rank.Max;
 import utils.Pair;
 
 import java.util.*;
@@ -22,8 +21,6 @@ public class Plan  {
     String vmUpgrading;
     public ArrayList<Long> opsMigrated = null;
 
-    public double SimpleDist = Double.MAX_VALUE;
-
     public HashMap<Long, Pair<Long, Long>> opIdtoStartEndProcessing_MS;
 
     public HashMap<Long, Long> opIdToContainerRuntime_MS; //runtime for the assigned container;
@@ -36,8 +33,6 @@ public class Plan  {
     public HashMap<Long,Long> opIdToAfterDTDuration_MS;
 
     public HashMap<Long,Stack<Long>> contIdToSortedOps = null;
-
-
 
 
     //copies the cluster
@@ -156,9 +151,7 @@ public class Plan  {
         long contFirstAvailTime_MS = cont.getFirstAvailTime_atEnd_MS();
 
         ////////////DEPENDENCIES//////////////////
-
-
-        for (Edge link : graph.getParents(opId)) {              //calculate the max(ParentFS+dtTime)
+        for (Edge link : graph.getParents(opId)) {
             long fromId = link.from;
 
             long fromOpEndTimePLUSDTTime =
@@ -169,8 +162,6 @@ public class Plan  {
         }
 
         ///////////////BRING DATA TO OPERATOR MACHINE//////////////////
-
-
         for (Edge edge : graph.getParents(opId)) {
 
             long transferTime = calculateDelayDistributedStorage(edge.from,opId,contId);//(long) Math.ceil(edge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
@@ -180,26 +171,18 @@ public class Plan  {
 
 
         ///////////////OPERATOR PROCESS TIME///////////////
-
-
         Operator op = graph.getOperator(opId);
         opProcessingDuration_MS = (int) Math.ceil(op.getRunTime_MS() / cont.contType.container_CPU);
 
         ////////////////SEND DATA TO DISTRIBUTED STORAGE ////////////////////
-
         for (Edge edge : graph.getChildren(opId)) {
             int transferTime = (int) Math.ceil(edge.data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
             afterDTDuration_MS = Math.max(afterDTDuration_MS,transferTime);
         }
 
         //////////////////INFO///////////////////////
-
-
         contOpDuration_MS = beforeDTDuration_MS + opProcessingDuration_MS + afterDTDuration_MS;
-
-
         earliestStartTime_MS = dependenciesEnd_MS;
-
         opIdToearliestStartTime_MS.put(opId, dependenciesEnd_MS);//+1);
 
 
@@ -218,8 +201,6 @@ public class Plan  {
 
                 if (  fs.end_MS-fs.start_MS >= opProcessingDuration_MS &&
                     earliestStartTime_MS + beforeDTDuration_MS <= fs.end_MS - opProcessingDuration_MS){
-//                    Math.max(fs.start_MS,earliestStartTime_MS) + opProcessingDuration_MS >= fs.end_MS ){ //if operator fits
-
                     backfilled = true;
 
                     long pushForward = 0L;
@@ -303,110 +284,6 @@ public class Plan  {
 
     }
 
-
-    public void updateSlots(Operator op, Plan plan) {
-
-
-        Long opId = op.getId();
-        HashMap <Long, Long> opLST = new HashMap<>();
-
-        LinkedList<Long> opsToUpdate = new LinkedList<>();
-        opsToUpdate.addLast(opId);
-
-        while(!opsToUpdate.isEmpty()) {
-
-            Long opIdToUpdate= opsToUpdate.removeFirst();
-
-            //add succ at vm
-            Long succId=-1L;
-            Long succStartTime=Long.MAX_VALUE;
-
-            Long predId=-1L;
-            Long predStartTime=Long.MIN_VALUE;
-
-            //TODO: use any new data structures instead to find succ/predecessor at vm
-
-            //find the successor and predecessor (if any) at the assigned vm
-            for(Long opIdNext: plan.contAssignments.keySet())
-            {
-                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a>=plan.opIdtoStartEndProcessing_MS.get(opId).a);
-                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a<=succStartTime) {
-                    succId=opIdNext;
-                    succStartTime= plan.opIdtoStartEndProcessing_MS.get(opIdNext).a;
-                }
-
-
-                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a<plan.opIdtoStartEndProcessing_MS.get(opId).a);
-                if(plan.opIdtoStartEndProcessing_MS.get(opIdNext).a>=predStartTime) {
-                    predId=opIdNext;
-                    predStartTime= plan.opIdtoStartEndProcessing_MS.get(opIdNext).a;
-                }
-            }
-
-            //add succesor at vm to the list for updating
-            if(succId>=0L)
-            opsToUpdate.add(succId);
-
-//add children to the list for updating
-            if(!graph.getChildren(opId).isEmpty())
-                for (Edge outEdge : graph.getChildren(opId)) {
-                    succId = outEdge.to;
-                    if(!opsToUpdate.contains(succId))
-                        opsToUpdate.addLast(succId);
-                }
-
-//if there is a predecessor at vm est is the finish time of the predecessor
-            Long est=0L;
-            if(predId>=0)
-                est= plan.opIdtoStartEndProcessing_MS.get(predId).b;
-
-            //update est if the op has any parents. TODO: data transfer 0 if they are assigned at the new VM after "migration"
-            for(Edge inEdge:graph.getParents(opId)){
-                predId = inEdge.from;
-                Long predEndTime = plan.opIdtoStartEndProcessing_MS.get(predId).b +
-                        plan.opIdToAfterDTDuration_MS.get(predId) +
-                        plan.opIdToBeforeDTDuration_MS.get(opId);
-                est = Math.max(predEndTime,est);
-            }
-
-            //new ctype assigned
-            containerType cType = plan.cluster.getContainer(plan.assignments.get(opId)).contType;
-            long opProcessingDuration_MS = (int) Math.ceil(op.getRunTime_MS() / cType.container_CPU);
-            plan.opIdToProcessingTime_MS.put(opId,opProcessingDuration_MS );
-            plan.opIdtoStartEndProcessing_MS.put(opId, new Pair<>(est, est+opProcessingDuration_MS));
-            //update startendstructures with data transfers
-        }
-
-    }
-
-    public Long calculateNetworkDelayBetweenOps(Long parentId, Long childId){
-        long netdelay = 0L;
-        if(assignments.get(parentId) == assignments.get(childId)){
-            return netdelay;
-        }
-        for(Edge e: graph.edges.get(parentId)){
-            if(e.to == childId){
-                netdelay =  (long) (Math.ceil(e.data.size_B / RuntimeConstants.network_speed_B_MS));
-                break;
-            }
-        }
-        return netdelay;
-    }
-
-    public long calculateNetworkDelayBetweenOps(Long parentId, Long contParentId, Long childId, Long contChildId){
-        long netdelay = 0L;
-        if(contParentId == contChildId){
-            return netdelay;
-        }
-        for(Edge e: graph.edges.get(parentId)){
-            if(e.to == childId){
-                netdelay =  (long) (Math.ceil(e.data.size_B / RuntimeConstants.network_speed_B_MS));
-                break;
-            }
-        }
-        return netdelay;
-    }
-
     public Long calculateDelayDistributedStorage(Long parentId, Long childId, Long childContId){
 
         if(!graph.edgesMap.containsKey(parentId))
@@ -421,14 +298,6 @@ public class Plan  {
         return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
     }
 
-    public Long calculateDelayDistributedStorage(Long parentId, Long childId,  Long parentContId,Long childContId){
-
-        if(childContId == parentContId){ //remove to transfer always to distributed storage
-            return 0L;
-        }
-        return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
-    }
-
     public Long calculateDelayDistributedStorage(Long parentId, Long childId){//TODO: if not parent-child set?
 
 
@@ -436,8 +305,6 @@ public class Plan  {
             return 0L;
         if( !graph.edgesMap.get(parentId).containsKey(childId))
             return 0L;
-//        if(graph.getEdge(parentId,childId)==null)
-//            return 0L;
 
         if(assignments.get(parentId) == assignments.get(childId) ){ //remove to transfer always to distributed storage
             return 0L;
@@ -445,36 +312,10 @@ public class Plan  {
         return (long) Math.ceil(graph.getEdge(parentId,childId).data.size_B / RuntimeConstants.distributed_storage_speed_B_MS);
     }
 
-
-//    @Override public int compareTo(Plan other) {  //TODO ji is this right?
-//
-////
-////        if(isMoheft){
-////            if (stats.runtime_MS == other.stats.runtime_MS) {
-////                return Double.compare(stats.money, other.stats.money);
-////            }else{
-////                return Long.compare(stats.runtime_MS, other.stats.runtime_MS);
-////            }
-////        }else{
-//            if (stats.runtime_MS == other.stats.runtime_MS) {
-//                if (Math.abs(stats.money - other.stats.money) < RuntimeConstants.precisionError) {
-//                    return Double.compare(stats.contUtilization, other.stats.contUtilization);//return Long.compare(stats.quanta, other.stats.quanta);
-//                    //return Long.compare(stats.containersUsed, other.stats.containersUsed);//TODO: if containers number the same add a criterion e.g fragmentation, #idle slots, utilization etc
-//                }
-//                return Double.compare(stats.money, other.stats.money);
-//            } else {
-//                return Long.compare(stats.runtime_MS, other.stats.runtime_MS);
-//            }
-////        }
-//
-//    }
-
     @Override public String toString() {
 
         StringBuilder i = new StringBuilder();
         StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(i, Locale.US);
-
         String.format("%10d %06.2f", stats.runtime_MS, stats.money );
 
 
@@ -483,13 +324,9 @@ public class Plan  {
 
         sb.append(String.format("%10d %06.2f", stats.runtime_MS, stats.money));
 
-
-        long usedTimeSum =0;
-        long freeTimeSum = 0;
         double minUtil = 10.0;
         double maxUtil = -5.0;
         double AvgUtil= 0;
-        double UtilQuantum = 0;
         int countfs =0;
         double AvgQUtil = 0;
         double MinQUtil = 10.0;
@@ -526,7 +363,6 @@ public class Plan  {
 
             for(Slot s: c.freeSlots){
                 countfs++;
-                freeTimeSum+=s.end_MS - s.start_MS;
                 ftime += s.end_MS - s.start_MS;
 
             }
@@ -536,7 +372,6 @@ public class Plan  {
             long o=0;
 
             for(Slot s: c.opsschedule){
-                usedTimeSum+= s.end_MS - s.start_MS;
                 o += s.end_MS - s.start_MS;
 
             }
@@ -596,48 +431,9 @@ public class Plan  {
 
         sb.append(String.format("%n"));
 
-        //        System.out.println(i.toString());
-        //        System.out.println("------Plan Info END----");
 
         return sb.toString();
     }
-
-    public void printInfo() {
-        System.out.println(this.toString());
-    }
-
-
-    public void printAssignments() {
-        for(Long contId: this.contAssignments.keySet()) {
-            System.out.println("cont " + contId + ": " + this.contAssignments.get(contId));
-        }
-
-        for(Long opId: opIdToProcessingTime_MS.keySet()) {
-            System.out.println("op " + opId + " (" + (opIdtoStartEndProcessing_MS.get(opId).b - opIdtoStartEndProcessing_MS.get(opId).a) + ") [ " + opIdtoStartEndProcessing_MS.get(opId).a + " - " + opIdtoStartEndProcessing_MS.get(opId).b + " ]");
-
-        }
-
-    }
-
-    public double getScore(Double alphaPar, Double mCost, Double mTime, Double k) {
-        return (1.0 - alphaPar) * stats.money + alphaPar * (stats.runtime_MS);
-    }
-
-    public void calculateOrderingofOperatorsInContainers() {
-        if(this.contIdToSortedOps == null) {
-            contIdToSortedOps = new HashMap<>();
-            for (Container c : cluster.containers.values()) {
-                contIdToSortedOps.put(c.id, new Stack<Long>());
-                Collections.sort(c.opsschedule);
-                Collections.reverse(c.opsschedule);
-                for (Slot s : c.opsschedule) {
-                    contIdToSortedOps.get(c.id).push(s.opId);
-                }
-            }
-
-        }
-    }
-
 
 
 

@@ -51,70 +51,27 @@ public class PegasusDaxParser {
         sumdata=0;
 
     }
-    public PegasusDaxParser(){
-        sumdata=0;
-    }
 
     public  DAG parseDax(String url, Long dagId) throws Exception {
         sumdata=0;
         DAG graph = new DAG(dagId);
         graph.name = url+multiply_by_time+"_"+multiply_by_data;
         ArrayList<Edge> edges = new ArrayList<>();
-        HashMap<Long,HashMap<Long,Edge>> fEdges = new HashMap<>();
-
-
-        ////
-        HashMap<String,Long> nameOut = new HashMap<>();
-        HashMap<String,ArrayList<Long>> nameIn = new HashMap<>();
-        HashMap<String,Long> nameToSize = new HashMap<>();
-        /////
-
-
-        //elaaaa
         HashMap<String,HashMap<String,tempFile>>  opin = new HashMap<>();
         HashMap<String,HashMap<String,tempFile>>  opout = new HashMap<>();
         HashMap<String,ArrayList<String>> optoop = new HashMap<>();
-
-
-        //////
-
-
-        int count=0;
-
-        HashMap<String,Edge> filenameToEdge = new HashMap<>();
-
-        HashMap<String, Data> filenameToFile = new HashMap<>();
         LinkedHashMap<String, Long> operatorNameMap = new LinkedHashMap<>();
-
-
-        HashMap<String,tempFile> nameTotempFile = new HashMap<>();
-        HashMap<Long,tempFile> fTotempFile = new HashMap<>();
-
-
-        LinkedHashMap<String, Data> operatorDataMap = new LinkedHashMap<>(16);
-
-        LinkedHashMap<String, LinkedHashMap<String, Integer>> operatorDataInputMap =
-            new LinkedHashMap<>(16);
-        LinkedHashMap<String, LinkedHashMap<String, Integer>> operatorDataOutputMap =
-            new LinkedHashMap<>(16);
-
-        HashMap<String, Data> inFileDataMap = new HashMap<>();
-        HashMap<String, Data> outFileDataMap = new HashMap<>();
-        HashMap<String, String> inDataOpMap = new HashMap<>();
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(url);
         doc.getDocumentElement().normalize();
 
-        Random rand = new Random();
-
         NodeList jobList = doc.getElementsByTagName("job");
         for (int s = 0; s < jobList.getLength(); s++) {
 
             double runTimeValue = 0;
-            double cpuUtilizationValue = 1.0;
-            int memoryValue = 40;
+           int memoryValue = 40;
 
             Node job = jobList.item(s);
             Element jobElement = (Element) job;
@@ -132,7 +89,6 @@ public class PegasusDaxParser {
 
             Long opid = graph.addOperator(new Operator(name,res));
             graph.getOperator(opid).setDAGId(dagId);
-//            System.out.println("opcreated "+opid+"  "+runtime_MS);
 
             Operator op = graph.getOperator(opid);
             operatorNameMap.put(name, opid);
@@ -156,33 +112,6 @@ public class PegasusDaxParser {
                 sumdata+=data_B;
 
                 String filename = useElement.getAttribute("file");
-                //                if(!filenameToFile.containsKey(filename)){
-//                    data = new Data(filename,data_B);
-//                    filenameToFile.put(filename,data);
-//                }else{
-//                    data = filenameToFile.get(filename);
-//                }
-
-//                Edge e = null;
-//                tempFile tf = null;
-//
-////                if(!filenameToEdge.containsKey(filename)) {
-////                    e = new Edge(-1, -1, new Data(filename, data_B));
-////                    filenameToEdge.put(filename,e);
-////                }else{
-////                    e = filenameToEdge.get(filename);
-////                }
-//                if(!nameTotempFile.containsKey(filename)) {
-//                    count++;
-//                    tf = new tempFile(-1, -1, data_B, filename);
-//                    nameTotempFile.put(filename,tf);
-//                }else{
-//                    tf = nameTotempFile.get(filename);
-//                }
-
-//                if(!nameToSize.containsKey(filename)){
-//                    nameToSize.put(filename,data_B);
-//                }
 
                 if (useElement.getAttribute("link").equals("output")) {
 
@@ -190,88 +119,17 @@ public class PegasusDaxParser {
                         opout.put(name,new HashMap<String, tempFile>());
                     }
                     opout.get(name).put(filename,new tempFile(null,name,data_B,filename));
-//                      tf.from = opid;
-//                    op.addInFile(filename);
-//                    data.fromOpId = opid;
                 }
                 else {
-//                    if(!nameIn.containsKey(filename)){
-//                        nameIn.put(filename,new ArrayList<Long>());
-//                    }
-//                    nameIn.get(filename).add(opid);
                     if(!opin.containsKey(name)){
                         opin.put(name,new HashMap<String, tempFile>());
                     }
                     opin.get(name).put(filename,new tempFile(name,"",data_B,filename));
-//                    tf.to = opid;
-//                    op.addOutFile(filename);
-//                    data.toOpId = opid;
                 }
 
             }
 
         }
-        //all operator added
-//        for(Data f:filenameToFile.values()){
-//            graph.addFile(f);
-//        }//add all files
-
-
-        //////cleanup files with only from or to
-
-//        HashSet<String> rmNames = new HashSet<>();
-//        for(String s:nameTotempFile.keySet()){
-//            tempFile tf = nameTotempFile.get(s);
-//            if(tf.to.equals("") || tf.from.equals("")){
-//                rmNames.add(tf.name);
-//            }
-//        }
-//        for(String n:rmNames){
-//            nameTotempFile.remove(n);
-//        }
-
-//        HashMap<Long,HashMap<Long,Long>> fTotfs = new HashMap<>();//from->to,filesize_MB
-//
-//        for(tempFile tf:nameTotempFile.values()){
-//            if(!fTotfs.containsKey(tf.from)){
-//                fTotfs.put(tf.from,new HashMap<Long,Long>());
-//            }
-//            if(!fTotfs.get(tf.from).containsKey(tf.to)){
-//                fTotfs.get(tf.from).put(tf.to,0L);
-//            }
-//            fTotfs.get(tf.from).put(tf.to, fTotfs.get(tf.from).get(tf.to)+tf.file_MB);
-//        }
-
-//        for(Long from: fTotfs.keySet()) {  //add all edges
-//            HashMap<Long,Long> innermap = fTotfs.get(from);
-//            for(Long to:innermap.keySet()){
-//                graph.addEdge(new Edge(from,to,new Data(from+"->"+to,innermap.get(to))));
-//            }
-//        }
-//
-//        graph.printEdges();
-
-        //////////////////////////////////////
-
-//        for(Edge e:filenameToEdge.values()) {  //add all edges
-//            System.out.println(e.from+" "+e.to);
-//            graph.addEdge(e);
-//        }
-
-        /////
-
-
-
-        ////////check edges from files to edges from xml/////////
-
-//        for(Edge e:filenameToEdge.values()) {
-//            fEdges.put(e.from,new HashSet<Long>());
-//        }
-//        for(Edge e:filenameToEdge.values()) {
-//            fEdges.get(e.from).add(e.to);
-//        }
-//        // Create the links
-
 
         NodeList childList = doc.getElementsByTagName("child");
         for (int c = 0; c < childList.getLength(); c++) {
@@ -283,7 +141,6 @@ public class PegasusDaxParser {
             NodeList parentList = childElement.getElementsByTagName("parent");
 
       /* Input port names */
-//            LinkedHashMap<String, Integer> inMap = operatorDataInputMap.get(to);
             for (int p = 0; p < parentList.getLength(); p++) {
                 Node parent = parentList.item(p);
                 Element parentElement = (Element) parent;
@@ -297,16 +154,6 @@ public class PegasusDaxParser {
                     optoop.put(from,new ArrayList<String>());
                 }
                 optoop.get(from).add(to);
-
-
-                //
-//                if(!fEdges.containsKey(fromOpId)){
-//                    System.out.printf("1.PROBLEM IN DAX PARSER!!!");
-//                }
-//                if(!fEdges.get(fromOpId).contains(toOpId)  ){
-//                    System.out.printf("2.PROBLEM IN DAX PARSER!!!");
-//                }
-
 
             }//all the parents
         }
@@ -333,52 +180,6 @@ public class PegasusDaxParser {
 
             }
         }
-
-//        graph.printEdges();
-
-
-
-//        System.out.println("/////edges from data");
-//        for(Edge e:edges){
-//            if(!fEdges.containsKey(e.from)){
-//                fEdges.put(e.from,new HashMap<Long,Edge>());
-//            }
-//            fEdges.get(e.from).put(e.to,e);
-//        }
-////        for(Long fid:fEdges.keySet()){
-////            System.out.printf(fid+": ");
-////            for(Long tid: fEdges.get(fid).keySet()){
-////                System.out.printf(" "+tid);
-////            }
-////            System.out.println();
-////        }
-////        System.out.println("////////");
-//
-//
-//        ///add files to edges/////////
-//
-//        for(Long fid:fEdges.keySet()){
-//            for(Long tid: fEdges.get(fid).keySet()){
-//                if(!fTotfs.containsKey(fid)){continue;}
-//                if(!fTotfs.get(fid).containsKey(tid)){continue;}
-//                fEdges.get(fid).get(tid).data.name = fid+"->"+tid;
-//                fEdges.get(fid).get(tid).data.size_B = fTotfs.get(fid).get(tid);
-//            }
-//        }
-//        System.out.println("////////");
-//
-//
-//        /////////////
-//
-//        for(Long fid:fEdges.keySet()){
-//            System.out.printf(fid+": ");
-//            for(Long tid: fEdges.get(fid).keySet()){
-//                System.out.printf(" "+tid +"("+fEdges.get(fid).get(tid).data.size_B+")");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("////////");
-//
 
         graph.sumdata_B = sumdata;
         return graph;

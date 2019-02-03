@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+tmux (gia na ksekiniseis)
+tmux ls (gia na deis ti trexei)
+tmux attach -t <seesionid> gia na ksanasindetheis 
+
+ilia@195.134.66.184:/home/ilia/Desktop/.
+
+scp -P 15000 ~/MyScheduler/target/classes/artifacts/MyScheduler.jar chronis@sigmod.imis.athena-innovation.gr:/home/chronis/jc2018/.
+
+
+ssh chronis@sigmod.imis.athena-innovation.gr -p 15000
+
+
+mkdir -p ensemble20SecMontageLigoPerSec/dagMerge/Multiobj
+mkdir -p ensemble20SecMontageLigoPerSec/commonEntry/Biobj
+mkdir -p ensemble20SecMontageLigoPerSec/Moheft
+mkdir -p ensemble20SecMontageLigoPerSec/dagMerge/Biobj
+mkdir -p ensemble20SecMontageLigoPerSec/commonEntry/Multiobj
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20SecMontageLigoPerSec/dagMerge/Multiobj/ true 20 perSec 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20SecMontageLigoPerSec/commonEntry/Biobj/ false 20 perSec 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20SecMontageLigoPerSec/dagMerge/Biobj/ false 20 perSec 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20SecMontageLigoPerSec/commonEntry/Multiobj/ true 20 perSec 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar moheft ensemble20SecMontageLigoPerSec/Moheft/ false 20 perSec 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+mkdir -p ensemble20SecMontageLigoPerHour/dagMerge/Multiobj
+mkdir -p ensemble20SecMontageLigoPerHour/commonEntry/Biobj
+mkdir -p ensemble20SecMontageLigoPerHour/Moheft
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20SecMontageLigoPerHour/dagMerge/Multiobj/ true 20 perHour 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20SecMontageLigoPerHour/commonEntry/Biobj/ false 20 perHour 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar moheft ensemble20SecMontageLigoPerHour/Moheft/ false 20 perHour 10 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 50 LIGO 100 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50 MONTAGE 100 LIGO 50
+mkdir -p ensemble20SecMontage50Montage100/dagMerge/Multiobj
+mkdir -p ensemble20SecMontage50Montage100/commonEntry/Biobj
+mkdir -p ensemble20SecMontage50Montage100/Moheft
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20SecMontage50Montage100/dagMerge/Multiobj/ true 20 perSec 10 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20SecMontage50Montage100/commonEntry/Biobj/ false 20 perSec 10 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100
+java -Xms5g -Xmx130g -jar MyScheduler.jar moheft ensemble20SecMontage50Montage100/Moheft/ false 20 perSec 10 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100
+mkdir -p ensemble20SecLigo100Ligo50/dagMerge/Multiobj
+mkdir -p ensemble20SecLigo100Ligo50/commonEntry/Biobj
+mkdir -p ensemble20SecLigo100Ligo50/Moheft
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20SecLigo100Ligo50/dagMerge/Multiobj/ true 20 perSec 10 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20SecLigo100Ligo50/commonEntry/Biobj/ false 20 perSec 10 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar moheft ensemble20SecLigo100Ligo50/Moheft/ false 20 perSec 10 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50
+mkdir -p ensemble20HourMontage50Montage100/dagMerge/Multiobj
+mkdir -p ensemble20HourMontage50Montage100/commonEntry/Biobj
+mkdir -p ensemble20HourMontage50Montage100/Moheft
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20HourMontage50Montage100/dagMerge/Multiobj/ true 20 perHour 10 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20HourMontage50Montage100/commonEntry/Biobj/ false 20 perHour 10 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100
+java -Xms5g -Xmx130g -jar MyScheduler.jar moheft ensemble20HourMontage50Montage100/Moheft/ false 20 perHour 10 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100 MONTAGE 50 MONTAGE 100
+mkdir -p ensemble20HourLigo100Ligo50/dagMerge/Multiobj
+mkdir -p ensemble20HourLigo100Ligo50/commonEntry/Biobj
+mkdir -p ensemble20HourLigo100Ligo50/Moheft
+java -Xms5g -Xmx130g -jar MyScheduler.jar dagMerge ensemble20HourLigo100Ligo50/dagMerge/Multiobj/ true 20 perHour 10 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar commonEntry ensemble20HourLigo100Ligo50/commonEntry/Biobj/ false 20 perHour 10 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50
+java -Xms5g -Xmx130g -jar MyScheduler.jar moheft ensemble20HourLigo100Ligo50/Moheft/ false 20 perHour 10 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50 LIGO 100 LIGO 50
+
+

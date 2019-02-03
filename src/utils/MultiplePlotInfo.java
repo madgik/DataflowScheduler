@@ -23,13 +23,5 @@ public class MultiplePlotInfo {
         series.add(xy);
     }
 
-    public void addPairs(String name, ArrayList<PairPlot> ps){
-        XYSeries xy = new XYSeries(name);
-        for(PairPlot<Long,Double> p:ps){
-            xy.add(p.getMoney(),(p.getTime()/ 1000));
-        }
-        series.add(xy);
-    }
-
 
 }

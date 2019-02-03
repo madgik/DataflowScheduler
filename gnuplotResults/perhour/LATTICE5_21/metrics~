@@ -1,0 +1,10 @@
+/////////////////size: 30
+nodes 485 edges 924
+d: 5 b: 21  sumDataGB 0
+pareto Lattice time(sec) -> 2622.301
+moheft Lattice time(sec) -> 1110.636
+Jaccard from M to C 0.375
+Jaccard from P to C 0.625
+distance from M to C 0.0
+distance from P to C 0.0
+

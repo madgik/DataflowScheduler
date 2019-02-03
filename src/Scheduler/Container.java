@@ -20,10 +20,8 @@ public class Container {
     public ArrayList<Slot> opsschedule;
 
     public ArrayList<Slot> freeSlots;
-    //be carefull to remove the first slot if the first op is moved!!!
 
-
-    public Container(long cid,containerType ctype){
+   public Container(long cid,containerType ctype){
         id=cid;
         name = "c"+ String.valueOf(cid);
         contType = ctype;

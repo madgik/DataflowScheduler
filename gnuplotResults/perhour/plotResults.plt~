@@ -1,0 +1,16 @@
+reset
+set terminal eps
+set key font ",12" height 3
+set xtics out font ",12"
+set ytics font ",12" 
+set xlabel font ",12" 
+set ylabel font ",12" offset -1
+set label font ",2"
+set offset 0, 0.05, graph 0.25, 0.0
+set output 'perhour.eps'
+set xlabel 'Cost ($)'
+set ylabel 'Execution Time (min)'
+plot "LIGO/hh" using 2:($1/60000) title 'HHDS' with points pt 8 lc rgb 'black',\
+"LIGO/moheft" using 2:($1/60000) title 'MOHEFT' with points pt 1 lc rgb 'black'
+set output 'others.eps'
+

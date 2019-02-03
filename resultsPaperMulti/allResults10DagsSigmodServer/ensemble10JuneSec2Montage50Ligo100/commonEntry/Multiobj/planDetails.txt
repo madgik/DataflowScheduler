@@ -1,0 +1,130 @@
+
+plan 0 runtime money unfairnessNorm 
+ 44335	9895.90000000001	0.8437376639340316
+dag 1 responseTime 31.743232157506146 makespan 11928 starts 0 ends 11928 slowdown 0.03150277813671017
+dag 2 responseTime 5.1037451667445675 makespan 44335 starts 0 ends 44335 slowdown 0.19593454753891087
+dag 3 responseTime 31.304128090941045 makespan 11763 starts 0 ends 11763 slowdown 0.03194466867420547
+dag 4 responseTime 5.042617644842202 makespan 43804 starts 0 ends 43804 slowdown 0.19830970151441907
+dag 5 responseTime 53.389732020782056 makespan 20062 starts 0 ends 20062 slowdown 0.01873019328156111
+dag 6 responseTime 5.1037451667445675 makespan 44335 starts 0 ends 44335 slowdown 0.19593454753891087
+dag 7 responseTime 31.743232157506146 makespan 11928 starts 0 ends 11928 slowdown 0.03150277813671017
+dag 8 responseTime 5.026155807493731 makespan 43661 starts 0 ends 43661 slowdown 0.1989592122291659
+dag 9 responseTime 31.743232157506146 makespan 11928 starts 0 ends 11928 slowdown 0.03150277813671017
+dag 10 responseTime 5.005434613628522 makespan 43481 starts 0 ends 43481 slowdown 0.19978285147852196
+
+plan 1 runtime money unfairnessNorm 
+ 43804	9916.000000000011	0.3766434886527871
+dag 1 responseTime 8.215237899917964 makespan 3087 starts 0 ends 3087 slowdown 0.12172502028334271
+dag 2 responseTime 5.042617644842202 makespan 43804 starts 0 ends 43804 slowdown 0.19830970151441907
+dag 3 responseTime 8.169996874877924 makespan 3070 starts 0 ends 3070 slowdown 0.12239906762693126
+dag 4 responseTime 5.042617644842202 makespan 43804 starts 0 ends 43804 slowdown 0.19830970151441907
+dag 5 responseTime 8.124755849837882 makespan 3053 starts 0 ends 3053 slowdown 0.12308062155737928
+dag 6 responseTime 5.042042056123724 makespan 43799 starts 0 ends 43799 slowdown 0.1983323401250625
+dag 7 responseTime 8.026290089456618 makespan 3016 starts 0 ends 3016 slowdown 0.12459056286958851
+dag 8 responseTime 5.026155807493731 makespan 43661 starts 0 ends 43661 slowdown 0.1989592122291659
+dag 9 responseTime 7.983710301183638 makespan 3000 starts 0 ends 3000 slowdown 0.12525504587155967
+dag 10 responseTime 5.005434613628522 makespan 43481 starts 0 ends 43481 slowdown 0.19978285147852196
+
+plan 2 runtime money unfairnessNorm 
+ 167894	8020.469999999971	0.060423075018154276
+dag 1 responseTime 5.26705144732216 makespan 7650 starts 0 ends 7650 slowdown 0.18985954665554167
+dag 2 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 3 responseTime 5.245019336692839 makespan 7618 starts 0 ends 7618 slowdown 0.19065706641046123
+dag 4 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 5 responseTime 5.245019336692839 makespan 7618 starts 0 ends 7618 slowdown 0.19065706641046123
+dag 6 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 7 responseTime 5.26705144732216 makespan 7650 starts 0 ends 7650 slowdown 0.18985954665554167
+dag 8 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 9 responseTime 5.603041134419312 makespan 8138 starts 0 ends 8138 slowdown 0.17847450625643815
+dag 10 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+
+plan 3 runtime money unfairnessNorm 
+ 74451	8425.200000000013	0.7313303937587258
+dag 1 responseTime 10.24534161490683 makespan 6598 starts 0 ends 6598 slowdown 0.09760533494998488
+dag 2 responseTime 5.000845323321595 makespan 74451 starts 0 ends 74451 slowdown 0.19996619278274202
+dag 3 responseTime 10.167701863354033 makespan 6548 starts 0 ends 6548 slowdown 0.09835064141722667
+dag 4 responseTime 5.000845323321595 makespan 74451 starts 0 ends 74451 slowdown 0.19996619278274202
+dag 5 responseTime 42.88975155279502 makespan 27621 starts 0 ends 27621 slowdown 0.023315593208066334
+dag 6 responseTime 5.000845323321595 makespan 74451 starts 0 ends 74451 slowdown 0.19996619278274202
+dag 7 responseTime 42.88975155279502 makespan 27621 starts 0 ends 27621 slowdown 0.023315593208066334
+dag 8 responseTime 5.000845323321595 makespan 74451 starts 0 ends 74451 slowdown 0.19996619278274202
+dag 9 responseTime 38.59006211180123 makespan 24852 starts 0 ends 24852 slowdown 0.025913407371640117
+dag 10 responseTime 5.000845323321595 makespan 74451 starts 0 ends 74451 slowdown 0.19996619278274202
+
+plan 4 runtime money unfairnessNorm 
+ 46262	9948.159999999994	0.14130225792637563
+dag 1 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 2 responseTime 5.1037451667445675 makespan 44335 starts 0 ends 44335 slowdown 0.19593454753891087
+dag 3 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 4 responseTime 5.325577058845995 makespan 46262 starts 0 ends 46262 slowdown 0.18777307866364648
+dag 5 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 6 responseTime 5.307733808573176 makespan 46107 starts 0 ends 46107 slowdown 0.18840432396680792
+dag 7 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 8 responseTime 5.142654964113682 makespan 44673 starts 0 ends 44673 slowdown 0.1944520888486919
+dag 9 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 10 responseTime 5.12331518317282 makespan 44505 starts 0 ends 44505 slowdown 0.19518611763032498
+
+plan 5 runtime money unfairnessNorm 
+ 46112	9953.519999999995	0.14191307423882243
+dag 1 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 2 responseTime 5.1037451667445675 makespan 44335 starts 0 ends 44335 slowdown 0.19593454753891087
+dag 3 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 4 responseTime 5.308309397291654 makespan 46112 starts 0 ends 46112 slowdown 0.18838389497609329
+dag 5 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 6 responseTime 5.307733808573176 makespan 46107 starts 0 ends 46107 slowdown 0.18840432396680792
+dag 7 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 8 responseTime 5.142654964113682 makespan 44673 starts 0 ends 44673 slowdown 0.1944520888486919
+dag 9 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 10 responseTime 5.12331518317282 makespan 44505 starts 0 ends 44505 slowdown 0.19518611763032498
+
+plan 6 runtime money unfairnessNorm 
+ 167894	7976.009999999971	0.4466186906787841
+dag 1 responseTime 9.824944333763037 makespan 14270 starts 0 ends 14270 slowdown 0.10178174715591407
+dag 2 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 3 responseTime 9.780880112504393 makespan 14206 starts 0 ends 14206 slowdown 0.10224028804131309
+dag 4 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 5 responseTime 8.74261689909762 makespan 12698 starts 0 ends 12698 slowdown 0.11438222806070986
+dag 6 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 7 responseTime 8.536065861947732 makespan 12398 starts 0 ends 12398 slowdown 0.11714998644256282
+dag 8 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+dag 9 responseTime 8.492001640689088 makespan 12334 starts 0 ends 12334 slowdown 0.11775786702731424
+dag 10 responseTime 5.000345986906741 makespan 167894 starts 0 ends 167894 slowdown 0.19998616148131965
+
+plan 7 runtime money unfairnessNorm 
+ 227306	7945.7999999999965	0.7077238144198478
+dag 1 responseTime 141.45785479901556 makespan 205457 starts 0 ends 205457 slowdown 0.007069243354643034
+dag 2 responseTime 6.769799069054424 makespan 227306 starts 0 ends 227306 slowdown 0.14771487156407961
+dag 3 responseTime 119.47325090823858 makespan 173526 starts 0 ends 173526 slowdown 0.00837007440910811
+dag 4 responseTime 6.352006571976936 makespan 213278 starts 0 ends 213278 slowdown 0.15743056759602342
+dag 5 responseTime 109.14363354037266 makespan 158523 starts 0 ends 158523 slowdown 0.009162238488515191
+dag 6 responseTime 6.768131234734754 makespan 227250 starts 0 ends 227250 slowdown 0.14775127214849143
+dag 7 responseTime 86.34521856322512 makespan 125410 starts 0 ends 125410 slowdown 0.011581417206880582
+dag 8 responseTime 6.768131234734754 makespan 227250 starts 0 ends 227250 slowdown 0.14775127214849143
+dag 9 responseTime 156.0141948904254 makespan 226599 starts 0 ends 226599 slowdown 0.006409673175587244
+dag 10 responseTime 6.6814336328675905 makespan 224339 starts 0 ends 224339 slowdown 0.1496684775974961
+
+plan 8 runtime money unfairnessNorm 
+ 43804	9977.64	0.1745314051943162
+dag 1 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 2 responseTime 5.042617644842202 makespan 43804 starts 0 ends 43804 slowdown 0.19830970151441907
+dag 3 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 4 responseTime 5.026155807493731 makespan 43661 starts 0 ends 43661 slowdown 0.1989592122291659
+dag 5 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 6 responseTime 5.02592557200634 makespan 43659 starts 0 ends 43659 slowdown 0.1989683264650499
+dag 7 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 8 responseTime 5.026155807493731 makespan 43661 starts 0 ends 43661 slowdown 0.1989592122291659
+dag 9 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 10 responseTime 5.005434613628522 makespan 43481 starts 0 ends 43481 slowdown 0.19978285147852196
+
+plan 9 runtime money unfairnessNorm 
+ 46082	9961.559999999996	0.14877366107543463
+dag 1 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 2 responseTime 5.1037451667445675 makespan 44335 starts 0 ends 44335 slowdown 0.19593454753891087
+dag 3 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 4 responseTime 5.124466360609776 makespan 44515 starts 0 ends 44515 slowdown 0.19514227036139759
+dag 5 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 6 responseTime 5.304855864980786 makespan 46082 starts 0 ends 46082 slowdown 0.18850653541811582
+dag 7 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 8 responseTime 5.142654964113682 makespan 44673 starts 0 ends 44673 slowdown 0.1944520888486919
+dag 9 responseTime 6.094232196570178 makespan 2290 starts 0 ends 2290 slowdown 0.1640895797444013
+dag 10 responseTime 5.12331518317282 makespan 44505 starts 0 ends 44505 slowdown 0.19518611763032498

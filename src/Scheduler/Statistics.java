@@ -34,25 +34,18 @@ public class Statistics {
     public Double subdagMeanResponseTime=0.0;//dagId, time
     public Double subdagMeanSlowdown=0.0;//dagId, time
     public HashMap  <Long, Double> subdagSlowdown = new HashMap<>();//dagId, time
-
-
-    //   public Double subdagPartialMeanResponseTime=0.0;//dagId, time
     public Double subdagMaxResponseTime=0.0;//dagId, time
     public Double subdagMinResponseTime = Double.MAX_VALUE;//dagId, time
-
     public HashMap <Long, Double> subdagPartialCP = new HashMap<>();//dagId, time
 
 
     public Statistics(Plan plan){
 
         meanContainersUsed=0;
-
         runtime_MS = 0;
         quanta = 0;
         money = 0;
         contUtilization=0.0;
-
-
         partialUnfairness = 0.0;
         unfairness=0.0;
         unfairnessNorm=0.0;
@@ -69,8 +62,7 @@ public class Statistics {
                 }
                 continue;}
 
-            //idea: the last slot of a container may affect previously computed response time and partial crpath (maxtrank)
-            //if last op is added in an idle slot, they won't be changed
+            //the last slot of a container may affect previously computed response time and partial crpath (maxtrank)
             long opCurId= c.opsschedule.get(c.opsschedule.size()-1).opId;//last slot in container
 
             Long dId = plan.graph.operators.get(opCurId).dagID;
@@ -81,17 +73,11 @@ public class Statistics {
             Double path=0.0;//trank of operator = ;//
             subdagMaxPath = Math.max(subdagMaxPath, path);
             subdagPartialCP.put(dId, subdagMaxPath);
-            //define maxTrank and compute it for opCur, dgId based on trank
-
-
             runtime_MS = Math.max(c.UsedUpTo_MS,runtime_MS);
             int localQuanta = (int) Math.ceil((double)(c.UsedUpTo_MS-c.startofUse_MS)/RuntimeConstants.quantum_MS);
             if(localQuanta == 0 ){
                 System.out.println("NO QUANTA IS USED IN CONTAINER");
             }
-//            if(c.UsedUpTo_MS>0){
-//                localQuanta+=1;
-//            }
             quanta+=localQuanta;
             money+=localQuanta*c.contType.container_price;
 
@@ -102,32 +88,12 @@ public class Statistics {
        int makespanQuanta = (int)Math.ceil(runtime_MS/(double)RuntimeConstants.quantum_MS);
         meanContainersUsed = (int) Math.ceil(quanta/(double)(makespanQuanta));
 
-
-//        for(Long dgId: subdagMakespan.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
-//            partialUnfairness += Math.abs(subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime);
-//            //plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
-//            System.out.println(dgId + " partialunfairnes " + partialUnfairness);
-//        }
-        //   System.out.println("quanta " + quanta + " " + makespanQuanta + " " + meanContainersUsed);
-
-
-
-
-
-
-
-        long usedTimeSum =0;
-        long freeTimeSum = 0;
         double minUtil = 10.0;
         double maxUtil = -5.0;
         double AvgUtil= 0;
-        double UtilQuantum = 0;
-        int countfs =0;
         double AvgQUtil = 0;
         double MinQUtil = 10.0;
         double MaxQUtil = -5.0;
-
-
 
         for(Container c:plan.cluster.containersList){
             long dtTime = 0;
@@ -155,11 +121,7 @@ public class Statistics {
             QUtil = (double)(dtTime+proTime) / (double)(quantaUsed*RuntimeConstants.quantum_MS);
 
 
-
-
             for(Slot s: c.freeSlots){
-                countfs++;
-                freeTimeSum+=s.end_MS - s.start_MS;
                 ftime += s.end_MS - s.start_MS;
 
             }
@@ -169,7 +131,6 @@ public class Statistics {
             long o=0;
 
             for(Slot s: c.opsschedule){
-                usedTimeSum+= s.end_MS - s.start_MS;
                 o += s.end_MS - s.start_MS;
 
             }
@@ -199,14 +160,7 @@ public class Statistics {
 
         }
 
-
-        int a = plan.cluster.containersList.size();
-        int b = plan.cluster.contUsed.size();
-
         AvgUtil = (double) AvgUtil / plan.cluster.contUsed.size();
-        AvgQUtil = (double) AvgQUtil / plan.cluster.contUsed.size();
-
-
 
         contUtilization = AvgUtil;
 
@@ -269,25 +223,17 @@ public class Statistics {
                     meanSlowdown += plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) / (double) (subdagFinishTime.get(dgId) - 0);
                     subdagSlowdown.put(dgId, plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType})/(double) subdagFinishTime.get(dgId));//for now TODO: change later by adding -submitTime
                 }
-
-                //   System.out.println(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(plan.cluster.containersList.get(0).contType));
             }
 
             if(subdagFinishTime.size()>0) {
                 subdagMeanMakespan = meanMakespan / (double) subdagFinishTime.size();
                 subdagMeanResponseTime = meanResponseTime / (double) subdagFinishTime.size();
                 subdagMeanSlowdown = meanSlowdown / (double) subdagFinishTime.size();
-
-                //     subdagPartialMeanResponseTime = meanPartialResponseTime / (double) subdagFinishTime.size();
             }
 
-            for(Long dgId: subdagResponseTime.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
-                //if(Math.abs(subdagResponseTime.get(dgId))<1e-12)
+            for(Long dgId: subdagResponseTime.keySet()) {
                     partialUnfairness += Math.abs(subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime);
-                //standard deviation
-                //partialUnfairness += Math.pow(Math.abs((subdagResponseTime.get(dgId) / computePartialCP(plan.graph.superDAG.getSubDAG(dgId)) - subdagMeanResponseTime)), 2);
-            }
-          //  partialUnfairness = subdagMaxResponseTime - subdagMinResponseTime;//or max - mean
+                           }
             for(Long dgId: subdagResponseTime.keySet()) {
                 unfairness += Math.abs((double)subdagResponseTime.get(dgId)/plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) -subdagMeanResponseTime);//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
              }
@@ -296,18 +242,6 @@ public class Statistics {
                 if(Math.abs(subdagResponseTime.get(dgId))>1e-12)
                     unfairnessNorm += Math.abs(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType})/(double)subdagResponseTime.get(dgId)-subdagMeanSlowdown);//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
             }
-
-//            for(Long dgId: subdagSlowdown.keySet()) {//subdagresponsetime is partial. crPathLength might be partial. use of max(trank) to take into account crpath only.
-//                if(Math.abs(subdagSlowdown.get(dgId))>1e-12)
-//                partialUnfairness += Math.abs(computePartialCP(plan.graph.superDAG.getSubDAG(dgId))/(double)subdagSlowdown.get(dgId) - subdagMeanSlowdown);
-//               }
-//
-//            for(Long dgId: subdagSlowdown.keySet()) {
-//                if(Math.abs(subdagSlowdown.get(dgId))>1e-12)
-//                    unfairness += Math.abs(plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType})/(double)subdagSlowdown.get(dgId)-subdagMeanSlowdown);//+= Math.abs(subdagResponseTime.get(dgId) / plan.graph.superDAG.getSubDAG(dgId).computeCrPathLength(new containerType[]{plan.cluster.containersList.get(0).contType}) - subdagMeanResponseTime);
-//            }
-
-
 
             Double sumCostSubdag =0.0;
 
@@ -321,7 +255,7 @@ public class Statistics {
                     Long tused= plan.opIdToBeforeDTDuration_MS.get(s.opId) + plan.opIdtoStartEndProcessing_MS.get(s.opId).b + plan.opIdToAfterDTDuration_MS.get(s.opId);
 
                     if(timeUsedPerDag.containsValue(dId))
-                    tused += timeUsedPerDag.get(dId); //+ ( s.end_MS - s.start_MS);
+                    tused += timeUsedPerDag.get(dId);
                     timeUsedPerDag.put(dId, tused);
                 }
 
@@ -333,7 +267,6 @@ public class Statistics {
 
                     double moneyFrag = contCost * timeUsedPerDag.get(dgId)/(contQuanta*RuntimeConstants.quantum_MS);
                     if(subdagMoneyFragment.containsKey(dgId)) {
-                       // System.out.println("done");
                         moneyFrag += subdagMoneyFragment.get(dgId);
                     }
 
@@ -353,7 +286,6 @@ public class Statistics {
 
 
         }
-////////////////////
 
     }
 
