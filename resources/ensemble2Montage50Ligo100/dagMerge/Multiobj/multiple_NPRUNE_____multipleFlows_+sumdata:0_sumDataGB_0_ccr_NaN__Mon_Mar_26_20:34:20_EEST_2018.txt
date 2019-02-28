@@ -1,7 +1,0 @@
-Running multiple  multipleFlows +sumdata:0 Pareto, Moheft
-         0 000.00 || noQ Q (Avg,Max,Min) (NaN, -5.00, 10.00) (NaN, 10.00, -5.00) #fs:   0  -- #Conts: 0
-/////////////////size: 1
-nodes 0 edges 0
- multipleFlows +sumdata:0  sumDataGB 0
-pareto multiple time(sec) -> 0.114
-
