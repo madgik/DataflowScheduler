@@ -14,8 +14,6 @@ import java.util.Random;
  */
 public class LatticeGenerator {
 
-
-
     public static void main(String[] args) {
 
         int depth = 5 ;

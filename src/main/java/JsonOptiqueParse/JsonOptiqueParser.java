@@ -25,9 +25,6 @@ public class JsonOptiqueParser {
         mult_data = mulData;
         mult_time = mulTime  ;
     }
-    public JsonOptiqueParser(){
-
-    }
 
     public DAG parse(String filepath){
 
@@ -67,10 +64,7 @@ public class JsonOptiqueParser {
 
             opIdtoDisk.put(op.getId(),Double.valueOf(opjp.getResources().getDiskMB()*1000*1000).longValue());
 
-
         }
-
-
 
         for(OpLink opl : jp.getOpLinks()){
 

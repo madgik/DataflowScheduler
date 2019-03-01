@@ -3,9 +3,6 @@ package main.java.Graph;
 import main.java.Scheduler.RuntimeConstants;
 import main.java.Scheduler.TopologicalSorting;
 import main.java.Scheduler.containerType;
-import main.java.Graph.Operator;
-import main.java.Graph.Edge;
-import main.java.Graph.DAGmerged;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,7 +23,6 @@ public class DAG {
     public HashMap<Long,ArrayList<Edge>> edges;
     public HashMap<Long, HashMap<Long,Edge>> edgesMap;
     private HashMap<Long,ArrayList<Edge>> reverseEdges;
-
 
     public Long getNextId() {
         return nextId;
