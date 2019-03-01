@@ -1,3 +1,0 @@
-
-plan 0 runtime money unfairnessNorm 
- 0	0.0	0.0
