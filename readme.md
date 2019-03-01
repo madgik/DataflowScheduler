@@ -3,7 +3,7 @@
 This repository contains the code used in used in the experiments of the paper "Fairness in Dataflow Scheduling in the Cloud"
 
 ## Compile
-Using maven the project can be build using:
+Using maven the project can be build using maven:
 
 ```mvn clean package```
 
