@@ -14,21 +14,14 @@ public class hhdsEnsemble implements Scheduler {
 
     public SolutionSpace space;
     public Cluster cluster;
-
-
     public DAG graph;
 
-    public ArrayList<DAG> ensemble;
-
-
-    //public String newDir = "";
-    public String rankingMethod = "";//"dagMerge";//commonEntry:default, perDag, dagMerge
+    public String rankingMethod = ""; //commonEntry, perDag, dagMerge: default
 
     public LinkedList<Long> opsSorted ;
 
-    public int pruneSkylineSize = 10;//20;
-    public int homoPlanstoKeep = 10;//80;
-
+    public int pruneSkylineSize;
+    public int homoPlanstoKeep = 10;
 
     public int maxContainers = 100000000;
 
@@ -36,47 +29,42 @@ public class hhdsEnsemble implements Scheduler {
     public boolean backfillingUpgrade = false;
 
     public boolean heteroEnabled = true;
-    public boolean pruneEnabled = false;
-    public String PruneMethod = "";
-    public boolean homotohetero = false;
-    public boolean heteroStartEnabled = false;
-
-    public boolean multi=false;
+    public boolean pruneEnabled;
+    public String PruneMethod;
+    public boolean multi;
+    public int constraint_mode;
+    public double money_constraint;
+    public long time_constraint;
 
     private HashMap<Long, Integer> opLevel;
 
-    int constraint_mode;
-    double money_constraint;
-    long time_constraint;
 
     public hhdsEnsemble(DAG graph, Cluster cl, boolean prune, String PruneMethod, String rankingMethod, Boolean multi,
                         int pruning_k, int constraint_mode, double money_constraint, long time_constraint) {
         this.rankingMethod = rankingMethod;
         this.pruneEnabled = prune;
-        space = new SolutionSpace();
+        this.space = new SolutionSpace();
         this.graph = graph;
         this.cluster = cl;
         this.opsSorted = new LinkedList<>();
-        opLevel = new HashMap<>();
+        this.opLevel = new HashMap<>();
         this.PruneMethod = PruneMethod;
         this.multi = multi;
         this.pruneSkylineSize = pruning_k;
         this.constraint_mode = constraint_mode;
         this.money_constraint = money_constraint;
         this.time_constraint = time_constraint;
-        // this.newDir = dir;
     }
 
     @Override
     public SolutionSpace schedule() {
         long startCPU_MS = System.currentTimeMillis();
+
         MultiplePlotInfo mpinfo = new MultiplePlotInfo();
         SolutionSpace skylinePlans = new SolutionSpace();
-
         SolutionSpace skylinePlans_INC = new SolutionSpace();
         SolutionSpace skylinePlans_DEC = new SolutionSpace();
         SolutionSpace skylinePlans_INCDEC = new SolutionSpace();
-
         SolutionSpace paretoPlans = new SolutionSpace();
 
         computeRankings();
@@ -84,7 +72,8 @@ public class hhdsEnsemble implements Scheduler {
         skylinePlans.clear();
 
         if (heteroEnabled){
-
+            // We have plans with containers of different types
+            // hetero = heterogeneous
             for (containerType cType : containerType.values()) {
 
                 if (maxContainers == 1) {
@@ -125,44 +114,28 @@ public class hhdsEnsemble implements Scheduler {
             skylinePlans.addAll(skylinePlans_DEC.results);
             skylinePlans.addAll(skylinePlans_INC.results);
             skylinePlans.addAll(skylinePlans_INCDEC.results);
-
-
         } else{
-
-            // for (containerType cType : containerType.values()) {
-
             containerType cType = containerType.getSmallest();
             if (maxContainers == 1) {
                 skylinePlans.add(onlyOneContainer());
             } else {
-
                 ArrayList<containerType> cTypes = new ArrayList<>();
                 cTypes.add(cType);
-
                 skylinePlans_INCDEC.addAll(this.createAssignments("increasing", cTypes, true));
 
             }
-
-            // }
             skylinePlans.addAll(skylinePlans_INCDEC.results);
-
-
         }
-
-//        for(int pc=0; pc<skylinePlans.results.size(); pc++)
-//            System.out.println("plan " + skylinePlans.results.get(pc).stats.money+" "+skylinePlans.results.get(pc).stats.runtime_MS );
 
         paretoPlans.addAll(skylinePlans.results);
 
         // compute the skyline for all the homogeneous plans
-        System.out.println("After homo: " + paretoPlans.size());
         paretoPlans.computeSkyline(pruneEnabled, homoPlanstoKeep, false, PruneMethod, multi,
                 false, 0, money_constraint, time_constraint);
-        System.out.println("After homo+computeskyline: " + paretoPlans.size());
+
         mpinfo.add("pareto", paretoPlans.results);
 
         long homoEnd = System.currentTimeMillis();
-        System.out.println("Pare homoEnd: " + (homoEnd - startCPU_MS));
 
         skylinePlans.clear();
 
@@ -183,12 +156,10 @@ public class hhdsEnsemble implements Scheduler {
         paretoPlans.clear();
         space.smallPrint();
 
+        // We want plans with heterogeneous container types
         if (heteroEnabled) {
             paretoPlans.addAll(homoToHetero(skylinePlans)); //returns only hetero
-            System.out.println("After hetero: " + paretoPlans.size());
         }
-
-//        System.out.println("Pare homoToHetero End: " + (System.currentTimeMillis() - homoEnd));
 
         paretoPlans.addAll(skylinePlans);
 
@@ -198,13 +169,6 @@ public class hhdsEnsemble implements Scheduler {
         space.setOptimizationTime(endCPU_MS - startCPU_MS);
 
         mpinfo.add("final space", space.results);
-
-        System.out.println("before final computeSkyline: " + space.size());
-        System.out.println("minmoney: "+space.getMinCostPlan().stats.money + " "+ space.getMinCostPlan().stats.runtime_MS);
-        System.out.println("mintime: "+space.getMinRuntimePlan().stats.runtime_MS + " " + space.getMinRuntimePlan().stats.money);
-
-        System.out.println("money_constraint: "+money_constraint);
-        System.out.println("time_constraint: "+time_constraint );
 
         space.smallPrint();
 
@@ -216,13 +180,11 @@ public class hhdsEnsemble implements Scheduler {
             space.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, false,
                     0, money_constraint, time_constraint);
         }
-        System.out.println("After final computeSkyline: " + space.size());
         space.smallPrint();
         return space;
 
     }
-    //input plan
-    //output contSlack, contOps, opSlack
+
     private void computeSlack(Plan plan,HashMap<Long, Double> contSlack, HashMap<Long, Integer> contOps, HashMap<Long, Long> opSlack, ArrayList<Long> opSortedBySlack) {
         contSlack.clear();
         contOps.clear();
@@ -243,15 +205,13 @@ public class hhdsEnsemble implements Scheduler {
             contSlack.put(opContID, slackPerCont);
             contOps.put(opContID, opsPerCont);
         }
-        //contSlack = avg opSlack //TODO: check this is needed here
         for(Long contId: contSlack.keySet()) {
             double contAvgSlack = contSlack.get(contId) /(double) contOps.get(contId);
             contSlack.put(contId, contAvgSlack);
         }
-
-
     }
 
+    // Covnert plans with homogeneous container types to heterogeneous
     private SolutionSpace homoToHetero(SolutionSpace plans) {
         if( plans.isEmpty() ) { return plans; }
 
@@ -270,7 +230,8 @@ public class hhdsEnsemble implements Scheduler {
         HashMap<Long, Long> opSlack = new HashMap<>();
 
         SolutionSpace skylinePlansNew = new SolutionSpace();
-        //the set of plans from the newly modified plans (plans with upgraded/degraded vm types) that belong to the current pareto
+        // the set of plans from the newly modified plans (plans with upgraded/degraded vm types)
+        // that belong to the current pareto
 
         int updateSkyline = 1;
 

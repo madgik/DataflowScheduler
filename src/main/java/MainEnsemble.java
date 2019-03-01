@@ -174,16 +174,12 @@ public class MainEnsemble {
                                         Boolean multiObjective, Integer pruning_k, int constraint_mode,
                                         double money_constraint, long time_constraint) {
         SolutionSpace space;
-
         Cluster cluster = new Cluster();
-
         Scheduler sched = new hhdsEnsemble(graph, cluster, prune, method, rankMethod, multiObjective, pruning_k,
                 constraint_mode, money_constraint, time_constraint);
 
         space = sched.schedule();
-
         combined.addAll(space);
-
         return space;
     }
 
