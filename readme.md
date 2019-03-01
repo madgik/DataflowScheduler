@@ -1,9 +1,14 @@
-jaraki στο intelij.
+# Fairness in Dataflow Scheduling in the Cloud
 
-prepei na pas sto File->projectStructure->Artifacts
+This repository contains the code used in used in the experiments of the paper "Fairness in Dataflow Scheduling in the Cloud"
 
-na patiseis to + ->jar->module with dependencies
+## Compile and Run
+Using maven the project can be build using:
 
-dialegeis main opoia thes, dialegeis kai extract to target jar
+```mvn clean package```
 
-kai meta gia na to kaneis build pass build->build artifacts->build 
+This will produce a jar containing all required dependencies with can be executed by running:
+
+```
+java -jar java -jar target/DataflowScheduler-1.0-jar-with-dependencies.jar 
+```
