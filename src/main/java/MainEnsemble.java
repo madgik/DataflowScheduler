@@ -34,26 +34,27 @@ public class MainEnsemble {
         Long time_constraint = 0L;
 
         if (args.length == 0) {
-            System.out.println("Running with default configuration.");
+            System.out.println("No dataflows to schedule.");
+            System.exit(0);
         } else if (args.length != 0) {
             rankMethod = args[0];
-            multiObjective = Boolean.valueOf(args[2]);
-            ensembleSize = Integer.parseInt(args[3]);
-            if (args[4].equals("perHour"))
+            multiObjective = Boolean.valueOf(args[1]);
+            ensembleSize = Integer.parseInt(args[2]);
+            if (args[3].equals("perHour"))
                 RuntimeConstants.quantum_MS = RuntimeConstants.OneHour_MS;
             else
                 RuntimeConstants.quantum_MS = RuntimeConstants.OneSec_MS;
-            pruning_k = Integer.parseInt(args[5]);
-            constraint_mode = Integer.parseInt(args[6]);
-            money_constraint = Double.parseDouble(args[7]);
-            time_constraint = Long.parseLong(args[8]);
+            pruning_k = Integer.parseInt(args[4]);
+            constraint_mode = Integer.parseInt(args[5]);
+            money_constraint = Double.parseDouble(args[6]);
+            time_constraint = Long.parseLong(args[7]);
         }
 
         ArrayList<Triple<String, Integer, Integer>> flowsandParasms = new ArrayList<>();
 
         // Read all dataflow files.
         if (args.length > 1) {
-            for (int i = 9; i < 9 + 2 * ensembleSize; i += 2) {
+            for (int i = 8; i < 8 + 2 * ensembleSize; i += 2) {
                 String appName = args[i];
                 Integer size = Integer.parseInt(args[i + 1]);
                 if (RuntimeConstants.quantum_MS == RuntimeConstants.OneHour_MS)

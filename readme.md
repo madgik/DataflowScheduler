@@ -10,7 +10,7 @@ Using maven the project can be build using:
 This will produce a jar containing all required dependencies with can be executed by running:
 
 ```
-java -jar java -jar target/DataflowScheduler-1.0-jar-with-dependencies.jar 
+java -jar target/DataflowScheduler-1.0-jar-with-dependencies.jar dagMerge true 2 perSec 10 0 13500 60000 Example 10 Example 10 
 ```
 
 ## Run
@@ -49,9 +49,8 @@ The arguments that can be configure each experiment are:
 13. ...
 14. ...
 
-An example experiment is:
-```
-mvn clean package
 
-java -jar java -jar target/DataflowScheduler-1.0-jar-with-dependencies.jar dagMerge true 2 perSec 10 1 13500 60000 Example 10 Example 10 
+Another example of an experiment is:
+```
+java -jar target/DataflowScheduler-1.0-jar-with-dependencies.jar dagMerge true 2 perSec 10 1 2000 100000 MONTAGE 50 LIGO 50
 ```

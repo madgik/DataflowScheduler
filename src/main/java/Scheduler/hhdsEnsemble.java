@@ -154,7 +154,7 @@ public class hhdsEnsemble implements Scheduler {
         }
 
         paretoPlans.clear();
-        space.smallPrint();
+//        space.smallPrint();
 
         // We want plans with heterogeneous container types
         if (heteroEnabled) {
@@ -170,7 +170,7 @@ public class hhdsEnsemble implements Scheduler {
 
         mpinfo.add("final space", space.results);
 
-        space.smallPrint();
+//        space.smallPrint();
 
         if (constraint_mode == 1 || constraint_mode == 2  || constraint_mode == 3) {
             // by fixing constraint mode to 1 only one plan is returned. This happens only when constraints are applied.
@@ -180,7 +180,7 @@ public class hhdsEnsemble implements Scheduler {
             space.computeSkyline(pruneEnabled, pruneSkylineSize, false, PruneMethod, multi, false,
                     0, money_constraint, time_constraint);
         }
-        space.smallPrint();
+//        space.smallPrint();
         return space;
 
     }
